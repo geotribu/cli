@@ -1,6 +1,6 @@
 # Tests
 
-## Requirements {: tests-requirements }
+## Requirements
 
 ```sh
 pip install -U -r requirements/testing.txt
