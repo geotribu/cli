@@ -10,6 +10,6 @@ Une fois l'outil installé, il est appelable en ligne de commande : *{{ cli_name
   :module: src.cli
   :hook:
   :func: main
-  :prog: geotrib-toolbelt
+  :prog: geotribu-toolbelt
   :title: Commandes et options
 ```
