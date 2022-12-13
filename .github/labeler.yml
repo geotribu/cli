@@ -1,0 +1,20 @@
+ci-cd:
+  - .github/**/*
+
+dependencies:
+  - requirements.txt
+  - requirements/*.txt
+
+documentation:
+  - docs/**/*
+
+packaging:
+  - builder/**/*
+  - setup.py
+
+quality:
+  - tests/**/*
+
+tooling:
+  - setup.cfg
+  - .vscode/**/*
