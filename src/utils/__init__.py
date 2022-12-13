@@ -2,4 +2,3 @@
 
 # submodules
 from .geomtools import GeomTools  # noqa: E402 F401
-

@@ -81,8 +81,5 @@ jobs:
       - name: CLI - Echoing version
         run: geotribu-toolbelt --version
 
-      - name: CLI - Verbose check
-        run: geotribu-toolbelt --verbose check
-
-      - name: CLI - Sample scenario
-        run: geotribu-toolbelt --verbose
+      - name: CLI - Echoing help
+        run: geotribu-toolbelt --help

@@ -30,7 +30,7 @@ Si besoin, ajuster le fichier `.dockerignore`.
 ### Prérequis
 
 - Docker >= 20.10
-- dépôt cloné localement 
+- dépôt cloné localement
 
 ### Builder l'image
 

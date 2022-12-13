@@ -66,5 +66,4 @@ setup(
     entry_points={
         "console_scripts": [f"{__about__.__executable_name__} = src.cli:main"]
     },
-
 )

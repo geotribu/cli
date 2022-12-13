@@ -22,7 +22,6 @@ from src.__about__ import (
     __version__,
 )
 
-
 # ############################################################################
 # ########## MAIN ################
 # ################################
@@ -57,8 +56,6 @@ def main(argv: List[str] = None):
         version=__version__,
     )
 
-
-
     # -- PARSE PASSED ARGUMENTS --
 
     # get passed args and force print help if none
@@ -90,7 +87,6 @@ def main(argv: List[str] = None):
     logger.debug(f"Log level set: {logging.getLevelName(args.verbosity)}")
 
     # -- RUN LOGIC --
-
 
 
 # -- Stand alone execution
