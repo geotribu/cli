@@ -39,6 +39,7 @@ pip-delete-this-directory.txt
 
 # Unit test / coverage reports
 htmlcov/
+junit/
 .tox/
 .nox/
 .coverage
@@ -127,3 +128,13 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# #################
+# CUSTOM ##########
+# #################
+
+version_info.txt
+_logs/
+*.pfx
+docs/misc/licenses.md
+
