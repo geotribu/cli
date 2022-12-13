@@ -33,7 +33,7 @@ def main(argv: List[str] = None):
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"{__cli_usage__}\n\n"
-        f"Développé avec \u2764\uFE0F par {__author__}\n"
+        f"Développé par {__author__}\n"
         f"Documentation : {__uri_homepage__}",
         description=f"{__title__} {__version__} - {__summary__}",
     )
