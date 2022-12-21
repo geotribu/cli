@@ -16,6 +16,10 @@ Unreleased
 
 -->
 
+## 0.3.0 - 2022-12-21
+
+- Modernized build and publish workflow for PyPi
+
 ## 0.2.0 - 2022-12-21
 
 - First published version
