@@ -8,7 +8,7 @@ on:
     paths:
       - ".github/workflows/build_release.yml"
       - "builder/**/*"
-      - "src/**/*.py"
+      - "geotribu_cli/**/*.py"
 
     tags:
       - "*"
@@ -20,7 +20,7 @@ on:
 
 # Globals
 env:
-  PROJECT_FOLDER: "src"
+  PROJECT_FOLDER: "geotribu_cli"
   PYTHON_VERSION: "3.10"
   PYINSTALLER_LOG_LEVEL: "DEBUG"
 

@@ -24,7 +24,7 @@ from geotribu_cli import __about__  # noqa: E402
 # #############################################################################
 # ########### MAIN #################
 # ##################################
-package_folder = Path("src")
+package_folder = Path("geotribu_cli")
 
 PyInstaller.__main__.run(
     [

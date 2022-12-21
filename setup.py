@@ -56,7 +56,7 @@ setup(
         "Topic :: Scientific/Engineering :: GIS",
     ],
     # packaging
-    py_modules=["src"],
+    py_modules=["geotribu_cli"],
     packages=find_packages(
         exclude=["contrib", "docs", "*.tests", "*.tests.*", "tests.*", "tests", ".venv"]
     ),
