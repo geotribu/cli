@@ -16,7 +16,13 @@ Unreleased
 
 -->
 
-## 0.1.0 - 2022-12-XX
+## 0.2.0 - 2022-12-21
+
+- First published version
+- Achieve project structure
+- Add 2 subcommands: search-content and search-image
+
+## 0.1.0 - 2022-12-10
 
 - First functional version
 - Unit tests and coverage
