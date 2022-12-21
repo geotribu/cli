@@ -18,7 +18,7 @@ from os import chmod, getenv
 from pathlib import Path
 
 # project
-from src.utils.check_path import (
+from geotribu_cli.utils.check_path import (
     check_path,
     check_path_exists,
     check_path_is_readable,

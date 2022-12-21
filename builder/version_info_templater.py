@@ -22,7 +22,7 @@ from pathlib import Path
 sys.path.insert(0, path.abspath(r"."))
 
 # module
-from src import __about__
+from geotribu_cli import __about__
 
 # #############################################################################
 # ########### MAIN #################

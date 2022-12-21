@@ -13,7 +13,7 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 # package (to get version)
-from src import __about__
+from geotribu_cli import __about__
 
 # ############################################################################
 # ########### Globals ##############
@@ -64,6 +64,6 @@ setup(
     install_requires=requirements,
     # cli
     entry_points={
-        "console_scripts": [f"{__about__.__executable_name__} = src.cli:main"]
+        "console_scripts": [f"{__about__.__executable_name__} = geotribu_cli.cli:main"]
     },
 )

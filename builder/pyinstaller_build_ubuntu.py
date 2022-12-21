@@ -20,7 +20,7 @@ import PyInstaller.__main__
 
 # package
 sys.path.insert(0, str(Path(".").resolve()))
-from src import __about__  # noqa: E402
+from geotribu_cli import __about__  # noqa: E402
 
 # #############################################################################
 # ########### MAIN #################
