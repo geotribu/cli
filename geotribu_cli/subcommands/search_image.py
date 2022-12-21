@@ -9,11 +9,7 @@ import argparse
 import json
 import logging
 import sys
-from datetime import datetime, timedelta
 from pathlib import Path
-from typing import List
-from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
 
 # 3rd party
 from lunr.index import Index
