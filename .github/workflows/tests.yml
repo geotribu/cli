@@ -79,7 +79,7 @@ jobs:
         run: python -m pip install -e .
 
       - name: CLI - Echoing version
-        run: geotribu-toolbelt --version
+        run: geotribu --version
 
       - name: CLI - Echoing help
-        run: geotribu-toolbelt --help
+        run: geotribu --help

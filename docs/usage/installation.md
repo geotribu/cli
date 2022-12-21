@@ -13,7 +13,7 @@ Il est possible d'installer le projet de deux façon différentes, en plus de [c
 ### Installer
 
 ```sh
-pip install geotribu-toolbelt
+pip install geotribu
 ```
 
 ----
@@ -35,7 +35,7 @@ Si besoin, ajuster le fichier `.dockerignore`.
 ### Builder l'image
 
 ```sh
-docker build --pull --rm -f "Dockerfile" -t geotribu-toolbelt:latest "."
+docker build --pull --rm -f "Dockerfile" -t geotribu:latest "."
 ```
 
 ### Exécuter l'image dans un conteneur
@@ -43,14 +43,14 @@ docker build --pull --rm -f "Dockerfile" -t geotribu-toolbelt:latest "."
 Entrer dans le conteneur et exécuter des commandes de façon interactive :
 
 ```sh
-> docker run --rm -it geotribu-toolbelt:latest
-root@55c5de0191ee:/user/app# geotribu-toolbelt --version
+> docker run --rm -it geotribu:latest
+root@55c5de0191ee:/user/app# geotribu --version
 0.2.0
 ```
 
 Exécuter le programme dans le conteneur :
 
 ```sh
-> docker run --rm checkmd5:latest geotribu-toolbelt --version
+> docker run --rm checkmd5:latest geotribu --version
 0.2.0
 ```
