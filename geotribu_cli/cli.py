@@ -5,6 +5,7 @@
 # standard lib
 import argparse
 import logging
+import sys
 from typing import List
 
 from rich_argparse import RawDescriptionRichHelpFormatter
@@ -41,7 +42,12 @@ def add_common_arguments(parser_to_update):
 
 
 def main(argv: List[str] = None):
-    """Main CLI entrypoint."""
+    """Main CLI entrypoint.
+
+    Args:
+        argv (List[str], optional): list of command-line arguments. Defaults to None.
+    """
+
     # create the top-level parser
     main_parser = argparse.ArgumentParser(
         formatter_class=RawDescriptionRichHelpFormatter,
@@ -67,6 +73,7 @@ def main(argv: List[str] = None):
         "--version",
         action="version",
         version=__version__,
+        help="Affiche la version du CLI",
     )
 
     # -- PARSE PASSED ARGUMENTS --
@@ -81,10 +88,10 @@ def main(argv: List[str] = None):
     parser_search_image(subcmd_search_image)
 
     # get passed args and force print help if none
-    # args = main_parser.parse_args(None if sys.argv[1:] else ["-h"])
+    args = main_parser.parse_args(None if sys.argv[1:] else ["-h"])
 
     # just get passed args
-    args = main_parser.parse_args(argv)
+    # args = main_parser.parse_args(argv)
 
     # set log level depending on verbosity argument
     if 0 < args.verbosity < 4:
