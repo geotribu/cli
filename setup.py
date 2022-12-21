@@ -22,7 +22,7 @@ from geotribu_cli import __about__
 # The directory containing this file
 HERE = Path(__file__).parent
 
-with open(HERE / "requirements/base-pypi.txt") as f:
+with open(HERE / "requirements/base.txt") as f:
     requirements = [
         line
         for line in f.read().splitlines()
