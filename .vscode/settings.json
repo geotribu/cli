@@ -1,3 +1,38 @@
 {
-    "python.pythonPath": ".venv/bin/python3"
+    // Editor
+    "editor.rulers": [
+        88
+    ],
+    "editor.wordWrapColumn": 88,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": "active",
+    "files.associations": {
+        "./requirements/*.txt": "pip-requirements"
+    },
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    },
+    // Python environment
+    "python.defaultInterpreterPath": ".venv/bin/python",
+    "python.terminal.activateEnvInCurrentTerminal": true,
+    "python.terminal.activateEnvironment": true,
+    // Formatter
+    "python.formatting.provider": "black",
+    // Linter
+    "python.linting.enabled": true,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--config=setup.cfg",
+        "--verbose"
+    ],
+    "python.linting.pylintEnabled": false,
+    // Tests
+    "python.testing.pytestArgs": [],
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": true,
+    // extensions
+    "autoDocstring.guessTypes": true,
+    "autoDocstring.docstringFormat": "google",
+    "autoDocstring.generateDocstringOnEnter": false
 }
