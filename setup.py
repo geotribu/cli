@@ -22,8 +22,12 @@ from geotribu_cli import __about__
 # The directory containing this file
 HERE = Path(__file__).parent
 
-with open(HERE / "requirements/base.txt") as f:
-    requirements = f.read().splitlines()
+with open(HERE / "requirements/base-pypi.txt") as f:
+    requirements = [
+        line
+        for line in f.read().splitlines()
+        if not line.startswith(("#", "-")) and len(line)
+    ]
 
 # The text of the README file
 README = (HERE / "README.md").read_text()
