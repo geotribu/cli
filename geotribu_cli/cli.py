@@ -20,6 +20,7 @@ from geotribu_cli.__about__ import (
     __uri_homepage__,
     __version__,
 )
+from geotribu_cli.subcommands.search_content import parser_search_content
 from geotribu_cli.subcommands.search_image import parser_search_image
 
 RawDescriptionRichHelpFormatter.usage_markup = True
@@ -76,13 +77,25 @@ def main(argv: List[str] = None):
         help="Affiche la version du CLI",
     )
 
-    # -- PARSE PASSED ARGUMENTS --
+    # -- SUB-COMMANDS --
     subparsers = main_parser.add_subparsers(title="Sous-commandes", dest="command")
 
+    # Search Content
+    subcmd_search_content = subparsers.add_parser(
+        "search-content",
+        help="Rechercher dans les contenus du site",
+        formatter_class=main_parser.formatter_class,
+        prog="search-content",
+    )
+    add_common_arguments(subcmd_search_content)
+    parser_search_content(subcmd_search_content)
+
+    # Search Image
     subcmd_search_image = subparsers.add_parser(
         "search-image",
         help="Rechercher dans les images du CDN",
         formatter_class=main_parser.formatter_class,
+        prog="search-image",
     )
     add_common_arguments(subcmd_search_image)
     parser_search_image(subcmd_search_image)
