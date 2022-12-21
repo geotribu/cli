@@ -20,12 +20,12 @@ import PyInstaller.__main__
 
 # package
 sys.path.insert(0, str(Path(".").resolve()))
-from src import __about__  # noqa: E402
+from geotribu_cli import __about__  # noqa: E402
 
 # #############################################################################
 # ########### MAIN #################
 # ##################################
-package_folder = Path("src")
+package_folder = Path("geotribu_cli")
 
 PyInstaller.__main__.run(
     [

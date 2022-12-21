@@ -18,7 +18,7 @@ from semver import VersionInfo
 from validators import url
 
 # project
-from src import __about__
+from geotribu_cli import __about__
 
 # ############################################################################
 # ########## Classes #############

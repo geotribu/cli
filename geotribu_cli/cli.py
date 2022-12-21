@@ -6,13 +6,10 @@
 import argparse
 import logging
 import sys
-from datetime import datetime
-from os import getenv
-from pathlib import Path
 from typing import List
 
 # package
-from src.__about__ import (
+from geotribu_cli.__about__ import (
     __author__,
     __cli_usage__,
     __summary__,
@@ -21,16 +18,29 @@ from src.__about__ import (
     __uri_homepage__,
     __version__,
 )
+from geotribu_cli.subcommands.search_image import parser_search_image
 
 # ############################################################################
 # ########## MAIN ################
 # ################################
 
+# this serves as a parent parser
+def add_common_arguments(parser_to_update):
+    parser_to_update.add_argument(
+        "-v",
+        "--verbose",
+        action="count",
+        default=1,
+        dest="verbosity",
+        help="Niveau de verbosité : None = WARNING, -v = INFO, -vv = DEBUG",
+    )
+    return parser_to_update
+
 
 def main(argv: List[str] = None):
     """Main CLI entrypoint."""
     # create the top-level parser
-    parser = argparse.ArgumentParser(
+    main_parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"{__cli_usage__}\n\n"
         f"Développé par {__author__}\n"
@@ -41,28 +51,35 @@ def main(argv: List[str] = None):
     # -- ROOT ARGUMENTS --
 
     # Optional verbosity counter (eg. -v, -vv, -vvv, etc.)
-    parser.add_argument(
+    main_parser.add_argument(
         "-v",
         "--verbose",
         action="count",
         default=1,
         dest="verbosity",
-        help="Verbosity level: None = WARNING, -v = INFO, -vv = DEBUG",
+        help="Niveau de verbosité : None = WARNING, -v = INFO, -vv = DEBUG",
     )
 
-    parser.add_argument(
+    main_parser.add_argument(
         "--version",
         action="version",
         version=__version__,
     )
 
     # -- PARSE PASSED ARGUMENTS --
+    subparsers = main_parser.add_subparsers(title="Sous-commandes", dest="command")
+
+    subcmd_search_image = subparsers.add_parser(
+        "search-image", help="Rechercher dans les images du CDN"
+    )
+    add_common_arguments(subcmd_search_image)
+    parser_search_image(subcmd_search_image)
 
     # get passed args and force print help if none
-    # args = parser.parse_args(None if sys.argv[1:] else ["-h"])
+    # args = main_parser.parse_args(None if sys.argv[1:] else ["-h"])
 
     # just get passed args
-    args = parser.parse_args(argv)
+    args = main_parser.parse_args(argv)
 
     # set log level depending on verbosity argument
     if 0 < args.verbosity < 4:
@@ -87,6 +104,8 @@ def main(argv: List[str] = None):
     logger.debug(f"Log level set: {logging.getLevelName(args.verbosity)}")
 
     # -- RUN LOGIC --
+    logger.info("piou")
+    args.func(args)
 
 
 # -- Stand alone execution

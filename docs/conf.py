@@ -12,7 +12,7 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath(r".."))
 
 # project
-from src import __about__
+from geotribu_cli import __about__
 
 # -- Build environment -----------------------------------------------------
 on_rtd = os.environ.get("READTHEDOCS", None) == "True"
@@ -184,7 +184,7 @@ def run_apidoc(_):
 
     cur_dir = os.path.normpath(os.path.dirname(__file__))
     output_path = os.path.join(cur_dir, "_apidoc")
-    modules = os.path.normpath(os.path.join(cur_dir, "../src/"))
+    modules = os.path.normpath(os.path.join(cur_dir, "../geotribu_cli/"))
     exclusions = ["../input", "../output", "/tests"]
     main(["-e", "-f", "-M", "-o", output_path, modules] + exclusions)
 

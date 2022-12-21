@@ -12,7 +12,7 @@ on:
       - "**.py"
 
 env:
-  PROJECT_FOLDER: "src"
+  PROJECT_FOLDER: "geotribu_cli"
   PYTHON_VERSION: "3.10"
 
 jobs:

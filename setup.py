@@ -13,7 +13,7 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 # package (to get version)
-from src import __about__
+from geotribu_cli import __about__
 
 # ############################################################################
 # ########### Globals ##############
@@ -23,7 +23,11 @@ from src import __about__
 HERE = Path(__file__).parent
 
 with open(HERE / "requirements/base.txt") as f:
-    requirements = f.read().splitlines()
+    requirements = [
+        line
+        for line in f.read().splitlines()
+        if not line.startswith(("#", "-")) and len(line)
+    ]
 
 # The text of the README file
 README = (HERE / "README.md").read_text()
@@ -56,7 +60,7 @@ setup(
         "Topic :: Scientific/Engineering :: GIS",
     ],
     # packaging
-    py_modules=["src"],
+    py_modules=["geotribu_cli"],
     packages=find_packages(
         exclude=["contrib", "docs", "*.tests", "*.tests.*", "tests.*", "tests", ".venv"]
     ),
@@ -64,6 +68,6 @@ setup(
     install_requires=requirements,
     # cli
     entry_points={
-        "console_scripts": [f"{__about__.__executable_name__} = src.cli:main"]
+        "console_scripts": [f"{__about__.__executable_name__} = geotribu_cli.cli:main"]
     },
 )

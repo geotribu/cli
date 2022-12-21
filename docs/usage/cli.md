@@ -7,7 +7,7 @@ Une fois l'outil installé, il est appelable en ligne de commande : *{{ cli_name
 {{ cli_usage }}
 
 ```{sphinx_argparse_cli}
-  :module: src.cli
+  :module: geotribu_cli.cli
   :hook:
   :func: main
   :prog: geotribu-toolbelt

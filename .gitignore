@@ -71,6 +71,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/_apidoc/
 
 # PyBuilder
 target/
@@ -137,4 +138,3 @@ version_info.txt
 _logs/
 *.pfx
 docs/misc/licenses.md
-

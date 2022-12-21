@@ -42,4 +42,7 @@ __version_info__ = tuple(
     ]
 )
 
-__cli_usage__ = "Des outils pour les contributeur/ices ou les lecteur/ices de Geotribu."
+__cli_usage__ = (
+    "Des outils pour les administrateur/ices, contributeur/ices ou "
+    "les lecteur/ices de Geotribu."
+)
