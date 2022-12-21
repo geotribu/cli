@@ -31,8 +31,10 @@ defaults_settings = GeotribuDefaults()
 # ################################
 
 
-def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    """Set the argument parser for search-image subcommand.
+def parser_search_content(
+    subparser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    """Set the argument parser for search-content subcommand.
 
     Args:
         subparser (argparse.ArgumentParser): parser to set up
@@ -51,7 +53,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     subparser.add_argument(
         "--remote-index-file",
         help="Emplacement du fichier distant.",
-        default=defaults_settings.cdn_search_index_full_url,
+        default=defaults_settings.site_search_index_full_url,
         type=str,
         dest="remote_index_file",
     )
@@ -59,16 +61,16 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     subparser.add_argument(
         "--local-index-file",
         help="Emplacement du fichier local.",
-        default=Path().home() / ".geotribu/search/cdn_search_index.json",
+        default=Path().home() / ".geotribu/search/site_search_index.json",
         type=Path,
         dest="local_index_file",
     )
 
     subparser.add_argument(
         "--filter-type",
-        choices=["logo", "geoicone"],
+        choices=["article", "rdp"],
         default=None,
-        help="Filtrer sur un type d'images en particulier.",
+        help="Filtrer sur un type de contenu en particulier.",
     )
 
     subparser.add_argument(
@@ -95,7 +97,7 @@ def run(args):
     Args:
         args (_type_): _description_
     """
-    logger.debug(f"Running {args.command} with {args}")
+    print(f"Running {args.command} with {args}")
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -137,8 +139,6 @@ def run(args):
         mapped_img = images_dict.get(search_result.get("ref"))
         search_result.update(
             {
-                "width": mapped_img[0],
-                "height": mapped_img[1],
                 "full_url": f"{defaults_settings.cdn_base_url}"
                 f"{defaults_settings.cdn_base_path}/"
                 f"{search_result.get('ref')}",
