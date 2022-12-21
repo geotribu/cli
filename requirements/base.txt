@@ -1,1 +1,2 @@
+lunr>=0.6,<0.7
 typing-extensions>=4,<5 ; python_version < '3.11'
