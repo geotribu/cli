@@ -5,8 +5,9 @@
 # standard lib
 import argparse
 import logging
-import sys
 from typing import List
+
+from rich_argparse import RawDescriptionRichHelpFormatter
 
 # package
 from geotribu_cli.__about__ import (
@@ -19,6 +20,8 @@ from geotribu_cli.__about__ import (
     __version__,
 )
 from geotribu_cli.subcommands.search_image import parser_search_image
+
+RawDescriptionRichHelpFormatter.usage_markup = True
 
 # ############################################################################
 # ########## MAIN ################
@@ -41,7 +44,7 @@ def main(argv: List[str] = None):
     """Main CLI entrypoint."""
     # create the top-level parser
     main_parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
+        formatter_class=RawDescriptionRichHelpFormatter,
         epilog=f"{__cli_usage__}\n\n"
         f"Développé par {__author__}\n"
         f"Documentation : {__uri_homepage__}",
@@ -70,7 +73,9 @@ def main(argv: List[str] = None):
     subparsers = main_parser.add_subparsers(title="Sous-commandes", dest="command")
 
     subcmd_search_image = subparsers.add_parser(
-        "search-image", help="Rechercher dans les images du CDN"
+        "search-image",
+        help="Rechercher dans les images du CDN",
+        formatter_class=main_parser.formatter_class,
     )
     add_common_arguments(subcmd_search_image)
     parser_search_image(subcmd_search_image)
