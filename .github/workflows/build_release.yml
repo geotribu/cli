@@ -45,13 +45,19 @@ jobs:
         run: |
           python -m pip install -U pip setuptools wheel
           python -m pip install -U -r requirements.txt
-          python -m pip install -U -r requirements/packaging.txt
+          python -m pip install -U build
 
       - name: Install project as a package
         run: python -m pip install -e .
 
-      - name: Generates wheel
-        run: python setup.py sdist bdist_wheel
+      - name: Build a binary wheel and a source tarball
+        run: >-
+          python -m
+          build
+          --sdist
+          --wheel
+          --outdir dist/
+          .
 
       - uses: actions/upload-artifact@v3
         with:
@@ -171,24 +177,19 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ env.PYTHON_VERSION }}
-
-      - name: Install requirements
-        run: |
-          python -m pip install -U pip setuptools wheel
-          python -m pip install -U twine
-
       - name: Retrieve artifact from Python build
         uses: actions/download-artifact@v3
         with:
           name: python_wheel
-          path: builds/wheel/
 
-      - name: Publish on PyPI
-        env:
-          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-        run: twine upload builds/wheel/*
+      # - name: Publish on PyPI
+      #   env:
+      #     TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      #   run: twine upload builds/wheel/*
+
+      - name: Publish to PyPI
+        if: startsWith(github.ref, 'refs/tags')
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
