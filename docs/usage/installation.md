@@ -9,6 +9,8 @@ Il est possible d'installer le projet de deux façon différentes, en plus de [c
 - Python >= 3.10
 - Accès réseau sur :
   - le dépôt officiel de paquets Python : <https://pypi.org/>
+  - les différents sous-domaines de Geotribu <https://*geotribu.fr>
+  - le site des données NTLK <https://www.nltk.org/nltk_data/>
 
 ### Installer
 
