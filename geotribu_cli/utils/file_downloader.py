@@ -74,10 +74,11 @@ def download_remote_file_to_local(
 
     try:
         with urlopen(custom_request) as response:
-            with local_file_path.open(mode="wb") as tmp_file:
-                tmp_file.write(response.read())
+            with local_file_path.open(mode="wb") as buffile:
+                buffile.write(response.read())
         logger.info(
-            f"Téléchargement du fichier distant {url_index_to_download} dans {local_file_path} a réussi."
+            f"Téléchargement du fichier distant {url_index_to_download} dans "
+            f"{local_file_path} a réussi."
         )
     except HTTPError as error:
         logger.error(error)
