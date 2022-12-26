@@ -7,13 +7,13 @@
 
 # standard library
 import logging
-from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
+from geotribu_cli.utils.file_stats import is_file_older_than
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -39,28 +39,32 @@ def download_remote_file_to_local(
     Args:
         url_index_to_download (str): remote URL of the search index
         local_file_path (Path): local path to the index file
-        expiration_rotating_hours (int, optional): number in hours to consider the local file outaded. Defaults to 24.
-        user_agent (str, optional): user agent to use to perform the request. Defaults to f"{__title_clean__}/{__version__}".
+        expiration_rotating_hours (int, optional): number in hours to consider the \
+            local file outdated. Defaults to 24.
+        user_agent (str, optional): user agent to use to perform the request. Defaults \
+            to f"{__title_clean__}/{__version__}".
 
     Returns:
         Path: path to the local index file (should be the same as local_file_path)
     """
     # content search index
     if local_file_path.exists():
-        f_creation = datetime.fromtimestamp(local_file_path.stat().st_ctime)
-        if (datetime.now() - f_creation) < timedelta(hours=expiration_rotating_hours):
-            logger.info(
-                f"Local search index ({local_file_path}) is up to date. "
-                "No download needed.",
-            )
-            return local_file_path
-        else:
+        if is_file_older_than(
+            local_file_path=local_file_path,
+            expiration_rotating_hours=expiration_rotating_hours,
+        ):
             logger.info(
                 f"Local search index ({local_file_path}) is outdated: "
                 f"updated more than {expiration_rotating_hours} hour(s) ago. "
                 "Let's remove and download it again from remote."
             )
             local_file_path.unlink(missing_ok=True)
+        else:
+            logger.info(
+                f"Local search index ({local_file_path}) is up to date. "
+                "No download needed.",
+            )
+            return local_file_path
 
     # download the remote file into local
     custom_request = Request(
