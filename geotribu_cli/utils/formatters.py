@@ -1,5 +1,7 @@
 #! python3  # noqa: E265
 
+"""Helpers to format text and variables."""
+
 # standard library
 from math import floor
 from math import log as math_log
@@ -16,12 +18,14 @@ def convert_octets(octets: int) -> str:
         octets (int): mount of octets to convert
 
     Returns:
-        str: _description_
+        str: size in a human readbale format: ko, Mo, etc.
 
     Example:
+
     .. code-block:: python
+
         >>> convert_octets(1024)
-        "1ko"
+        "1 ko"
         >>> from pathlib import Path
         >>> convert_octets(Path(my_file.txt).stat().st_size)
     """
