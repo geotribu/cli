@@ -39,8 +39,10 @@ def download_remote_file_to_local(
     Args:
         url_index_to_download (str): remote URL of the search index
         local_file_path (Path): local path to the index file
-        expiration_rotating_hours (int, optional): number in hours to consider the local file outaded. Defaults to 24.
-        user_agent (str, optional): user agent to use to perform the request. Defaults to f"{__title_clean__}/{__version__}".
+        expiration_rotating_hours (int, optional): number in hours to consider the \
+            local file outdated. Defaults to 24.
+        user_agent (str, optional): user agent to use to perform the request. Defaults \
+            to f"{__title_clean__}/{__version__}".
 
     Returns:
         Path: path to the local index file (should be the same as local_file_path)
