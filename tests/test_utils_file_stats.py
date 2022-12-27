@@ -15,6 +15,7 @@
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from time import sleep
 
 # project
 from geotribu_cli.__about__ import __title_clean__, __version__
@@ -35,6 +36,7 @@ class TestUtilsFileStats(unittest.TestCase):
         ) as tempo_dir:
             tempo_file = Path(tempo_dir, "really_recent_file.txt")
             tempo_file.touch()
+            sleep(15)
             self.assertFalse(is_file_older_than(Path(tempo_file)))
 
     def test_created_file_has_expired(self):
@@ -44,6 +46,7 @@ class TestUtilsFileStats(unittest.TestCase):
         ) as tempo_dir:
             tempo_file = Path(tempo_dir, "not_so_really_recent_file.txt")
             tempo_file.touch()
+            sleep(15)
             self.assertTrue(
                 is_file_older_than(Path(tempo_file), expiration_rotating_hours=0)
             )
