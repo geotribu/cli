@@ -16,6 +16,11 @@ Unreleased
 
 -->
 
+## 0.4.0 - 2022-12-27
+
+- Improve search-content subcommand
+- Add utils to check file against time since its creation or modification
+
 ## 0.3.0 - 2022-12-21
 
 - Modernized build and publish workflow for PyPi
