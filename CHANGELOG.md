@@ -16,6 +16,10 @@ Unreleased
 
 -->
 
+## 0.5.0 - 2022-12-28
+
+- add format output argument to search-image with 'table' as first available option
+
 ## 0.4.0 - 2022-12-27
 
 - Improve search-content subcommand
