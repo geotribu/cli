@@ -11,3 +11,4 @@ Outil en ligne de commande pour les tâches récurrentes du projet Geotribu.
 [![🎳 Tester](https://github.com/geotribu/cli/actions/workflows/tests.yml/badge.svg)](https://github.com/geotribu/cli/actions/workflows/tests.yml)
 [![📦 Build & 🚀 Release](https://github.com/geotribu/cli/actions/workflows/build_release.yml/badge.svg)](https://github.com/geotribu/cli/actions/workflows/build_release.yml)
 [![📚 Documentation](https://github.com/geotribu/cli/actions/workflows/documentation.yml/badge.svg)](https://github.com/geotribu/cli/actions/workflows/documentation.yml)
+[![codecov](https://codecov.io/gh/geotribu/cli/branch/main/graph/badge.svg?token=YRLQ6OPFRL)](https://codecov.io/gh/geotribu/cli)
