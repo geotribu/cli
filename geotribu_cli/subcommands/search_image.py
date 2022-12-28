@@ -13,6 +13,7 @@ from pathlib import Path
 
 # 3rd party
 from lunr.index import Index
+from rich import print
 
 # package
 from geotribu_cli.constants import GeotribuDefaults
@@ -69,6 +70,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
         choices=["logo", "geoicone"],
         default=None,
         help="Filtrer sur un type d'images en particulier.",
+        dest="filter_type",
     )
 
     subparser.add_argument(
@@ -89,11 +91,14 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
 # ################################
 
 
-def run(args):
+def run(args: argparse.Namespace):
     """Run the sub command logic.
 
+    Perform a search on images stored on the Geotribu pseudo-CDN \
+        (<https://cdn.geotribu.fr/>).
+
     Args:
-        args (_type_): _description_
+        args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
 
@@ -133,19 +138,42 @@ def run(args):
     # recherche
     search_results: list[dict] = idx.search(f"*{args.search_term}*")
 
-    for search_result in search_results:
-        mapped_img = images_dict.get(search_result.get("ref"))
-        search_result.update(
+    # résultats : enrichissement et filtre
+    final_results = []
+
+    for result in search_results:
+        # filter on image type
+        if args.filter_type == "logo" and not result.get("ref").startswith(
+            "logos-icones/"
+        ):
+            logger.debug(
+                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+            )
+            continue
+        elif args.filter_type == "geoicone" and not result.get("ref").startswith(
+            "internal/icons-rdp-news/"
+        ):
+            logger.debug(
+                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+            )
+            continue
+        else:
+            pass
+
+        mapped_img = images_dict.get(result.get("ref"))
+        result.update(
             {
                 "width": mapped_img[0],
                 "height": mapped_img[1],
                 "full_url": f"{defaults_settings.cdn_base_url}"
                 f"{defaults_settings.cdn_base_path}/"
-                f"{search_result.get('ref')}",
+                f"{result.get('ref')}",
             }
         )
 
-    print(search_results)
+        final_results.append(result)
+
+    print(final_results)
 
 
 # -- Stand alone execution
