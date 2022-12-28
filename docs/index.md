@@ -15,6 +15,7 @@ maxdepth: 1
 ---
 usage/installation
 usage/cli
+usage/examples
 ```
 
 ```{toctree}

@@ -14,8 +14,11 @@ from pathlib import Path
 # 3rd party
 from lunr.index import Index
 from rich import print
+from rich.console import Console
+from rich.table import Table
 
 # package
+from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.formatters import convert_octets
@@ -26,6 +29,49 @@ from geotribu_cli.utils.formatters import convert_octets
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
+
+# ############################################################################
+# ########## FUNCTIONS ###########
+# ################################
+
+
+def format_output_result(result: list[dict], format_type: str = None) -> str:
+    """Format result according to output option.
+
+    Args:
+        result (list[dict]): result to format
+        format_type (str, optional): format output option. Defaults to None.
+
+    Returns:
+        str: formatted result ready to print
+    """
+
+    if format_type == "table":
+        table = Table(
+            title="Recherche d'images - Résultats",
+            show_lines=True,
+            highlight=True,
+            caption=f"{__title__} {__version__}",
+        )
+
+        # determine row from first item
+        for k in result[0].keys():
+            table.add_column(header=k.title(), justify="right")
+
+        # iterate over results
+        for r in result:
+
+            table.add_row(
+                r.get("nom"),
+                r.get("dimensions"),
+                r.get("score"),
+                r.get("url"),
+            )
+
+        return table
+    else:
+        return result
+
 
 # ############################################################################
 # ########## CLI #################
@@ -79,6 +125,16 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
         default=24,
         type=int,
         dest="expiration_rotating_hours",
+    )
+
+    subparser.add_argument(
+        "--format-output",
+        choices=[
+            "table",
+        ],
+        default=None,
+        help="Format de sortie.",
+        dest="format_output",
     )
 
     subparser.set_defaults(func=run)
@@ -161,19 +217,21 @@ def run(args: argparse.Namespace):
             pass
 
         mapped_img = images_dict.get(result.get("ref"))
-        result.update(
-            {
-                "width": mapped_img[0],
-                "height": mapped_img[1],
-                "full_url": f"{defaults_settings.cdn_base_url}"
-                f"{defaults_settings.cdn_base_path}/"
-                f"{result.get('ref')}",
-            }
-        )
 
-        final_results.append(result)
+        # crée un résultat de sortie
+        out_result = {
+            "nom": result.get("ref").split("/")[-1],
+            "dimensions": f"{mapped_img[0]}x{mapped_img[1]}",
+            "score": f"{result.get('score'):.3}",
+            "url": f"{defaults_settings.cdn_base_url}"
+            f"{defaults_settings.cdn_base_path}/"
+            f"{result.get('ref')}",
+        }
 
-    print(final_results)
+        final_results.append(out_result)
+
+    # formatage de la sortie
+    print(format_output_result(result=final_results, format_type=args.format_output))
 
 
 # -- Stand alone execution
