@@ -15,6 +15,7 @@ from typing import List
 # 3rd party
 from lunr import lunr
 from lunr.index import Index
+from rich import print
 
 # package
 from geotribu_cli.constants import GeotribuDefaults
@@ -225,16 +226,43 @@ def run(args: argparse.Namespace):
         idx = Index.load(serialized_idx)
 
     # recherche
-    search_results: list[dict] = idx.search(f"*{args.search_term}*")
+    search_results: list[dict] = idx.search(f"{args.search_term}*")
 
-    for search_result in search_results:
-        search_result.update(
-            {
-                "full_url": f"{defaults_settings.site_base_url}/{search_result.get('ref')}",
-            }
-        )
+    # résultats : enrichissement et filtre
+    final_results = []
 
-    print(search_results)
+    for result in search_results:
+        # filter on image type
+        if args.filter_type == "article" and not result.get("ref").startswith(
+            "articles/"
+        ):
+            logger.debug(
+                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+            )
+            continue
+        elif args.filter_type == "rdp" and not result.get("ref").startswith("rdp/"):
+            logger.debug(
+                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+            )
+            continue
+        else:
+            pass
+
+        result.update({})
+
+        # crée un résultat de sortie
+        out_result = {
+            "titre": result.get("title"),
+            "type": "Article"
+            if result.get("ref").startswith("articles/")
+            else "GeoRDP",
+            "score": f"{result.get('score'):.3}",
+            "url": f"{defaults_settings.site_base_url}{result.get('ref')}",
+        }
+
+        final_results.append(out_result)
+
+    print(final_results)
 
 
 # -- Stand alone execution
