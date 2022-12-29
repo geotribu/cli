@@ -196,8 +196,8 @@ def run(args: argparse.Namespace):
             index_fieds_definition=[
                 dict(field_name="title", boost=10),
                 dict(field_name="tags", boost=5),
-                "text",
-                "location",
+                dict(field_name="text")
+                # "location",
             ],
         )
 
