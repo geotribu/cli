@@ -87,6 +87,7 @@ def parser_search_content(
     )
 
     subparser.add_argument(
+        "-r",
         "--remote-index-file",
         help="Emplacement du fichier distant.",
         default=defaults_settings.site_search_index_full_url,
@@ -95,6 +96,7 @@ def parser_search_content(
     )
 
     subparser.add_argument(
+        "-l",
         "--local-index-file",
         help="Emplacement du fichier local.",
         default=Path().home() / ".geotribu/search/site_search_index.json",
@@ -103,6 +105,7 @@ def parser_search_content(
     )
 
     subparser.add_argument(
+        "-f",
         "--filter-type",
         choices=["article", "rdp"],
         default=None,
@@ -110,6 +113,7 @@ def parser_search_content(
     )
 
     subparser.add_argument(
+        "-x",
         "--expiration-rotating-hours",
         help="Nombre d'heures à partir de quand considérer le fichier local comme périmé.",
         default=24 * 7,
@@ -191,7 +195,7 @@ def run(args: argparse.Namespace):
             index_configuration=contents_listing.get("config", {"lang": "fr"}),
             index_fieds_definition=[
                 dict(field_name="title", boost=10),
-                dict(field_name="tags", boost=5, extractor=lambda d: d or None),
+                dict(field_name="tags", boost=5),
                 "text",
                 "location",
             ],

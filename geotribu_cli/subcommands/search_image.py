@@ -96,6 +96,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     )
 
     subparser.add_argument(
+        "-r",
         "--remote-index-file",
         help="Emplacement du fichier distant.",
         default=defaults_settings.cdn_search_index_full_url,
@@ -104,6 +105,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     )
 
     subparser.add_argument(
+        "-l",
         "--local-index-file",
         help="Emplacement du fichier local.",
         default=Path().home() / ".geotribu/search/cdn_search_index.json",
@@ -112,6 +114,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     )
 
     subparser.add_argument(
+        "-f",
         "--filter-type",
         choices=["logo", "geoicone"],
         default=None,
@@ -120,6 +123,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     )
 
     subparser.add_argument(
+        "-x",
         "--expiration-rotating-hours",
         help="Nombre d'heures à partir de quand considérer le fichier local comme périmé.",
         default=24,
@@ -128,6 +132,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     )
 
     subparser.add_argument(
+        "-o",
         "--format-output",
         choices=[
             "table",
