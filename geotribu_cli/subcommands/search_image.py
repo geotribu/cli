@@ -14,7 +14,6 @@ from pathlib import Path
 # 3rd party
 from lunr.index import Index
 from rich import print
-from rich.console import Console
 from rich.table import Table
 
 # package
