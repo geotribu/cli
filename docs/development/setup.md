@@ -8,7 +8,7 @@
 
 ## Cloner le dépôt
 
-Exemple pour Oslandia avec l'utilisateur `geojulien` :
+Exemple en utilisant le protocole HTTPS :
 
 ```sh
 git clone https://github.com/geotribu/cli.git

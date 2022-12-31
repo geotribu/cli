@@ -1,6 +1,6 @@
 # Exemples
 
-## Rerchercher une image
+## Rechercher une image
 
 ### Recherche simple
 

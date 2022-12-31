@@ -1,12 +1,12 @@
 # Tests
 
-## Requirements
+## Prérequis
 
 ```sh
 pip install -U -r requirements/testing.txt
 ```
 
-## Run
+## Exécution
 
 ```bash
 pytest
