@@ -16,6 +16,11 @@ Unreleased
 
 -->
 
+## 0.6.0 - 2022-12-31
+
+- rewrite search-content subcommand by improving both indexation and search
+- add format output argument to search-content with 'table' as first available option
+
 ## 0.5.0 - 2022-12-28
 
 - add format output argument to search-image with 'table' as first available option
