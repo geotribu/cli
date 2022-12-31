@@ -45,16 +45,11 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     # 3rd party
-    "sphinxcontrib.images",
     "myst_parser",
     "sphinx_argparse_cli",
     "sphinx_copybutton",
     "sphinxext.opengraph",
 ]
-
-images_config = {
-    "override_image_directive": True,
-}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
