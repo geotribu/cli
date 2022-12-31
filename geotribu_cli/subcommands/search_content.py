@@ -122,6 +122,17 @@ def parser_search_content(
         dest="expiration_rotating_hours",
     )
 
+    subparser.add_argument(
+        "-o",
+        "--format-output",
+        choices=[
+            "table",
+        ],
+        default=None,
+        help="Format de sortie.",
+        dest="format_output",
+    )
+
     subparser.set_defaults(func=run)
 
     return subparser
