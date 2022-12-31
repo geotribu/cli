@@ -45,11 +45,16 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.napoleon",
     # 3rd party
+    "sphinxcontrib.images",
     "myst_parser",
     "sphinx_argparse_cli",
     "sphinx_copybutton",
     "sphinxext.opengraph",
 ]
+
+images_config = {
+    "override_image_directive": True,
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -98,13 +103,15 @@ pygments_style = "sphinx"
 html_baseurl = __about__.__uri_homepage__
 
 # Theme
-# html_favicon = "static/img/qgis_deployment_toolbelt_logo_200px.png"
-# html_logo = "static/img/qgis_deployment_toolbelt_logo_200px.png"
-# html_theme = "sphinx_book_theme"
+html_favicon = "https://cdn.geotribu.fr/img/internal/charte/geotribu_logo_orange_LQ.png"
+html_logo = "https://cdn.geotribu.fr/img/internal/charte/geotribu_logo_64x64.png"
+
 html_theme = "furo"
 html_theme_options = {
-    "source_edit_link": f"{__about__.__uri_repository__}"
-    + "/-/edit/main/docs/{filename}",
+    "navigation_with_keys": True,
+    "source_repository": __about__.__uri_repository__,
+    "source_branch": "main",
+    "source_directory": "docs/",
 }
 
 

@@ -20,7 +20,7 @@ usage/examples
 
 ```{toctree}
 ---
-caption: Development
+caption: Développement
 maxdepth: 1
 ---
 development/setup
@@ -34,8 +34,9 @@ Code documentation <_apidoc/modules>
 
 ```{toctree}
 ---
-caption: Miscellaneous
+caption: Divers
 maxdepth: 1
 ---
 misc/credits
+Site Geotribu <http://geotribu.fr>
 ```
