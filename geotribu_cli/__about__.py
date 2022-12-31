@@ -28,7 +28,7 @@ __package_name__ = "geotribu"
 __summary__ = "Des outils pour faciliter les tâches récurrentes des contributeur/ices de Geotribu."
 __title__ = "Geotribu Toolbelt"
 __title_clean__ = "".join(e for e in __title__ if e.isalnum())
-__uri_homepage__ = "https://geotribu.github.io/cli/"
+__uri_homepage__ = "https://cli.geotribu.fr/"
 __uri_repository__ = "https://github.com/geotribu/cli/"
 __uri_tracker__ = f"{__uri_repository__}issues/"
 
