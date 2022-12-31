@@ -53,6 +53,6 @@ root@55c5de0191ee:/user/app# geotribu --version
 Exécuter le programme dans le conteneur :
 
 ```sh
-> docker run --rm checkmd5:latest geotribu --version
+> docker run --rm geotribu:latest geotribu --version
 0.2.0
 ```
