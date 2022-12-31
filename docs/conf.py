@@ -94,6 +94,9 @@ pygments_style = "sphinx"
 
 # -- Options for HTML output -------------------------------------------------
 
+# final URL
+html_baseurl = __about__.__uri_homepage__
+
 # Theme
 # html_favicon = "static/img/qgis_deployment_toolbelt_logo_200px.png"
 # html_logo = "static/img/qgis_deployment_toolbelt_logo_200px.png"
