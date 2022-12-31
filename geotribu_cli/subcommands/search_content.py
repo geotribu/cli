@@ -16,8 +16,10 @@ from typing import List
 from lunr import lunr
 from lunr.index import Index
 from rich import print
+from rich.table import Table
 
 # package
+from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
@@ -33,6 +35,47 @@ defaults_settings = GeotribuDefaults()
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################
+
+
+def format_output_result(
+    result: list[dict], search_term: str = None, format_type: str = None
+) -> str:
+    """Format result according to output option.
+
+    Args:
+        result (list[dict]): result to format
+        format_type (str, optional): format output option. Defaults to None.
+
+    Returns:
+        str: formatted result ready to print
+    """
+
+    if format_type == "table":
+        table = Table(
+            title=f"Recherche de contenus - {len(result)} résultats "
+            f"avec le terme : {search_term}",
+            show_lines=True,
+            highlight=True,
+            caption=f"{__title__} {__version__}",
+        )
+
+        # determine row from first item
+        for k in result[0].keys():
+            table.add_column(header=k.title(), justify="right")
+
+        # iterate over results
+        for r in result:
+
+            table.add_row(
+                r.get("titre"),
+                r.get("type"),
+                r.get("score"),
+                r.get("url"),
+            )
+
+        return table
+    else:
+        return result
 
 
 def generate_index_from_docs(
@@ -208,8 +251,8 @@ def run(args: argparse.Namespace):
             index_fieds_definition=[
                 dict(field_name="title", boost=10),
                 dict(field_name="tags", boost=5),
-                dict(field_name="text")
-                # "location",
+                dict(field_name="text"),
+                "location",
             ],
         )
 
@@ -273,7 +316,15 @@ def run(args: argparse.Namespace):
 
         final_results.append(out_result)
 
-    print(final_results)
+    print(result)
+    # formatage de la sortie
+    print(
+        format_output_result(
+            result=final_results,
+            search_term=args.search_term,
+            format_type=args.format_output,
+        )
+    )
 
 
 # -- Stand alone execution
