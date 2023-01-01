@@ -27,7 +27,7 @@ from geotribu_cli import __about__  # noqa: E402
 package_folder = Path("geotribu_cli")
 
 mac_os_version, _, _ = platform.mac_ver()
-mac_os_version = float("-".join(mac_os_version.split(".")[:2]))
+mac_os_version = "-".join(mac_os_version.split(".")[:2])
 
 PyInstaller.__main__.run(
     [
