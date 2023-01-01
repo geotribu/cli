@@ -26,14 +26,16 @@ from geotribu_cli import __about__  # noqa: E402
 # ##################################
 package_folder = Path("geotribu_cli")
 
+mac_os_version, _, _ = platform.mac_ver()
+mac_os_version = float("-".join(mac_os_version.split(".")[:2]))
+
 PyInstaller.__main__.run(
     [
         "--log-level={}".format(getenv("PYINSTALLER_LOG_LEVEL", "WARN")),
-        "--name={}_{}_{}{}_Python{}-{}".format(
+        "--name={}_{}_MacOS{}_Python{}-{}".format(
             __about__.__title_clean__,
             __about__.__version__.replace(".", "-"),
-            platform.system(),
-            platform.architecture()[0],
+            mac_os_version,
             platform.python_version_tuple()[0],
             platform.python_version_tuple()[1],
         ),
