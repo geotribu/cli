@@ -117,6 +117,7 @@ html_theme_options = {
 # html_static_path = ["static"]
 html_extra_path = ["robots.txt"]
 
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
@@ -183,6 +184,9 @@ ogp_custom_meta_tags = [
     '<meta property="twitter:site" content="@geotribu" />',
     f'<meta property="twitter:title" content="{project}" />',
 ]
+
+# sitemap
+sitemap_url_scheme = "{link}"
 
 # -- Options for Sphinx API doc ----------------------------------------------
 # run api doc
