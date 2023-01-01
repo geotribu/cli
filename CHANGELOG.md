@@ -2,6 +2,8 @@
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/).
 
+For more detailed changes, see the releases section on GitHub: <https://github.com/geotribu/cli/releases/>.
+
 <!--
 
 Unreleased
@@ -15,6 +17,11 @@ Unreleased
 ### Removed
 
 -->
+
+## 0.7.0 - 2023-01-01
+
+- packaging: add MacOS to targetted platform
+- increase test coverage
 
 ## 0.6.0 - 2022-12-31
 
