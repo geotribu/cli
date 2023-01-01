@@ -9,6 +9,7 @@ on:
       - ".github/workflows/build_release.yml"
       - "builder/**/*"
       - "geotribu_cli/**/*.py"
+      - "requirements/base.txt"
 
     tags:
       - "*"
