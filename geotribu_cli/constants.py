@@ -17,12 +17,15 @@ class GeotribuDefaults:
     site_base_url: str = "https://static.geotribu.fr/"
     site_git_project: str = "website"
     site_search_index: str = "search/search_index.json"
-    # website
+    # CDN
     cdn_base_url: str = "https://cdn.geotribu.fr/"
     cdn_base_path: str = "img"
     cdn_search_index: str = "search-index.json"
     # comments
     comments_base_url: str = "https://comments.geotribu.fr/"
+    # RSS
+    rss_path_created: str = "feed_rss_created.xml"
+    rss_path_updated: str = "feed_rss_updated.xml"
 
     @property
     def cdn_search_index_full_url(self) -> str:
@@ -32,6 +35,15 @@ class GeotribuDefaults:
             str: URL as string
         """
         return f"{self.cdn_base_url}{self.cdn_base_path}/{self.cdn_search_index}"
+
+    @property
+    def rss_created_full_url(self) -> str:
+        """Returns website RSS full URL for latest created contents.
+
+        Returns:
+            str: URL as string
+        """
+        return f"{self.site_base_url}{self.rss_path_created}"
 
     @property
     def site_search_index_full_url(self) -> str:
