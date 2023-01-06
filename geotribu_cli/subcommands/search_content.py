@@ -159,7 +159,7 @@ def parser_search_content(
     subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
-        help="Nombre d'heures à partir de quand considérer le fichier local comme périmé.",
+        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
         default=24 * 7,
         type=int,
         dest="expiration_rotating_hours",
@@ -246,13 +246,12 @@ def run(args: argparse.Namespace):
             contents_listing = json.loads(fd.read())
         idx = generate_index_from_docs(
             input_documents_to_index=contents_listing.get("docs"),
-            index_ref_id="location",
+            index_ref_id="location".split("#")[0],
             index_configuration=contents_listing.get("config", {"lang": "fr"}),
             index_fieds_definition=[
                 dict(field_name="title", boost=10),
                 dict(field_name="tags", boost=5),
                 dict(field_name="text"),
-                "location",
             ],
         )
 
@@ -286,7 +285,7 @@ def run(args: argparse.Namespace):
     final_results = []
 
     for result in search_results:
-        # filter on image type
+        # filter on content type
         if args.filter_type == "article" and not result.get("ref").startswith(
             "articles/"
         ):
@@ -316,7 +315,6 @@ def run(args: argparse.Namespace):
 
         final_results.append(out_result)
 
-    print(result)
     # formatage de la sortie
     print(
         format_output_result(

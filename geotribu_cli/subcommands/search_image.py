@@ -124,7 +124,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
-        help="Nombre d'heures à partir de quand considérer le fichier local comme périmé.",
+        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
         default=24,
         type=int,
         dest="expiration_rotating_hours",
