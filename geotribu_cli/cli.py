@@ -94,6 +94,7 @@ def main(argv: List[str] = None):
     # Latest Content
     subcmd_latest_content = subparsers.add_parser(
         "read-latest",
+        aliases=["latest", "rss"],
         help="Consulter les derniers contenus du site",
         formatter_class=main_parser.formatter_class,
         prog="read-latest",
@@ -104,6 +105,7 @@ def main(argv: List[str] = None):
     # Search Content
     subcmd_search_content = subparsers.add_parser(
         "search-content",
+        aliases=["contenus"],
         help="Rechercher dans les contenus du site",
         formatter_class=main_parser.formatter_class,
         prog="search-content",
@@ -114,6 +116,7 @@ def main(argv: List[str] = None):
     # Search Image
     subcmd_search_image = subparsers.add_parser(
         "search-image",
+        aliases=["images"],
         help="Rechercher dans les images du CDN",
         formatter_class=main_parser.formatter_class,
         prog="search-image",
