@@ -1,5 +1,35 @@
 # Exemples
 
+## Consulter les derniers contenus publiés
+
+### Récupération simple
+
+```sh
+❯ geotribu read-latest
+```
+
+### Dernières GeoRDP sous forme de tableau
+
+```sh
+$ geotribu read-latest -f rdp -o table
+                                                          5 derniers contenus publiés  
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Titre                               ┃ Date de publication ┃ Auteur/e ┃                                                                  URL ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ Revue de presse du 16 décembre 2022 │  16 décembre 2022   │ Geotribu │ https://static.geotribu.fr/rdp/2022/rdp_2022-12-16/?utm_campaign=fe… │
+├─────────────────────────────────────┼─────────────────────┼──────────┼──────────────────────────────────────────────────────────────────────┤
+│ Revue de presse du 2 décembre 2022  │  02 décembre 2022   │ Geotribu │ https://static.geotribu.fr/rdp/2022/rdp_2022-12-02/?utm_campaign=fe… │
+├─────────────────────────────────────┼─────────────────────┼──────────┼──────────────────────────────────────────────────────────────────────┤
+│ Revue de presse du 18 novembre 2022 │  18 novembre 2022   │ Geotribu │ https://static.geotribu.fr/rdp/2022/rdp_2022-11-18/?utm_campaign=fe… │
+├─────────────────────────────────────┼─────────────────────┼──────────┼──────────────────────────────────────────────────────────────────────┤
+│ Revue de presse du 4 novembre 2022  │  04 novembre 2022   │ Geotribu │ https://static.geotribu.fr/rdp/2022/rdp_2022-11-04/?utm_campaign=fe… │
+├─────────────────────────────────────┼─────────────────────┼──────────┼──────────────────────────────────────────────────────────────────────┤
+│ Revue de presse du 21 octobre 2022  │   21 octobre 2022   │ Geotribu │ https://static.geotribu.fr/rdp/2022/rdp_2022-10-21/?utm_campaign=fe… │
+└─────────────────────────────────────┴─────────────────────┴──────────┴──────────────────────────────────────────────────────────────────────┘
+                                                            Geotribu Toolbelt 0.7.0  
+
+```
+
 ## Rechercher une image
 
 ### Recherche simple
