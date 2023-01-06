@@ -6,19 +6,20 @@
 
 # standard library
 import argparse
-import json
+import locale
 import logging
 import sys
+import xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 # 3rd party
-from lunr.index import Index
 from rich import print
 from rich.table import Table
 
 # package
 from geotribu_cli.__about__ import __title__, __version__
-from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.constants import GeotribuDefaults, RssItem
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.formatters import convert_octets
 
@@ -28,18 +29,25 @@ from geotribu_cli.utils.formatters import convert_octets
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
+try:
+    locale.setlocale(locale.LC_TIME, "fr_FR.utf8")
+except Exception as error:
+    logger.warning(f"Unable to set the French locale. Trace: {error}")
 
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################
 
 
-def format_output_result(result: list[dict], format_type: str = None) -> str:
+def format_output_result(
+    result: list[RssItem], format_type: str = None, count: int = 5
+) -> str:
     """Format result according to output option.
 
     Args:
-        result (list[dict]): result to format
+        result (list[RssItem]): result to format
         format_type (str, optional): format output option. Defaults to None.
+        count (int, optional): _description_. Defaults to 5.
 
     Returns:
         str: formatted result ready to print
@@ -47,29 +55,32 @@ def format_output_result(result: list[dict], format_type: str = None) -> str:
 
     if format_type == "table":
         table = Table(
-            title="Recherche d'images - Résultats",
+            title=f"{count} derniers contenus publiés",
             show_lines=True,
-            highlight=True,
+            # highlight=True,
             caption=f"{__title__} {__version__}",
         )
 
-        # determine row from first item
-        for k in result[0].keys():
-            table.add_column(header=k.title(), justify="right")
+        table.add_column(header="Titre", justify="left", style="default")
+        table.add_column(
+            header="Date de publication", justify="center", style="bright_black"
+        )
+        table.add_column(header="Auteur/e", style="magenta")
+        table.add_column(header="URL", justify="right", style="blue")
 
         # iterate over results
-        for r in result:
+        for r in result[:count]:
 
             table.add_row(
-                r.get("nom"),
-                r.get("dimensions"),
-                r.get("score"),
-                r.get("url"),
+                r.title,
+                f"{r.date_pub:%d %B %Y}",
+                r.author,
+                r.url,
             )
 
         return table
     else:
-        return result
+        return result[:count]
 
 
 # ############################################################################
@@ -77,8 +88,10 @@ def format_output_result(result: list[dict], format_type: str = None) -> str:
 # ################################
 
 
-def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    """Set the argument parser for search-image subcommand.
+def parser_latest_content(
+    subparser: argparse.ArgumentParser,
+) -> argparse.ArgumentParser:
+    """Set the argument parser for search-content subcommand.
 
     Args:
         subparser (argparse.ArgumentParser): parser to set up
@@ -86,19 +99,11 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
-    subparser.add_argument(
-        "search_term",
-        help="Terme de recherche.",
-        type=str,
-        metavar="search-term",
-    )
-
     subparser.add_argument(
         "-r",
         "--remote-index-file",
         help="Emplacement du fichier distant.",
-        default=defaults_settings.cdn_search_index_full_url,
+        default=defaults_settings.rss_created_full_url,
         type=str,
         dest="remote_index_file",
     )
@@ -107,18 +112,26 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
         "-l",
         "--local-index-file",
         help="Emplacement du fichier local.",
-        default=Path().home() / ".geotribu/search/cdn_search_index.json",
+        default=Path().home() / ".geotribu/rss/rss.xml",
         type=Path,
         dest="local_index_file",
     )
 
     subparser.add_argument(
+        "-n",
+        "--results-number",
+        type=int,
+        default=5,
+        help="Nombre de résultats à retourner.",
+        dest="results_number",
+    )
+
+    subparser.add_argument(
         "-f",
         "--filter-type",
-        choices=["logo", "geoicone"],
+        choices=["article", "rdp"],
         default=None,
-        help="Filtrer sur un type d'images en particulier.",
-        dest="filter_type",
+        help="Filtrer sur un type de contenu en particulier.",
     )
 
     subparser.add_argument(
@@ -154,8 +167,7 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
 def run(args: argparse.Namespace):
     """Run the sub command logic.
 
-    Perform a search on images stored on the Geotribu pseudo-CDN \
-        (<https://cdn.geotribu.fr/>).
+    Download the RSS feed file and display results.
 
     Args:
         args (argparse.Namespace): arguments passed to the subcommand
@@ -179,63 +191,63 @@ def run(args: argparse.Namespace):
             logger.error(get_or_update_local_search_index)
         sys.exit()
     logger.info(
-        f"Local index file: {args.local_index_file}, "
+        f"Fichier RSS local : {args.local_index_file}, "
         f"{convert_octets(args.local_index_file.stat().st_size)}"
     )
 
-    # load the local index file
-    if not args.local_index_file.exists():
-        logger.error(f"{args.local_index_file.resolve()} does not exist")
-        sys.exit(f"{args.local_index_file.resolve()} does not exist")
-    # loads it
-    with args.local_index_file.open("r") as fd:
-        serialized_idx = json.loads(fd.read())
+    # Parse the feed
+    feed = ET.parse(args.local_index_file)
+    feed_items: list[RssItem] = []
 
-    # charge l'index sérialisé
-    idx = Index.load(serialized_idx.get("index"))
-    images_dict = serialized_idx.get("images")
+    # Find all articles in the feed
+    for item in feed.findall(".//item"):
+        try:
+            # filter on content type
+            if args.filter_type == "article" and not item.find("link").text.startswith(
+                f"{defaults_settings.site_base_url}articles/"
+            ):
+                logger.debug(
+                    f"Résultat ignoré par le filtre {args.filter_type}: {item.find('link').text}"
+                )
+                continue
+            elif args.filter_type == "rdp" and not item.find("link").text.startswith(
+                f"{defaults_settings.site_base_url}rdp/"
+            ):
+                logger.debug(
+                    f"Résultat ignoré par le filtre {args.filter_type}: {item.find('link').text}"
+                )
+                continue
+            else:
+                pass
 
-    # recherche
-    search_results: list[dict] = idx.search(f"*{args.search_term}*")
-
-    # résultats : enrichissement et filtre
-    final_results = []
-
-    for result in search_results:
-        # filter on image type
-        if args.filter_type == "logo" and not result.get("ref").startswith(
-            "logos-icones/"
-        ):
-            logger.debug(
-                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+            # add items to the feed
+            feed_items.append(
+                RssItem(
+                    abstract=item.find("description").text,
+                    author=item.find("author").text or None,
+                    categories=[cat.text for cat in item.findall("category")],
+                    date_pub=parsedate_to_datetime(item.find("pubDate").text),
+                    image_length=item.find("enclosure").attrib.get("length"),
+                    image_type=item.find("enclosure").attrib.get("type"),
+                    image_url=item.find("enclosure").attrib.get("url"),
+                    guid=item.find("guid").text,
+                    title=item.find("title").text,
+                    url=item.find("link").text,
+                )
             )
-            continue
-        elif args.filter_type == "geoicone" and not result.get("ref").startswith(
-            "internal/icons-rdp-news/"
-        ):
-            logger.debug(
-                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+        except Exception as err:
+            err_msg = "Feed item (index = {}) triggers an error. Trace: {}".format(
+                feed_items.index(item), err
             )
-            continue
-        else:
-            pass
-
-        mapped_img = images_dict.get(result.get("ref"))
-
-        # crée un résultat de sortie
-        out_result = {
-            "nom": result.get("ref").split("/")[-1],
-            "dimensions": f"{mapped_img[0]}x{mapped_img[1]}",
-            "score": f"{result.get('score'):.3}",
-            "url": f"{defaults_settings.cdn_base_url}"
-            f"{defaults_settings.cdn_base_path}/"
-            f"{result.get('ref')}",
-        }
-
-        final_results.append(out_result)
+            logger.error(err_msg)
+            sys.exit(err_msg)
 
     # formatage de la sortie
-    print(format_output_result(result=final_results, format_type=args.format_output))
+    print(
+        format_output_result(
+            result=feed_items, format_type=args.format_output, count=args.results_number
+        )
+    )
 
 
 # -- Stand alone execution

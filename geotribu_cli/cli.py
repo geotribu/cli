@@ -20,17 +20,29 @@ from geotribu_cli.__about__ import (
     __uri_homepage__,
     __version__,
 )
-from geotribu_cli.subcommands.search_content import parser_search_content
-from geotribu_cli.subcommands.search_image import parser_search_image
+from geotribu_cli.subcommands import (
+    parser_latest_content,
+    parser_search_content,
+    parser_search_image,
+)
 
 RawDescriptionRichHelpFormatter.usage_markup = True
+
 
 # ############################################################################
 # ########## MAIN ################
 # ################################
 
 # this serves as a parent parser
-def add_common_arguments(parser_to_update):
+def add_common_arguments(parser_to_update: argparse.ArgumentParser):
+    """Apply common argument to an existing parser.
+
+    Args:
+        parser_to_update (argparse.ArgumentParser): _description_
+
+    Returns:
+        argparse.ArgumentParser: _description_
+    """
     parser_to_update.add_argument(
         "-v",
         "--verbose",
@@ -48,7 +60,6 @@ def main(argv: List[str] = None):
     Args:
         argv (List[str], optional): list of command-line arguments. Defaults to None.
     """
-
     # create the top-level parser
     main_parser = argparse.ArgumentParser(
         formatter_class=RawDescriptionRichHelpFormatter,
@@ -80,9 +91,21 @@ def main(argv: List[str] = None):
     # -- SUB-COMMANDS --
     subparsers = main_parser.add_subparsers(title="Sous-commandes", dest="command")
 
+    # Latest Content
+    subcmd_latest_content = subparsers.add_parser(
+        "read-latest",
+        aliases=["latest", "rss"],
+        help="Consulter les derniers contenus du site",
+        formatter_class=main_parser.formatter_class,
+        prog="read-latest",
+    )
+    add_common_arguments(subcmd_latest_content)
+    parser_latest_content(subcmd_latest_content)
+
     # Search Content
     subcmd_search_content = subparsers.add_parser(
         "search-content",
+        aliases=["contenus"],
         help="Rechercher dans les contenus du site",
         formatter_class=main_parser.formatter_class,
         prog="search-content",
@@ -93,6 +116,7 @@ def main(argv: List[str] = None):
     # Search Image
     subcmd_search_image = subparsers.add_parser(
         "search-image",
+        aliases=["images"],
         help="Rechercher dans les images du CDN",
         formatter_class=main_parser.formatter_class,
         prog="search-image",
@@ -129,7 +153,6 @@ def main(argv: List[str] = None):
     logger.debug(f"Log level set: {logging.getLevelName(args.verbosity)}")
 
     # -- RUN LOGIC --
-    logger.info("piou")
     args.func(args)
 
 
