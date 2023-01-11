@@ -7,6 +7,7 @@
         pytest
 """
 
+from pathlib import Path
 
 # 3rd party
 import pytest
@@ -39,6 +40,8 @@ def test_cli_run_images(capsys):
 
         assert out == ""
         assert err == ""
+
+    assert Path(Path().home() / ".geotribu/search/cdn_search_index.json").exists()
 
 
 def test_cli_help(capsys):
