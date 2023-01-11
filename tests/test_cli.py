@@ -32,9 +32,9 @@ def test_cli_run_rss(capsys):
 
 
 def test_cli_run_images(capsys):
-    """Test subcommand rss."""
+    """Test subcommand images."""
     with pytest.raises(SystemExit):
-        cli.main(["images", "-f", "logo", "-o", "table"])
+        cli.main(["images", "-f", "logo", "-o", "table", "news"])
 
         out, err = capsys.readouterr()
 
