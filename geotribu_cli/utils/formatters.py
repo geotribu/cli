@@ -18,7 +18,7 @@ def convert_octets(octets: int) -> str:
         octets (int): mount of octets to convert
 
     Returns:
-        str: size in a human readbale format: ko, Mo, etc.
+        str: size in a human readable format: ko, Mo, etc.
 
     Example:
 

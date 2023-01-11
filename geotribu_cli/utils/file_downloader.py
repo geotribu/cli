@@ -9,7 +9,14 @@
 import logging
 from pathlib import Path
 from urllib.error import HTTPError, URLError
-from urllib.request import Request, urlopen
+from urllib.request import (
+    ProxyHandler,
+    Request,
+    build_opener,
+    getproxies,
+    install_opener,
+    urlopen,
+)
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
@@ -21,6 +28,12 @@ from geotribu_cli.utils.file_stats import is_file_older_than
 
 # logs
 logger = logging.getLogger(__name__)
+
+# Handle network proxy
+proxies_settings = getproxies()  # Get the system proxy settings
+proxy_handler = ProxyHandler(proxies_settings)  # Create a proxy handler
+opener = build_opener(proxy_handler)  # Create an opener that will use the proxy
+install_opener(opener)  # Install the opener
 
 # ############################################################################
 # ########## FUNCTIONS ###########
