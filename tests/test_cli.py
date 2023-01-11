@@ -25,7 +25,17 @@ def test_cli_run_rss(capsys):
         cli.main(["rss", "-o", "table"])
 
         out, err = capsys.readouterr()
-        print(out)
+
+        assert out == ""
+        assert err == ""
+
+
+def test_cli_run_images(capsys):
+    """Test subcommand rss."""
+    with pytest.raises(SystemExit):
+        cli.main(["images", "-f", "logo", "-o", "table"])
+
+        out, err = capsys.readouterr()
 
         assert out == ""
         assert err == ""
