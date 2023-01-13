@@ -64,10 +64,15 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+      - name: Setup Pages
+        uses: actions/configure-pages@v2
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          # Upload entire repository
+          path: docs/_build/html/
+
       - name: Deploy to GitHub Pages
-        if: startsWith(github.ref, 'refs/tags/') ||  github.ref == 'refs/heads/main'
-        run: |
-          python -m pip install -U "ghp-import<3"
-          git config --global user.name "Geotribu (Github Action)"
-          git config --global user.email "geotribu@gmail.com"
-          ghp-import --force --message="Site déployé" --no-history --no-jekyll --push docs/_build/html
+        id: deployment
+        uses: actions/deploy-pages@v1
