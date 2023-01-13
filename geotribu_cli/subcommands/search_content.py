@@ -21,6 +21,7 @@ from rich.table import Table
 # package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.utils.date_from_content import get_date_from_content_location
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
 from geotribu_cli.utils.formatters import convert_octets
@@ -64,6 +65,9 @@ def format_output_result(
         # columns
         table.add_column(header="Titre", justify="left", style="default")
         table.add_column(header="Type", justify="center", style="bright_black")
+        table.add_column(
+            header="Date de publication", justify="center", style="bright_black"
+        )
         table.add_column(header="Score", style="magenta")
         table.add_column(header="URL", justify="right", style="blue")
 
@@ -73,6 +77,7 @@ def format_output_result(
             table.add_row(
                 r.get("titre"),
                 r.get("type"),
+                f"{r.get('date'):%d %B %Y}",
                 r.get("score"),
                 r.get("url"),
             )
@@ -91,13 +96,13 @@ def generate_index_from_docs(
     """_summary_
 
     Args:
-        input_documents_to_index (dict): _description_
-        index_ref_id (str): _description_
-        index_configuration (dict): _description_
-        index_fieds_definition (List[dict]): _description_
+        input_documents_to_index (dict): documents to index
+        index_ref_id (str): field to use as index primary key
+        index_configuration (dict): index configuration (language, etc.)
+        index_fieds_definition (List[dict]): fields settings (boost, etc.)
 
     Returns:
-        Index: _description_
+        Index: lunr Index
     """
 
     idx: Index = lunr(
@@ -282,6 +287,11 @@ def run(args: argparse.Namespace):
             f"from contents listing ({local_listing_file})."
         )
     else:
+        # load
+        with local_listing_file.open("r", encoding=("UTF-8")) as fd:
+            contents_listing = json.loads(fd.read())
+
+        # load previously built index
         logger.info(
             f"Local index file ({args.local_index_file}) exists and is not "
             f"older than {args.expiration_rotating_hours} hour(s). "
@@ -314,14 +324,13 @@ def run(args: argparse.Namespace):
         else:
             pass
 
-        result.update({})
-
         # crée un résultat de sortie
         out_result = {
             "titre": result.get("title"),
             "type": "Article"
             if result.get("ref").startswith("articles/")
             else "GeoRDP",
+            "date": get_date_from_content_location(result.get("ref")),
             "score": f"{result.get('score'):.3}",
             "url": f"{defaults_settings.site_base_url}{result.get('ref')}",
         }
