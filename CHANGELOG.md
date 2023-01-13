@@ -18,6 +18,10 @@ Unreleased
 
 -->
 
+## 0.9.1 - 2023-01-13
+
+- Hotfix : Corrige l'argument manquant
+
 ## 0.9.0 - 2023-01-13
 
 - Fonctionnalité : ajoute le support des proxy HTTP/S by @Guts in <https://github.com/geotribu/cli/pull/29>
