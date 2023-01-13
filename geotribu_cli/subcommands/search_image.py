@@ -6,12 +6,12 @@
 
 # standard library
 import argparse
-import json
 import logging
 import sys
 from pathlib import Path
 
 # 3rd party
+import orjson
 from lunr.index import Index
 from rich import print
 from rich.table import Table
@@ -204,8 +204,8 @@ def run(args: argparse.Namespace):
         logger.error(f"{args.local_index_file.resolve()} does not exist")
         sys.exit(f"{args.local_index_file.resolve()} does not exist")
     # loads it
-    with args.local_index_file.open("r") as fd:
-        serialized_idx = json.loads(fd.read())
+    with args.local_index_file.open("rb") as fd:
+        serialized_idx = orjson.loads(fd.read())
 
     # charge l'index sérialisé
     idx = Index.load(serialized_idx.get("index"))

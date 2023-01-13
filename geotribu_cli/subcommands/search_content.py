@@ -6,13 +6,13 @@
 
 # standard library
 import argparse
-import json
 import logging
 import sys
 from pathlib import Path
 from typing import List
 
 # 3rd party
+import orjson
 from lunr import lunr
 from lunr.index import Index
 from rich import print
@@ -38,6 +38,17 @@ defaults_settings = GeotribuDefaults()
 # ################################
 
 
+def filter_content_listing(json_filepath: Path) -> filter:
+    with json_filepath.open(mode="rb") as j:
+        data: dict = orjson.loads(j.read())
+
+    return filter(
+        lambda c: c.get("location").startswith(("article", "rdp")),
+        # and not c.get("location").endswith(("#intro", "#introduction")),
+        data.get("docs"),
+    )
+
+
 def format_output_result(
     result: list[dict], search_term: str = None, format_type: str = None, count: int = 5
 ) -> str:
@@ -55,7 +66,7 @@ def format_output_result(
 
     if format_type == "table":
         table = Table(
-            title=f"Recherche de contenus - {len(result)} résultats "
+            title=f"Recherche de contenus - {count}/{len(result)} résultats "
             f"avec le terme : {search_term}",
             show_lines=True,
             highlight=True,
@@ -226,7 +237,7 @@ def run(args: argparse.Namespace):
     Args:
         args (argparse.Namespace): arguments passed to the subcommand
     """
-    print(f"Running {args.command} with {args}")
+    logger.debug(f"Running {args.command} with {args}")
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -259,13 +270,16 @@ def run(args: argparse.Namespace):
             f"{convert_octets(local_listing_file.stat().st_size)}"
         )
 
+        # filtre les contenus qui ne sont ni des articles, ni des revues de presse
+        contents_listing = tuple(filter_content_listing(local_listing_file))
+        with local_listing_file.open(mode="wb") as fd:
+            fd.write(orjson.dumps(contents_listing))
+
         # build index from contents listing
-        with local_listing_file.open("r", encoding=("UTF-8")) as fd:
-            contents_listing = json.loads(fd.read())
         idx = generate_index_from_docs(
-            input_documents_to_index=contents_listing.get("docs"),
-            index_ref_id="location".split("#")[0],
-            index_configuration=contents_listing.get("config", {"lang": "fr"}),
+            input_documents_to_index=tuple(contents_listing),
+            index_ref_id="location",
+            index_configuration={"lang": "fr"},
             index_fieds_definition=[
                 dict(field_name="title", boost=10),
                 dict(field_name="tags", boost=5),
@@ -279,8 +293,9 @@ def run(args: argparse.Namespace):
         # export into a JSON file
         args.local_index_file.unlink(missing_ok=True)
 
-        with args.local_index_file.open(mode="w", encoding="UTF-8") as fd:
-            json.dump(serialized_idx, fd, sort_keys=True, separators=(",", ":"))
+        with args.local_index_file.open(mode="wb") as fd:
+            # json.dump(serialized_idx, fd, separators=(",", ":"))
+            fd.write(orjson.dumps(serialized_idx))
 
         logger.info(
             f"Local index generated into {args.local_index_file} "
@@ -288,8 +303,8 @@ def run(args: argparse.Namespace):
         )
     else:
         # load
-        with local_listing_file.open("r", encoding=("UTF-8")) as fd:
-            contents_listing = json.loads(fd.read())
+        with local_listing_file.open("rb") as fd:
+            contents_listing = orjson.loads(fd.read())
 
         # load previously built index
         logger.info(
@@ -297,8 +312,8 @@ def run(args: argparse.Namespace):
             f"older than {args.expiration_rotating_hours} hour(s). "
             "Lets use it to perform search."
         )
-        with args.local_index_file.open("r") as fd:
-            serialized_idx = json.loads(fd.read())
+        with args.local_index_file.open("rb") as fd:
+            serialized_idx = orjson.loads(fd.read())
         idx = Index.load(serialized_idx)
 
     # recherche
