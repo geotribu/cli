@@ -6,13 +6,13 @@
 
 # standard library
 import argparse
-import json
 import logging
 import sys
 from pathlib import Path
 from typing import List
 
 # 3rd party
+import orjson
 from lunr import lunr
 from lunr.index import Index
 from rich import print
@@ -21,6 +21,7 @@ from rich.table import Table
 # package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.utils.date_from_content import get_date_from_content_location
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
 from geotribu_cli.utils.formatters import convert_octets
@@ -37,14 +38,27 @@ defaults_settings = GeotribuDefaults()
 # ################################
 
 
+def filter_content_listing(json_filepath: Path) -> filter:
+    with json_filepath.open(mode="rb") as j:
+        data: dict = orjson.loads(j.read())
+
+    return filter(
+        lambda c: c.get("location").startswith(("article", "rdp")),
+        # and not c.get("location").endswith(("#intro", "#introduction")),
+        data.get("docs"),
+    )
+
+
 def format_output_result(
-    result: list[dict], search_term: str = None, format_type: str = None
+    result: list[dict], search_term: str = None, format_type: str = None, count: int = 5
 ) -> str:
     """Format result according to output option.
 
     Args:
         result (list[dict]): result to format
+        search_term (str, optional): term used for search. Defaults to None.
         format_type (str, optional): format output option. Defaults to None.
+        count (int, optional): _description_. Defaults to 5.
 
     Returns:
         str: formatted result ready to print
@@ -52,23 +66,29 @@ def format_output_result(
 
     if format_type == "table":
         table = Table(
-            title=f"Recherche de contenus - {len(result)} résultats "
+            title=f"Recherche de contenus - {count}/{len(result)} résultats "
             f"avec le terme : {search_term}",
             show_lines=True,
             highlight=True,
             caption=f"{__title__} {__version__}",
         )
 
-        # determine row from first item
-        for k in result[0].keys():
-            table.add_column(header=k.title(), justify="right")
+        # columns
+        table.add_column(header="Titre", justify="left", style="default")
+        table.add_column(header="Type", justify="center", style="bright_black")
+        table.add_column(
+            header="Date de publication", justify="center", style="bright_black"
+        )
+        table.add_column(header="Score", style="magenta")
+        table.add_column(header="URL", justify="right", style="blue")
 
         # iterate over results
-        for r in result:
+        for r in result[:count]:
 
             table.add_row(
                 r.get("titre"),
                 r.get("type"),
+                f"{r.get('date'):%d %B %Y}",
                 r.get("score"),
                 r.get("url"),
             )
@@ -87,13 +107,13 @@ def generate_index_from_docs(
     """_summary_
 
     Args:
-        input_documents_to_index (dict): _description_
-        index_ref_id (str): _description_
-        index_configuration (dict): _description_
-        index_fieds_definition (List[dict]): _description_
+        input_documents_to_index (dict): documents to index
+        index_ref_id (str): field to use as index primary key
+        index_configuration (dict): index configuration (language, etc.)
+        index_fieds_definition (List[dict]): fields settings (boost, etc.)
 
     Returns:
-        Index: _description_
+        Index: lunr Index
     """
 
     idx: Index = lunr(
@@ -157,6 +177,15 @@ def parser_search_content(
     )
 
     subparser.add_argument(
+        "-n",
+        "--results-number",
+        type=int,
+        default=5,
+        help="Nombre de résultats à retourner.",
+        dest="results_number",
+    )
+
+    subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
         help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
@@ -208,7 +237,7 @@ def run(args: argparse.Namespace):
     Args:
         args (argparse.Namespace): arguments passed to the subcommand
     """
-    print(f"Running {args.command} with {args}")
+    logger.debug(f"Running {args.command} with {args}")
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -241,13 +270,16 @@ def run(args: argparse.Namespace):
             f"{convert_octets(local_listing_file.stat().st_size)}"
         )
 
+        # filtre les contenus qui ne sont ni des articles, ni des revues de presse
+        contents_listing = tuple(filter_content_listing(local_listing_file))
+        with local_listing_file.open(mode="wb") as fd:
+            fd.write(orjson.dumps(contents_listing))
+
         # build index from contents listing
-        with local_listing_file.open("r", encoding=("UTF-8")) as fd:
-            contents_listing = json.loads(fd.read())
         idx = generate_index_from_docs(
-            input_documents_to_index=contents_listing.get("docs"),
-            index_ref_id="location".split("#")[0],
-            index_configuration=contents_listing.get("config", {"lang": "fr"}),
+            input_documents_to_index=tuple(contents_listing),
+            index_ref_id="location",
+            index_configuration={"lang": "fr"},
             index_fieds_definition=[
                 dict(field_name="title", boost=10),
                 dict(field_name="tags", boost=5),
@@ -261,21 +293,27 @@ def run(args: argparse.Namespace):
         # export into a JSON file
         args.local_index_file.unlink(missing_ok=True)
 
-        with args.local_index_file.open(mode="w", encoding="UTF-8") as fd:
-            json.dump(serialized_idx, fd, sort_keys=True, separators=(",", ":"))
+        with args.local_index_file.open(mode="wb") as fd:
+            # json.dump(serialized_idx, fd, separators=(",", ":"))
+            fd.write(orjson.dumps(serialized_idx))
 
         logger.info(
             f"Local index generated into {args.local_index_file} "
             f"from contents listing ({local_listing_file})."
         )
     else:
+        # load
+        with local_listing_file.open("rb") as fd:
+            contents_listing = orjson.loads(fd.read())
+
+        # load previously built index
         logger.info(
             f"Local index file ({args.local_index_file}) exists and is not "
             f"older than {args.expiration_rotating_hours} hour(s). "
             "Lets use it to perform search."
         )
-        with args.local_index_file.open("r") as fd:
-            serialized_idx = json.loads(fd.read())
+        with args.local_index_file.open("rb") as fd:
+            serialized_idx = orjson.loads(fd.read())
         idx = Index.load(serialized_idx)
 
     # recherche
@@ -301,14 +339,13 @@ def run(args: argparse.Namespace):
         else:
             pass
 
-        result.update({})
-
         # crée un résultat de sortie
         out_result = {
             "titre": result.get("title"),
             "type": "Article"
             if result.get("ref").startswith("articles/")
             else "GeoRDP",
+            "date": get_date_from_content_location(result.get("ref")),
             "score": f"{result.get('score'):.3}",
             "url": f"{defaults_settings.site_base_url}{result.get('ref')}",
         }
@@ -321,6 +358,7 @@ def run(args: argparse.Namespace):
             result=final_results,
             search_term=args.search_term,
             format_type=args.format_output,
+            count=args.results_number,
         )
     )
 
