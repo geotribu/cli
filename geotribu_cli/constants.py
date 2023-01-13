@@ -72,6 +72,26 @@ class RssItem:
     url: str = None
 
 
+@dataclass
+class MkdocsSearchConfiguration:
+    lang: list
+    separator: str
+
+
+@dataclass
+class MkdocsSearchDocument:
+    title: str
+    text: str
+    location: str
+    tags: list
+
+
+@dataclass
+class MkdocsSearchListing:
+    config: MkdocsSearchConfiguration
+    docs: list[MkdocsSearchDocument]
+
+
 # -- Stand alone execution
 if __name__ == "__main__":
     defaults = GeotribuDefaults()
