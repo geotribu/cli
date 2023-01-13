@@ -61,9 +61,11 @@ def format_output_result(
             caption=f"{__title__} {__version__}",
         )
 
-        # determine row from first item
-        for k in result[0].keys():
-            table.add_column(header=k.title(), justify="right")
+        # columns
+        table.add_column(header="Titre", justify="left", style="default")
+        table.add_column(header="Type", justify="center", style="bright_black")
+        table.add_column(header="Score", style="magenta")
+        table.add_column(header="URL", justify="right", style="blue")
 
         # iterate over results
         for r in result[:count]:
@@ -156,6 +158,15 @@ def parser_search_content(
         choices=["article", "rdp"],
         default=None,
         help="Filtrer sur un type de contenu en particulier.",
+    )
+
+    subparser.add_argument(
+        "-n",
+        "--results-number",
+        type=int,
+        default=5,
+        help="Nombre de résultats à retourner.",
+        dest="results_number",
     )
 
     subparser.add_argument(
