@@ -16,6 +16,17 @@ on:
     paths:
       - ".github/workflows/documentation.yml"
 
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 env:
   PYTHON_VERSION: "3.10"
 
