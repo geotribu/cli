@@ -38,13 +38,15 @@ defaults_settings = GeotribuDefaults()
 
 
 def format_output_result(
-    result: list[dict], search_term: str = None, format_type: str = None
+    result: list[dict], search_term: str = None, format_type: str = None, count: int = 5
 ) -> str:
     """Format result according to output option.
 
     Args:
         result (list[dict]): result to format
+        search_term (str, optional): term used for search. Defaults to None.
         format_type (str, optional): format output option. Defaults to None.
+        count (int, optional): _description_. Defaults to 5.
 
     Returns:
         str: formatted result ready to print
@@ -64,7 +66,7 @@ def format_output_result(
             table.add_column(header=k.title(), justify="right")
 
         # iterate over results
-        for r in result:
+        for r in result[:count]:
 
             table.add_row(
                 r.get("titre"),
@@ -321,6 +323,7 @@ def run(args: argparse.Namespace):
             result=final_results,
             search_term=args.search_term,
             format_type=args.format_output,
+            count=args.results_number,
         )
     )
 

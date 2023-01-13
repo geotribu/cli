@@ -34,12 +34,16 @@ defaults_settings = GeotribuDefaults()
 # ################################
 
 
-def format_output_result(result: list[dict], format_type: str = None) -> str:
+def format_output_result(
+    result: list[dict], search_term: str = None, format_type: str = None, count: int = 5
+) -> str:
     """Format result according to output option.
 
     Args:
         result (list[dict]): result to format
+        search_term (str, optional): term used for search. Defaults to None.
         format_type (str, optional): format output option. Defaults to None.
+        count (int, optional): _description_. Defaults to 5.
 
     Returns:
         str: formatted result ready to print
@@ -47,18 +51,21 @@ def format_output_result(result: list[dict], format_type: str = None) -> str:
 
     if format_type == "table":
         table = Table(
-            title="Recherche d'images - Résultats",
+            title=f"Recherche d'images - {len(result)} résultats "
+            f"avec le terme : {search_term}",
             show_lines=True,
             highlight=True,
             caption=f"{__title__} {__version__}",
         )
 
-        # determine row from first item
-        for k in result[0].keys():
-            table.add_column(header=k.title(), justify="right")
+        # columns
+        table.add_column(header="Nom", justify="left", style="default")
+        table.add_column(header="Dimensions", justify="center", style="bright_black")
+        table.add_column(header="Score", style="magenta")
+        table.add_column(header="URL", justify="right", style="blue")
 
         # iterate over results
-        for r in result:
+        for r in result[:count]:
 
             table.add_row(
                 r.get("nom"),
@@ -119,6 +126,15 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
         default=None,
         help="Filtrer sur un type d'images en particulier.",
         dest="filter_type",
+    )
+
+    subparser.add_argument(
+        "-n",
+        "--results-number",
+        type=int,
+        default=5,
+        help="Nombre de résultats à retourner.",
+        dest="results_number",
     )
 
     subparser.add_argument(
@@ -235,7 +251,13 @@ def run(args: argparse.Namespace):
         final_results.append(out_result)
 
     # formatage de la sortie
-    print(format_output_result(result=final_results, format_type=args.format_output))
+    print(
+        format_output_result(
+            result=final_results,
+            format_type=args.format_output,
+            count=args.results_number,
+        )
+    )
 
 
 # -- Stand alone execution
