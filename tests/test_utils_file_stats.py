@@ -36,7 +36,7 @@ class TestUtilsFileStats(unittest.TestCase):
         ) as tempo_dir:
             tempo_file = Path(tempo_dir, "really_recent_file.txt")
             tempo_file.touch()
-            sleep(10)
+            sleep(3)
             self.assertFalse(is_file_older_than(Path(tempo_file)))
 
     def test_created_file_has_expired(self):
@@ -46,7 +46,7 @@ class TestUtilsFileStats(unittest.TestCase):
         ) as tempo_dir:
             tempo_file = Path(tempo_dir, "not_so_really_recent_file.txt")
             tempo_file.touch()
-            sleep(10)
+            sleep(3)
             self.assertTrue(
                 is_file_older_than(Path(tempo_file), expiration_rotating_hours=0)
             )
