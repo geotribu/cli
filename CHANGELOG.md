@@ -18,6 +18,17 @@ Unreleased
 
 -->
 
+## 0.9.0 - 2023-01-13
+
+- Fonctionnalité : ajoute le support des proxy HTTP/S by @Guts in <https://github.com/geotribu/cli/pull/29>
+- Homogénéise les sous-commandes en ajoutant l'argument nombre de résultats by @Guts in <https://github.com/geotribu/cli/pull/31>
+- Fonctionnalité : ajoute un utilitaire pour obtenir et vérifier les dimensions d'une image by @Guts in <https://github.com/geotribu/cli/pull/32>
+
+## 0.8.0 - 2023-01-06
+
+- Fonctionnalité : ajout sous-commande pour consulter les derniers contenus publiés by @Guts in <https://github.com/geotribu/cli/pull/28>
+- Documentation: add sitemap and robots.txt for SEO by @Guts in <https://github.com/geotribu/cli/pull/27>
+
 ## 0.7.0 - 2023-01-01
 
 - packaging: add MacOS to targetted platform
