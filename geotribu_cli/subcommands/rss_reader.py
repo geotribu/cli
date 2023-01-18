@@ -91,7 +91,7 @@ def format_output_result(
 def parser_latest_content(
     subparser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    """Set the argument parser for search-content subcommand.
+    """Set the argument parser for subcommand.
 
     Args:
         subparser (argparse.ArgumentParser): parser to set up
