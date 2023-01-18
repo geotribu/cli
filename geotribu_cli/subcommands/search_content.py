@@ -253,7 +253,7 @@ def run(args: argparse.Namespace):
         # if the local index doesn't exist or exists but it's outdated: download the
         # listing from website
         get_local_contents_listing = download_remote_file_to_local(
-            url_index_to_download=args.remote_index_file,
+            remote_url_to_download=args.remote_index_file,
             local_file_path=local_listing_file,
             expiration_rotating_hours=args.expiration_rotating_hours,
         )
