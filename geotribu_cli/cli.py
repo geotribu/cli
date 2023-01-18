@@ -23,6 +23,7 @@ from geotribu_cli.subcommands import (
     parser_latest_content,
     parser_search_content,
     parser_search_image,
+    parser_upgrade,
 )
 
 RawDescriptionRichHelpFormatter.usage_markup = True
@@ -123,9 +124,16 @@ def main(args: List[str] = None):
     add_common_arguments(subcmd_search_image)
     parser_search_image(subcmd_search_image)
 
-    # get passed args and force print help if none
-    if args is None:
-        args = ["--help"]
+    # Upgrader
+    subcmd_upgrade = subparsers.add_parser(
+        "upgrade",
+        aliases=["auto-update", "maj", "update"],
+        help="Mettre à jour Geotribu CLI.",
+        formatter_class=main_parser.formatter_class,
+        prog="upgrade",
+    )
+    add_common_arguments(subcmd_upgrade)
+    parser_upgrade(subcmd_upgrade)
 
     # just get passed args
     args = main_parser.parse_args(args)
