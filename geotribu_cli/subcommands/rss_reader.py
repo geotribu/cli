@@ -91,7 +91,7 @@ def format_output_result(
 def parser_latest_content(
     subparser: argparse.ArgumentParser,
 ) -> argparse.ArgumentParser:
-    """Set the argument parser for search-content subcommand.
+    """Set the argument parser for subcommand.
 
     Args:
         subparser (argparse.ArgumentParser): parser to set up
@@ -178,7 +178,7 @@ def run(args: argparse.Namespace):
 
     # get local search index
     get_or_update_local_search_index = download_remote_file_to_local(
-        url_index_to_download=args.remote_index_file,
+        remote_url_to_download=args.remote_index_file,
         local_file_path=args.local_index_file,
         expiration_rotating_hours=args.expiration_rotating_hours,
     )
