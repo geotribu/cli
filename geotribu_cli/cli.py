@@ -124,7 +124,8 @@ def main(args: List[str] = None):
     parser_search_image(subcmd_search_image)
 
     # get passed args and force print help if none
-    # args = main_parser.parse_args(None if sys.argv[1:] else ["-h"])
+    if args is None:
+        args = ["--help"]
 
     # just get passed args
     args = main_parser.parse_args(args)
