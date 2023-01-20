@@ -149,7 +149,7 @@ def parser_latest_content(
         choices=[
             "table",
         ],
-        default=None,
+        default="table",
         help="Format de sortie.",
         dest="format_output",
     )
