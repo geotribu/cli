@@ -22,7 +22,8 @@ from urllib.request import urlopen
 
 # 3rd party library
 import semver
-from rich import print
+from rich.console import Console
+from rich.markdown import Markdown
 
 # submodules
 from geotribu_cli.__about__ import __title__, __uri_repository__
@@ -156,6 +157,7 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
+    console = Console()
 
     # build API URL from repository
     api_url = replace_domain(url=__uri_repository__, new_domain="api.github.com/repos")
@@ -171,11 +173,15 @@ def run(args: argparse.Namespace):
     if semver.VersionInfo.parse(actual_version) < semver.VersionInfo.parse(
         latest_version
     ):
-        print(f"Une nouvelle version est disponible : {latest_version}")
+        console.print(f"Une nouvelle version est disponible : {latest_version}")
+        version_change = Markdown(latest_release.get("body"))
+        console.print(version_change)
         if args.opt_only_check:
             sys.exit(0)
     else:
-        print(f"Vous disposez déjà de la dernière version publiée : {latest_version}")
+        console.print(
+            f"Vous disposez déjà de la dernière version publiée : {latest_version}"
+        )
         sys.exit(0)
 
     # -- DOWNLOAD ------------------------------------------------------------
@@ -209,7 +215,7 @@ def run(args: argparse.Namespace):
     except Exception as err:
         sys.exit(f"Le téléchargement de la dernière version a échoué. Trace: {err}")
 
-    print(f"Nouvelle version de {__title__} téléchargée ici : {dest_filepath}.")
+    console.print(f"Nouvelle version de {__title__} téléchargée ici : {dest_filepath}.")
 
 
 # #############################################################################
