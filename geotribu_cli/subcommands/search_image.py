@@ -66,7 +66,6 @@ def format_output_result(
 
         # iterate over results
         for r in result[:count]:
-
             table.add_row(
                 r.get("nom"),
                 r.get("dimensions"),
