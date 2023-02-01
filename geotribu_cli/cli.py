@@ -33,6 +33,7 @@ RawDescriptionRichHelpFormatter.usage_markup = True
 # ########## MAIN ################
 # ################################
 
+
 # this serves as a parent parser
 def add_common_arguments(parser_to_update: argparse.ArgumentParser):
     """Apply common argument to an existing parser.

@@ -188,6 +188,7 @@ ogp_custom_meta_tags = [
 # sitemap
 sitemap_url_scheme = "{link}"
 
+
 # -- Options for Sphinx API doc ----------------------------------------------
 # run api doc
 def run_apidoc(_):
