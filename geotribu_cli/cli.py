@@ -29,6 +29,7 @@ from geotribu_cli.subcommands import (
     parser_latest_content,
     parser_open_result,
     parser_search_content,
+    parser_search_guides,
     parser_search_image,
     parser_upgrade,
 )
@@ -182,6 +183,17 @@ def main(args: list[str] = None):
     )
     add_common_arguments(subcmd_search_content)
     parser_search_content(subcmd_search_content)
+
+    # Search contribution guides
+    subcmd_search_guides = subparsers.add_parser(
+        "search-guides",
+        aliases=["guides", "contribution"],
+        help="Rechercher dans les guides de contribution",
+        formatter_class=main_parser.formatter_class,
+        prog="search-guides",
+    )
+    add_common_arguments(subcmd_search_guides)
+    parser_search_guides(subcmd_search_guides)
 
     # Search Image
     subcmd_search_image = subparsers.add_parser(
