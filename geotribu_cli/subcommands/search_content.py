@@ -38,6 +38,15 @@ defaults_settings = GeotribuDefaults()
 
 
 def filter_content_listing(json_filepath: Path) -> filter:
+    """Filtering out irrelevant docs from content listing to reduce number of \
+        documents to index.
+
+    Args:
+        json_filepath (Path): path to the input JSON file
+
+    Returns:
+        filter: filtered object
+    """
     with json_filepath.open(mode="rb") as j:
         data: dict = orjson.loads(j.read())
 
