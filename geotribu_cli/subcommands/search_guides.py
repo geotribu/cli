@@ -68,7 +68,6 @@ def format_output_result(
 
         # iterate over results
         for r in result[:count]:
-
             table.add_row(
                 r.get("titre"),
                 r.get("score"),
@@ -293,7 +292,6 @@ def run(args: argparse.Namespace):
     final_results = []
 
     for result in search_results:
-
         mapped_content = contents_listing.get(result.get("ref"))
 
         # crée un résultat de sortie
