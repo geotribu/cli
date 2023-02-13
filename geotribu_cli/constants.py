@@ -24,6 +24,9 @@ class GeotribuDefaults:
     cdn_base_url: str = "https://cdn.geotribu.fr/"
     cdn_base_path: str = "img"
     cdn_search_index: str = "search-index.json"
+    # Guides de contribution
+    guides_base_url: str = "https://contribuer.geotribu.fr/"
+    guides_search_index: str = "search/search_index.json"
     # comments
     comments_base_url: str = "https://comments.geotribu.fr/"
     # RSS
@@ -40,6 +43,15 @@ class GeotribuDefaults:
             str: URL as string
         """
         return f"{self.cdn_base_url}{self.cdn_base_path}/{self.cdn_search_index}"
+
+    @property
+    def guides_search_index_full_url(self) -> str:
+        """Returns search index full URL for contribuer.geotribu.fr.
+
+        Returns:
+            str: URL as string
+        """
+        return f"{self.guides_base_url}{self.guides_search_index}"
 
     @property
     def rss_created_full_url(self) -> str:
