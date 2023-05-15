@@ -240,14 +240,17 @@ def run(args: argparse.Namespace):
         sys.exit(0)
 
     # select remote download URL
-    remote_url, remote_content_type = get_download_url_for_os(
-        latest_release.get("assets")
-    )
-    if not remote_url:
+    if release_asset_for_os := get_download_url_for_os(latest_release.get("assets")):
+        remote_url, remote_content_type = release_asset_for_os
+    else:
         sys.exit(
             "Impossible de déterminée une URL de téléchargement adéquate pour "
             f"le système {opersys}."
         )
+
+    # handle empty content-type
+    if remote_content_type is None:
+        remote_content_type = "application/octet-stream"
 
     # destination local file
     dest_filepath = Path(
