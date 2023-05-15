@@ -8,6 +8,7 @@
 import argparse
 import logging
 import sys
+from os import getenv
 from pathlib import Path
 
 # 3rd party
@@ -180,26 +181,29 @@ def parser_search_content(
         "-f",
         "--filter-type",
         choices=["article", "rdp"],
-        default=None,
+        default=getenv("GEOTRIBU_CONTENUS_DEFAULT_TYPE", None),
         help="Filtrer sur un type de contenu en particulier.",
+        metavar="GEOTRIBU_CONTENUS_DEFAULT_TYPE",
     )
 
     subparser.add_argument(
         "-n",
         "--results-number",
-        type=int,
-        default=5,
-        help="Nombre de résultats à retourner.",
+        default=getenv("GEOTRIBU_RESULTATS_NOMBRE", 5),
         dest="results_number",
+        help="Nombre de résultats à retourner.",
+        metavar="GEOTRIBU_RESULTATS_NOMBRE",
+        type=int,
     )
 
     subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
-        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
-        default=24 * 7,
-        type=int,
+        default=getenv("GEOTRIBU_CONTENUS_INDEX_EXPIRATION_HOURS", 24 * 7),
         dest="expiration_rotating_hours",
+        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
+        metavar="GEOTRIBU_CONTENUS_INDEX_EXPIRATION_HOURS",
+        type=int,
     )
 
     subparser.add_argument(
@@ -209,9 +213,10 @@ def parser_search_content(
             "json",
             "table",
         ],
-        default="table",
-        help="Format de sortie.",
+        default=getenv("GEOTRIBU_RESULTATS_FORMAT", "table"),
         dest="format_output",
+        help="Format de sortie.",
+        metavar="GEOTRIBU_RESULTATS_FORMAT",
     )
 
     subparser.set_defaults(func=run)

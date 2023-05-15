@@ -8,12 +8,14 @@
 import argparse
 import logging
 import sys
+from os import getenv
 from pathlib import Path
 
 # 3rd party
 import orjson
 from lunr.index import Index
 from rich import print
+from rich.console import Console
 from rich.table import Table
 
 # package
@@ -122,38 +124,43 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
         "-f",
         "--filter-type",
         choices=["logo", "geoicone"],
-        default=None,
+        default=getenv("GEOTRIBU_IMAGES_DEFAULT_TYPE", None),
         help="Filtrer sur un type d'images en particulier.",
         dest="filter_type",
+        metavar="GEOTRIBU_IMAGES_DEFAULT_TYPE",
     )
 
     subparser.add_argument(
         "-n",
         "--results-number",
-        type=int,
-        default=5,
+        default=getenv("GEOTRIBU_RESULTATS_NOMBRE", 5),
         help="Nombre de résultats à retourner.",
         dest="results_number",
+        metavar="GEOTRIBU_RESULTATS_NOMBRE",
+        type=int,
     )
 
     subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
         help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
-        default=24,
-        type=int,
+        default=getenv("GEOTRIBU_IMAGES_INDEX_EXPIRATION_HOURS", 24),
         dest="expiration_rotating_hours",
+        metavar="GEOTRIBU_IMAGES_INDEX_EXPIRATION_HOURS",
+        type=int,
     )
 
     subparser.add_argument(
         "-o",
         "--format-output",
         choices=[
+            "json",
             "table",
         ],
-        default=None,
+        default=getenv("GEOTRIBU_RESULTATS_FORMAT", "table"),
         help="Format de sortie.",
         dest="format_output",
+        metavar="GEOTRIBU_RESULTATS_FORMAT",
     )
 
     subparser.set_defaults(func=run)
@@ -176,15 +183,17 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
+    console = Console()
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
-    # get local search index
-    get_or_update_local_search_index = download_remote_file_to_local(
-        remote_url_to_download=args.remote_index_file,
-        local_file_path=args.local_index_file,
-        expiration_rotating_hours=args.expiration_rotating_hours,
-    )
+    with console.status("Téléchargement de la liste des images...", spinner="earth"):
+        # get local search index
+        get_or_update_local_search_index = download_remote_file_to_local(
+            remote_url_to_download=args.remote_index_file,
+            local_file_path=args.local_index_file,
+            expiration_rotating_hours=args.expiration_rotating_hours,
+        )
     if not isinstance(get_or_update_local_search_index, Path):
         logger.error(
             f"Le téléchargement du fichier distant {args.remote_index_file} "
@@ -211,7 +220,14 @@ def run(args: argparse.Namespace):
     images_dict = serialized_idx.get("images")
 
     # recherche
-    search_results: list[dict] = idx.search(f"*{args.search_term}*")
+    with console.status(f"Recherche {args.search_term}...", spinner="earth"):
+        search_results: list[dict] = idx.search(f"*{args.search_term}*")
+
+    if not len(search_results):
+        print(
+            f":person_shrugging: Aucune image trouvée pour : {args.search_term} {search_results}"
+        )
+        sys.exit(0)
 
     # résultats : enrichissement et filtre
     final_results = []
@@ -250,13 +266,16 @@ def run(args: argparse.Namespace):
         final_results.append(out_result)
 
     # formatage de la sortie
-    print(
-        format_output_result(
-            result=final_results,
-            format_type=args.format_output,
-            count=args.results_number,
+    if len(final_results):
+        print(
+            format_output_result(
+                result=final_results,
+                format_type=args.format_output,
+                count=args.results_number,
+            )
         )
-    )
+    else:
+        print(f":person_shrugging: Aucune image trouvée pour : {args.search_term}")
 
 
 # -- Stand alone execution
