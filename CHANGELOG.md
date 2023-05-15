@@ -18,6 +18,13 @@ Unreleased
 
 -->
 
+## 0.13.0 - 2023-05-15
+
+### Features and enhancements 🎉
+
+* Upgrade : télécharge la nouvelle version de l'exécutable uniquement dans un contexte d'application packagée by @Guts in <https://github.com/geotribu/cli/pull/63>
+* Upgrade : gère le jeton Github en variable d'environnement et ajoute une option pour ne pas afficher les notes de version by @Guts in <https://github.com/geotribu/cli/pull/64>
+
 ## 0.12.0 - 2023-05-15
 
 ### Features and enhancements 🎉
