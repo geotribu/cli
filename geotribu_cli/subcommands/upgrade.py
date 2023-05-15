@@ -26,7 +26,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 # submodules
-from geotribu_cli.__about__ import __title__, __uri_repository__
+from geotribu_cli.__about__ import __package_name__, __title__, __uri_repository__
 from geotribu_cli.__about__ import __version__ as actual_version
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
@@ -189,7 +189,7 @@ def run(args: argparse.Namespace):
         logger.debug("Running in a normal Python process.")
         console.print(
             "\n\n:snake: Pour mettre à jour (adapter selon votre environnement) :"
-            "\n\n[code]python -m pip install -U geotribu[/code]"
+            f"\n\n[code]python -m pip install -U {__package_name__}[/code]"
         )
         sys.exit(0)
 
