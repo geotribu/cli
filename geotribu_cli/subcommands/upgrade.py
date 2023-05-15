@@ -21,7 +21,7 @@ from urllib.parse import urlsplit, urlunsplit
 from urllib.request import urlopen
 
 # 3rd party library
-import semver
+from packaging.version import Version
 from rich.console import Console
 from rich.markdown import Markdown
 
@@ -170,9 +170,7 @@ def run(args: argparse.Namespace):
 
     # compare it
     latest_version = latest_release.get("tag_name")
-    if semver.VersionInfo.parse(actual_version) < semver.VersionInfo.parse(
-        latest_version
-    ):
+    if Version(actual_version) < Version(latest_version):
         console.print(f"Une nouvelle version est disponible : {latest_version}")
         version_change = Markdown(latest_release.get("body"))
         console.print(version_change)
