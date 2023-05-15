@@ -36,6 +36,7 @@ from geotribu_cli.__about__ import (
 from geotribu_cli.__about__ import __version__ as actual_version
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
+from geotribu_cli.utils.str2bool import str2bool
 
 # #############################################################################
 # ########## Globals ###############
@@ -158,17 +159,26 @@ def parser_upgrade(
     subparser.add_argument(
         "-c",
         "--check-only",
-        help="Vérifie seulement la disponibilité d'une nouvelle version.",
-        default=False,
+        help="Vérifie seulement la disponibilité d'une nouvelle version, sans télécharger.",
+        default=str2bool(getenv("GEOTRIBU_UPGRADE_CHECK_ONLY", False)),
         action="store_true",
         dest="opt_only_check",
+    )
+
+    subparser.add_argument(
+        "-n",
+        "--dont-show-release-notes",
+        help="Display release notes.",
+        default=str2bool(getenv("GEOTRIBU_UPGRADE_DISPLAY_RELEASE_NOTES", True)),
+        action="store_false",
+        dest="opt_show_release_notes",
     )
 
     subparser.add_argument(
         "-w",
         "--where",
         help="Dossier dans lequel télécharger la nouvelle version.",
-        default="./",
+        default=getenv("GEOTRIBU_UPGRADE_DOWNLOAD_FOLDER", "./"),
         type=Path,
         dest="local_download_folder",
     )
@@ -207,8 +217,9 @@ def run(args: argparse.Namespace):
     latest_version = latest_release.get("tag_name")
     if Version(actual_version) < Version(latest_version):
         console.print(f"Une nouvelle version est disponible : {latest_version}")
-        version_change = Markdown(latest_release.get("body"))
-        console.print(version_change)
+        if args.opt_show_release_notes:
+            version_change = Markdown(latest_release.get("body"))
+            console.print(version_change)
         if args.opt_only_check:
             sys.exit(0)
     else:
