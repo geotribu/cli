@@ -47,7 +47,7 @@ def format_output_result(
     Args:
         result (list[RssItem]): result to format
         format_type (str, optional): format output option. Defaults to None.
-        count (int, optional): _description_. Defaults to 5.
+        count (int, optional): default number of results to display. Defaults to 5.
 
     Returns:
         str: formatted result ready to print

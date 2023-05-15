@@ -66,7 +66,7 @@ def format_output_result(
         result (list[dict]): result to format
         search_term (str, optional): term used for search. Defaults to None.
         format_type (str, optional): format output option. Defaults to None.
-        count (int, optional): _description_. Defaults to 5.
+        count (int, optional): default number of results to display. Defaults to 5.
 
     Returns:
         str: formatted result ready to print
@@ -111,7 +111,7 @@ def generate_index_from_docs(
     index_configuration: dict,
     index_fieds_definition: list[dict],
 ) -> Index:
-    """_summary_
+    """Build search index from input documents.
 
     Args:
         input_documents_to_index (dict): documents to index
