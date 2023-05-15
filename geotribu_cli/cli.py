@@ -2,10 +2,17 @@
 
 """Main CLI entrypoint."""
 
+# #############################################################################
+# ########## Libraries #############
+# ##################################
+
 # standard lib
 import argparse
 import logging
+import sys
+from os import getenv
 
+# 3rd party
 from rich_argparse import RawDescriptionRichHelpFormatter
 
 # package
@@ -25,11 +32,15 @@ from geotribu_cli.subcommands import (
     parser_upgrade,
 )
 
+# #############################################################################
+# ########## Globals ###############
+# ##################################
+
 RawDescriptionRichHelpFormatter.usage_markup = True
 
 
 # ############################################################################
-# ########## MAIN ################
+# ########## FUNCTIONS ###########
 # ################################
 
 
@@ -54,11 +65,57 @@ def add_common_arguments(parser_to_update: argparse.ArgumentParser):
     return parser_to_update
 
 
+def set_default_subparser(
+    parser_to_update: argparse.ArgumentParser,
+    default_subparser_name: str,
+    args: list = None,
+):
+    """Set a default subparser to a parent parser. Call after setup and just before
+        parse_args().
+        See: <https://stackoverflow.com/questions/5176691/argparse-how-to-specify-a-default-subcommand>
+
+    Args:
+        parser_to_update (argparse.ArgumentParser): parent parser to add
+        default_subparser_name (str): name of the subparser to call by default
+        args (list, optional): if set is the argument list handed to parse_args().
+            Defaults to None.
+    """
+    subparser_found = False
+    for arg in sys.argv[1:]:
+        if arg in [
+            "-h",
+            "--help",
+            "--version",
+            "--no-logfile",
+        ]:  # ignore main parser args
+            break
+
+    else:
+        for x in parser_to_update._subparsers._actions:
+            if not isinstance(x, argparse._SubParsersAction):
+                continue
+            for sp_name in x._name_parser_map.keys():
+                if sp_name in sys.argv[1:]:
+                    subparser_found = True
+        if not subparser_found:
+            # insert default in first position, this implies no
+            # global options without a sub_parsers specified
+            if args is None:
+                sys.argv.insert(1, default_subparser_name)
+            else:
+                args.insert(0, default_subparser_name)
+
+
+# ############################################################################
+# ########## MAIN ################
+# ################################
+
+
 def main(args: list[str] = None):
     """Main CLI entrypoint.
 
     Args:
-        args (List[str], optional): list of command-line arguments. Defaults to None.
+        args (list[str], optional): list of command-line arguments. Defaults to None.
     """
     # create the top-level parser
     main_parser = argparse.ArgumentParser(
@@ -67,6 +124,8 @@ def main(args: list[str] = None):
         f"Développé par {__author__}\n"
         f"Documentation : {__uri_homepage__}",
         description=f"{__title__} {__version__} - {__summary__}",
+        argument_default=argparse.SUPPRESS,
+        add_help=False,
     )
 
     # -- ROOT ARGUMENTS --
@@ -78,14 +137,24 @@ def main(args: list[str] = None):
         action="count",
         default=1,
         dest="verbosity",
-        help="Niveau de verbosité : None = WARNING, -v = INFO, -vv = DEBUG",
+        # metavar="GEOTRIBU_LOGS_LEVEL",
+        help="Niveau de verbosité : None = WARNING, -v = INFO, -vv = DEBUG. Réglable "
+        "avec la variable d'environnement GEOTRIBU_LOGS_LEVEL.",
+    )
+
+    main_parser.add_argument(
+        "-h",
+        "--help",
+        action="help",
+        default=argparse.SUPPRESS,
+        help="Affiche l'aide et s'arrête là.",
     )
 
     main_parser.add_argument(
         "--version",
         action="version",
         version=__version__,
-        help="Affiche la version du CLI",
+        help="Affiche la version du CLI et s'arrête là.",
     )
 
     # -- SUB-COMMANDS --
@@ -94,7 +163,7 @@ def main(args: list[str] = None):
     # Latest Content
     subcmd_latest_content = subparsers.add_parser(
         "read-latest",
-        aliases=["latest", "rss"],
+        aliases=["récents", "latest", "rl", "rss"],
         help="Consulter les derniers contenus du site",
         formatter_class=main_parser.formatter_class,
         prog="read-latest",
@@ -105,7 +174,7 @@ def main(args: list[str] = None):
     # Search Content
     subcmd_search_content = subparsers.add_parser(
         "search-content",
-        aliases=["contenus"],
+        aliases=["contenus", "sc"],
         help="Rechercher dans les contenus du site",
         formatter_class=main_parser.formatter_class,
         prog="search-content",
@@ -116,8 +185,8 @@ def main(args: list[str] = None):
     # Search Image
     subcmd_search_image = subparsers.add_parser(
         "search-image",
-        aliases=["images"],
-        help="Rechercher dans les images du CDN",
+        aliases=["images", "img", "si"],
+        help="Rechercher dans les images de Geotribu",
         formatter_class=main_parser.formatter_class,
         prog="search-image",
     )
@@ -134,6 +203,12 @@ def main(args: list[str] = None):
     )
     add_common_arguments(subcmd_upgrade)
     parser_upgrade(subcmd_upgrade)
+
+    # -- PARSE ARGS --
+    set_default_subparser(
+        parser_to_update=main_parser,
+        default_subparser_name=getenv("GEOTRIBU_DEFAULT_SUBCOMMAND", "read-latest"),
+    )
 
     # just get passed args
     args = main_parser.parse_args(args)
