@@ -184,6 +184,15 @@ def run(args: argparse.Namespace):
 
     # -- DOWNLOAD ------------------------------------------------------------
 
+    # check if we are in frozen mode (typically PyInstaller) or as "normal" Python
+    if not (getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")):
+        logger.debug("Running in a normal Python process.")
+        console.print(
+            "\n\n:snake: Pour mettre à jour (adapter selon votre environnement) :"
+            "\n\n[code]python -m pip install -U geotribu[/code]"
+        )
+        sys.exit(0)
+
     # select remote download URL
     remote_url, remote_content_type = get_download_url_for_os(
         latest_release.get("assets")
