@@ -39,6 +39,7 @@ def get_date_from_content_location(input_content_location: str) -> date:
         date: date object
 
     Example:
+
     .. code-block:: python
 
         > sample_content_location = (
