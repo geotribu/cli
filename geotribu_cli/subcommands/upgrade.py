@@ -220,6 +220,7 @@ def run(args: argparse.Namespace):
         if args.opt_show_release_notes:
             version_change = Markdown(latest_release.get("body"))
             console.print(version_change)
+            print("\n")
         if args.opt_only_check:
             sys.exit(0)
     else:
@@ -258,18 +259,20 @@ def run(args: argparse.Namespace):
     )
 
     # download it
-    logger.info(
-        f"Téléchargement de la nouvelle version '{latest_version}' depuis {remote_url} "
-        f"vers {dest_filepath}"
+    logger.info = (
+        f"Téléchargement de la nouvelle version '{latest_version}' depuis "
+        f"{remote_url} vers {dest_filepath}"
     )
-    try:
-        download_remote_file_to_local(
-            remote_url_to_download=remote_url,
-            local_file_path=dest_filepath,
-            content_type=remote_content_type,
-        )
-    except Exception as err:
-        sys.exit(f"Le téléchargement de la dernière version a échoué. Trace: {err}")
+
+    with console.status("Téléchargement de la nouvelle version...", spinner="earth"):
+        try:
+            download_remote_file_to_local(
+                remote_url_to_download=remote_url,
+                local_file_path=dest_filepath,
+                content_type=remote_content_type,
+            )
+        except Exception as err:
+            sys.exit(f"Le téléchargement de la dernière version a échoué. Trace: {err}")
 
     console.print(f"Nouvelle version de {__title__} téléchargée ici : {dest_filepath}.")
 
