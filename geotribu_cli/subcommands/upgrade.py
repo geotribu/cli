@@ -26,7 +26,7 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 # submodules
-from geotribu_cli.__about__ import __title__, __uri_repository__
+from geotribu_cli.__about__ import __package_name__, __title__, __uri_repository__
 from geotribu_cli.__about__ import __version__ as actual_version
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
@@ -183,6 +183,15 @@ def run(args: argparse.Namespace):
         sys.exit(0)
 
     # -- DOWNLOAD ------------------------------------------------------------
+
+    # check if we are in frozen mode (typically PyInstaller) or as "normal" Python
+    if not (getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS")):
+        logger.debug("Running in a normal Python process.")
+        console.print(
+            "\n\n:snake: Pour mettre à jour (adapter selon votre environnement) :"
+            f"\n\n[code]python -m pip install -U {__package_name__}[/code]"
+        )
+        sys.exit(0)
 
     # select remote download URL
     remote_url, remote_content_type = get_download_url_for_os(
