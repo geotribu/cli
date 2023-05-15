@@ -15,7 +15,7 @@ import logging
 import xml.etree.ElementTree as ET
 from decimal import Decimal
 from pathlib import Path
-from typing import Tuple, Union
+from typing import Union
 
 # 3rd party
 import imagesize
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-def get_image_size(image_filepath: Path) -> Tuple[int, int]:
+def get_image_size(image_filepath: Path) -> tuple[int, int]:
     """Get image dimensions as a tuple (width,height). Return None in case of error.
 
     :param Path image_filepath: path to the image
@@ -61,7 +61,7 @@ def get_image_size(image_filepath: Path) -> Tuple[int, int]:
     return None
 
 
-def get_svg_size(image_filepath: Path) -> Tuple[int, int]:
+def get_svg_size(image_filepath: Path) -> tuple[int, int]:
     """Extract SVG width and height from a SVG file and convert them into integers. \
     Relevant and working only if the file root has width and height attributes.
 
