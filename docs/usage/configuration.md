@@ -1,6 +1,6 @@
 # Configuration
 
-## Variables d'environment supportées
+## Variables d'environnement supportées
 
 | Variable name       | Corresponding CLI argument | Default value      |
 | :------------------ | :------------------------: | :----------------: |
