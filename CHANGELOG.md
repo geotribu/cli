@@ -18,6 +18,22 @@ Unreleased
 
 -->
 
+## 0.12.0 - 2023-05-15
+
+### Features and enhancements 🎉
+
+* Affiche les notes de version dans le terminal quand une nouvelle version est disponibel by @Guts in <https://github.com/geotribu/cli/pull/38>
+* Dépendances : remplace SemVer par Packaging by @Guts in <https://github.com/geotribu/cli/pull/59>
+
+### Tooling 🔧
+
+* Outillage : étend les git hooks by @Guts in <https://github.com/geotribu/cli/pull/58>
+* CI/CD : déploie la doc uniquement sur les tags by @Guts in <https://github.com/geotribu/cli/pull/62>
+
+### Other Changes
+
+* Corrige les docstrings by @Guts in <https://github.com/geotribu/cli/pull/41>
+
 ## 0.11.0 - 2023-01-20
 
 * Ajoute une sous-commande pour vérifier et télécharger la dernière version disponible by @Guts in <https://github.com/geotribu/cli/pull/36>
