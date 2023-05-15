@@ -137,4 +137,6 @@ dmypy.json
 version_info.txt
 _logs/
 *.pfx
+*.exe
 docs/misc/licenses.md
+GeotribuToolbelt_*_Python*
