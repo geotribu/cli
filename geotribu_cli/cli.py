@@ -5,7 +5,6 @@
 # standard lib
 import argparse
 import logging
-from typing import List
 
 from rich_argparse import RawDescriptionRichHelpFormatter
 
@@ -55,7 +54,7 @@ def add_common_arguments(parser_to_update: argparse.ArgumentParser):
     return parser_to_update
 
 
-def main(args: List[str] = None):
+def main(args: list[str] = None):
     """Main CLI entrypoint.
 
     Args:

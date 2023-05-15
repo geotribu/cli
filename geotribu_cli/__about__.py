@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 __author__ = "Julien Moura (Geotribu)"
-__copyright__ = "2022 - {0}, {1}".format(date.today().year, __author__)
+__copyright__ = f"2022 - {date.today().year}, {__author__}"
 __email__ = "geotribu@gmail.com"
 __executable_name__ = "geotribu"
 __keywords__ = ["cli, Geotribu, GIS"]

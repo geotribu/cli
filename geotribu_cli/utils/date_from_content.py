@@ -60,7 +60,7 @@ def get_date_from_content_location(input_content_location: str) -> date:
         # get the year
         parts = input_content_location.split("/")
         year = [p for p in parts if p.isdigit()][0]
-    except Exception as err:
+    except Exception:
         logger.error(
             f"Unable to extract year from content location: {input_content_location}"
         )
