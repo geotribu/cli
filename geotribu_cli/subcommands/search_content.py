@@ -38,6 +38,15 @@ defaults_settings = GeotribuDefaults()
 
 
 def filter_content_listing(json_filepath: Path) -> filter:
+    """Filtering out irrelevant docs from content listing to reduce number of \
+        documents to index.
+
+    Args:
+        json_filepath (Path): path to the input JSON file
+
+    Returns:
+        filter: filtered object
+    """
     with json_filepath.open(mode="rb") as j:
         data: dict = orjson.loads(j.read())
 
@@ -57,7 +66,7 @@ def format_output_result(
         result (list[dict]): result to format
         search_term (str, optional): term used for search. Defaults to None.
         format_type (str, optional): format output option. Defaults to None.
-        count (int, optional): _description_. Defaults to 5.
+        count (int, optional): default number of results to display. Defaults to 5.
 
     Returns:
         str: formatted result ready to print
@@ -102,7 +111,7 @@ def generate_index_from_docs(
     index_configuration: dict,
     index_fieds_definition: list[dict],
 ) -> Index:
-    """_summary_
+    """Build search index from input documents.
 
     Args:
         input_documents_to_index (dict): documents to index
