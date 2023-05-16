@@ -8,6 +8,7 @@
 import argparse
 import logging
 import sys
+from os import getenv
 from pathlib import Path
 
 # 3rd party
@@ -15,6 +16,7 @@ import orjson
 from lunr import lunr
 from lunr.index import Index
 from rich import print
+from rich.console import Console
 from rich.table import Table
 
 # package
@@ -152,9 +154,10 @@ def parser_search_content(
 
     subparser.add_argument(
         "search_term",
-        help="Terme de recherche.",
-        type=str,
+        help="Terme de recherche. Accepte les filtres sur les champs indexés : tags ou "
+        "title. Exemple : 'ubuntu title:qgis'",
         metavar="search-term",
+        type=str,
     )
 
     subparser.add_argument(
@@ -179,37 +182,42 @@ def parser_search_content(
         "-f",
         "--filter-type",
         choices=["article", "rdp"],
-        default=None,
+        default=getenv("GEOTRIBU_CONTENUS_DEFAULT_TYPE", None),
         help="Filtrer sur un type de contenu en particulier.",
+        metavar="GEOTRIBU_CONTENUS_DEFAULT_TYPE",
     )
 
     subparser.add_argument(
         "-n",
         "--results-number",
-        type=int,
-        default=5,
-        help="Nombre de résultats à retourner.",
+        default=getenv("GEOTRIBU_RESULTATS_NOMBRE", 5),
         dest="results_number",
+        help="Nombre de résultats à retourner.",
+        metavar="GEOTRIBU_RESULTATS_NOMBRE",
+        type=int,
     )
 
     subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
-        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
-        default=24 * 7,
-        type=int,
+        default=getenv("GEOTRIBU_CONTENUS_INDEX_EXPIRATION_HOURS", 24 * 7),
         dest="expiration_rotating_hours",
+        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
+        metavar="GEOTRIBU_CONTENUS_INDEX_EXPIRATION_HOURS",
+        type=int,
     )
 
     subparser.add_argument(
         "-o",
         "--format-output",
         choices=[
+            "json",
             "table",
         ],
-        default=None,
-        help="Format de sortie.",
+        default=getenv("GEOTRIBU_RESULTATS_FORMAT", "table"),
         dest="format_output",
+        help="Format de sortie.",
+        metavar="GEOTRIBU_RESULTATS_FORMAT",
     )
 
     subparser.set_defaults(func=run)
@@ -246,6 +254,8 @@ def run(args: argparse.Namespace):
     """
     logger.debug(f"Running {args.command} with {args}")
 
+    console = Console()
+
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
     #  local contents listing file
@@ -259,11 +269,14 @@ def run(args: argparse.Namespace):
     ):
         # if the local index doesn't exist or exists but it's outdated: download the
         # listing from website
-        get_local_contents_listing = download_remote_file_to_local(
-            remote_url_to_download=args.remote_index_file,
-            local_file_path=local_listing_file,
-            expiration_rotating_hours=args.expiration_rotating_hours,
-        )
+        with console.status(
+            "Téléchargement de la liste des contenus...", spinner="earth"
+        ):
+            get_local_contents_listing = download_remote_file_to_local(
+                remote_url_to_download=args.remote_index_file,
+                local_file_path=local_listing_file,
+                expiration_rotating_hours=args.expiration_rotating_hours,
+            )
         if not isinstance(get_local_contents_listing, Path):
             logger.error(
                 f"Le téléchargement du fichier distant {args.remote_index_file} "
@@ -282,17 +295,18 @@ def run(args: argparse.Namespace):
         with local_listing_file.open(mode="wb") as fd:
             fd.write(orjson.dumps(contents_listing))
 
-        # build index from contents listing
-        idx = generate_index_from_docs(
-            input_documents_to_index=tuple(contents_listing),
-            index_ref_id="location",
-            index_configuration={"lang": "fr"},
-            index_fieds_definition=[
-                dict(field_name="title", boost=10),
-                dict(field_name="tags", boost=5),
-                dict(field_name="text"),
-            ],
-        )
+        with console.status("Génère l'index de recherche local...", spinner="earth"):
+            # build index from contents listing
+            idx = generate_index_from_docs(
+                input_documents_to_index=tuple(contents_listing),
+                index_ref_id="location",
+                index_configuration={"lang": "fr"},
+                index_fieds_definition=[
+                    dict(field_name="title", boost=10),
+                    dict(field_name="tags", boost=5),
+                    dict(field_name="text"),
+                ],
+            )
 
         # save it as JSON file for next time
         serialized_idx = idx.serialize()
@@ -324,7 +338,14 @@ def run(args: argparse.Namespace):
         idx = Index.load(serialized_idx)
 
     # recherche
-    search_results: list[dict] = idx.search(f"{args.search_term}*")
+    with console.status(f"Recherche {args.search_term}...", spinner="earth"):
+        search_results: list[dict] = idx.search(f"{args.search_term}")
+
+    if not len(search_results):
+        print(
+            f":person_shrugging: Aucun contenu trouvé pour : {args.search_term} {search_results}"
+        )
+        sys.exit(0)
 
     # résultats : enrichissement et filtre
     final_results = []
@@ -360,14 +381,17 @@ def run(args: argparse.Namespace):
         final_results.append(out_result)
 
     # formatage de la sortie
-    print(
-        format_output_result(
-            result=final_results,
-            search_term=args.search_term,
-            format_type=args.format_output,
-            count=args.results_number,
+    if len(final_results):
+        print(
+            format_output_result(
+                result=final_results,
+                search_term=args.search_term,
+                format_type=args.format_output,
+                count=args.results_number,
+            )
         )
-    )
+    else:
+        print(f":person_shrugging: Aucun contenu trouvé pour : {args.search_term}")
 
 
 # -- Stand alone execution
