@@ -62,7 +62,7 @@ def test_cli_run_contenus_articles_ubuntu(capsys):
 
 def test_cli_run_images_logo_news(capsys):
     """Test CLI images."""
-    cli.main(["images", "-f", "logo", "news"])
+    cli.main(["images", "-o", "json", "-f", "logo", "news"])
 
     out, err = capsys.readouterr()
 
