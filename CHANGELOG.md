@@ -18,6 +18,13 @@ Unreleased
 
 -->
 
+## 0.14.0 - 2023-05-16
+
+### Features and enhancements 🎉
+
+* Ajoute une sous-commande par défaut et la rend paramétrable by @Guts in <https://github.com/geotribu/cli/pull/65>
+* Améliore les sous-commandes de recherche : spinner, variables d'environnement, metavars by @Guts in <https://github.com/geotribu/cli/pull/66>
+
 ## 0.13.0 - 2023-05-15
 
 ### Features and enhancements 🎉
