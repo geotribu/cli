@@ -18,6 +18,12 @@ Unreleased
 
 -->
 
+## 0.15.0 - 2023-05-16
+
+### Features and enhancements 🎉
+
+* Améliore l'affichage des liens dans le terminal by @Guts in <https://github.com/geotribu/cli/pull/67>
+
 ## 0.14.0 - 2023-05-16
 
 ### Features and enhancements 🎉
