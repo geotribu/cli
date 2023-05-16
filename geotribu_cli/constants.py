@@ -74,12 +74,16 @@ class RssItem:
 
 @dataclass
 class MkdocsSearchConfiguration:
+    """Search configuration in Mkdocs."""
+
     lang: list
     separator: str
 
 
 @dataclass
 class MkdocsSearchDocument:
+    """Search document structure in Mkdocs."""
+
     title: str
     text: str
     location: str
@@ -88,6 +92,8 @@ class MkdocsSearchDocument:
 
 @dataclass
 class MkdocsSearchListing:
+    """Mkdocs listing search."""
+
     config: MkdocsSearchConfiguration
     docs: list[MkdocsSearchDocument]
 

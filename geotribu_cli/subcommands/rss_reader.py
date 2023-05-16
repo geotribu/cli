@@ -21,7 +21,7 @@ from rich.table import Table
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults, RssItem
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
-from geotribu_cli.utils.formatters import convert_octets
+from geotribu_cli.utils.formatters import convert_octets, url_add_utm, url_rm_query
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -74,7 +74,7 @@ def format_output_result(
                 r.title,
                 f"{r.date_pub:%d %B %Y}",
                 r.author,
-                r.url,
+                f"[link={url_add_utm(r.url)}]{url_rm_query(r.url)}[/link]",
             )
 
         return table
