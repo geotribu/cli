@@ -221,7 +221,7 @@ def run(args: argparse.Namespace):
 
     # recherche
     with console.status(f"Recherche {args.search_term}...", spinner="earth"):
-        search_results: list[dict] = idx.search(f"*{args.search_term}*")
+        search_results: list[dict] = idx.search(f"{args.search_term}")
 
     if not len(search_results):
         print(

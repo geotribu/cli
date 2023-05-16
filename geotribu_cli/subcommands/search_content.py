@@ -154,9 +154,10 @@ def parser_search_content(
 
     subparser.add_argument(
         "search_term",
-        help="Terme de recherche.",
-        type=str,
+        help="Terme de recherche. Accepte les filtres sur les champs indexés : tags ou "
+        "title. Exemple : 'ubuntu title:qgis'",
         metavar="search-term",
+        type=str,
     )
 
     subparser.add_argument(
@@ -338,7 +339,7 @@ def run(args: argparse.Namespace):
 
     # recherche
     with console.status(f"Recherche {args.search_term}...", spinner="earth"):
-        search_results: list[dict] = idx.search(f"*{args.search_term}*")
+        search_results: list[dict] = idx.search(f"{args.search_term}")
 
     if not len(search_results):
         print(
