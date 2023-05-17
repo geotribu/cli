@@ -14,6 +14,7 @@
 import unittest
 
 # project
+from geotribu_cli.__about__ import __version__
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm, url_rm_query
 
 # ############################################################################
@@ -49,7 +50,7 @@ class TestUtilsFormatters(unittest.TestCase):
             url_add_utm(
                 in_url="https://geotribu.fr/rdp/2023/rdp_2023-05-12/?utm_campaign=feed-syndication&utm_medium=RSS&utm_source=rss-feed",
             ),
-            "https://geotribu.fr/rdp/2023/rdp_2023-05-12/?utm_source=geotribu_cli&utm_medium=GeotribuToolbelt&utm_campaign=geotribu_cli_0.14.0",
+            f"https://geotribu.fr/rdp/2023/rdp_2023-05-12/?utm_source=geotribu_cli&utm_medium=GeotribuToolbelt&utm_campaign=geotribu_cli_{__version__}",
         )
 
 
