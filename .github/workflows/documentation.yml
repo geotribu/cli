@@ -60,6 +60,7 @@ jobs:
           python -m pip install -U "pipdeptree<3"
           echo -e "\`\`\`{mermaid}" > docs/misc/dependencies.md
           pipdeptree --exclude pip,pipdeptree,setuptools,wheel --mermaid >> docs/misc/dependencies.md
+          echo -e "    lunr -- "any" --> nltk"
           echo -e "\`\`\`" >> docs/misc/dependencies.md
 
       # this job must run before installing other dependencies to avoid listing everything
