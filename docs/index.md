@@ -1,10 +1,10 @@
 # {{ title }} - Documentation
 
 > **Description:** {{ description }}  
-> **Author and contributors:** {{ author }}  
-> **Version:** {{ version }}  
-> **Source code:** {{ repo_url }}  
-> **Last documentation build:** {{ date_update }}
+> **Auteur et contributeurs :** {{ author }}  
+> **Version actuelle :** {{ version }}  
+> **Code source :** {{ repo_url }}  
+> **Date de génération de la documentation :** {{ date_update }}
 
 ---
 

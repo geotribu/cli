@@ -48,6 +48,7 @@ extensions = [
     "myst_parser",
     "sphinx_argparse_cli",
     "sphinx_copybutton",
+    "sphinxcontrib.mermaid",
     "sphinxext.opengraph",
     "sphinx_sitemap",
 ]
@@ -145,6 +146,19 @@ intersphinx_mapping = {
 
 # -- Extension configuration -------------------------------------------------
 
+autodoc_default_options = {
+    "special-members": "__init__",
+}
+
+# mermaid
+mermaid_params = [
+    "--theme",
+    "forest",
+    "--width",
+    "600",
+    "--backgroundColor",
+    "transparent",
+]
 
 # MyST Parser
 myst_enable_extensions = [
