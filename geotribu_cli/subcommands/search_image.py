@@ -64,23 +64,25 @@ def format_output_result(
         table.add_column(header="Nom", justify="left", style="default")
         table.add_column(header="Dimensions", justify="center", style="bright_black")
         table.add_column(header="Score", justify="center", style="magenta")
-        table.add_column(header="Syntaxe intégration", justify="right", style="blue")
+        table.add_column(header="URL", justify="right", style="blue underline")
+        # table.add_column(header="Syntaxe intégration", justify="right", style="blue")
 
         # iterate over results
 
         for r in result[:count]:
-            # syntaxe depending on image type
-            if "logos-icones" in r.get("url"):
-                syntax = rf"!\[logo {Path(r.get('nom')).stem}]({r.get('url')}){{: .img-rdp-news-thumb }}"
-            else:
-                syntax = rf"!\[{Path(r.get('nom')).stem}]({r.get('url')})"
+            # # syntaxe depending on image type
+            # if "logos-icones" in r.get("url"):
+            #     syntax = rf"!\[logo {Path(r.get('nom')).stem}]({r.get('url')}){{: .img-rdp-news-thumb }}"
+            # else:
+            #     syntax = rf"!\[{Path(r.get('nom')).stem}]({r.get('url')})"
 
             # add row
             table.add_row(
                 f"[link={url_add_utm(r.get('url'))}]{r.get('nom')}[/link]",
                 r.get("dimensions"),
                 r.get("score"),
-                syntax,
+                r.get("url")
+                # syntax,
             )
 
         return table
