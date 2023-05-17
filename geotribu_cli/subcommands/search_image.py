@@ -280,6 +280,7 @@ def run(args: argparse.Namespace):
                 result=final_results,
                 format_type=args.format_output,
                 count=args.results_number,
+                search_term=args.search_term,
             )
         )
     else:
