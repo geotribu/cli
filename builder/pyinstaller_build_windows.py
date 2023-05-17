@@ -31,6 +31,9 @@ PyInstaller.__main__.run(
         "--add-data=LICENSE;.",
         "--add-data=README.md;.",
         "--clean",
+        "--icon={}".format(
+            Path(__file__).parent.joinpath("frozen_app_icon.ico").resolve()
+        ),
         "--log-level={}".format(getenv("PYINSTALLER_LOG_LEVEL", "WARN")),
         "--manifest={}".format((package_folder / "../builder/manifest.xml").resolve()),
         "--name={}_{}_{}{}_Python{}-{}".format(
@@ -45,7 +48,6 @@ PyInstaller.__main__.run(
         "--noupx",
         "--onefile",
         "--version-file={}".format("version_info.txt"),
-        "--console",
         str(package_folder / "cli.py"),
     ]
 )
