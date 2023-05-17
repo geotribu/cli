@@ -138,5 +138,6 @@ version_info.txt
 _logs/
 *.pfx
 *.exe
+docs/misc/dependencies.md
 docs/misc/licenses.md
 GeotribuToolbelt_*_Python*
