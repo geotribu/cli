@@ -22,7 +22,7 @@ from rich.table import Table
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
-from geotribu_cli.utils.formatters import convert_octets
+from geotribu_cli.utils.formatters import convert_octets, url_add_utm
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -54,7 +54,7 @@ def format_output_result(
     if format_type == "table":
         table = Table(
             title=f"Recherche d'images - {len(result)} résultats "
-            f"avec le terme : {search_term}",
+            f"avec le terme : {search_term}\n(ctrl+clic sur le nom pour ouvrir l'image)",
             show_lines=True,
             highlight=True,
             caption=f"{__title__} {__version__}",
@@ -63,16 +63,26 @@ def format_output_result(
         # columns
         table.add_column(header="Nom", justify="left", style="default")
         table.add_column(header="Dimensions", justify="center", style="bright_black")
-        table.add_column(header="Score", style="magenta")
-        table.add_column(header="URL", justify="right", style="blue")
+        table.add_column(header="Score", justify="center", style="magenta")
+        table.add_column(header="URL", justify="right", style="blue underline")
+        # table.add_column(header="Syntaxe intégration", justify="right", style="blue")
 
         # iterate over results
+
         for r in result[:count]:
+            # # syntaxe depending on image type
+            # if "logos-icones" in r.get("url"):
+            #     syntax = rf"!\[logo {Path(r.get('nom')).stem}]({r.get('url')}){{: .img-rdp-news-thumb }}"
+            # else:
+            #     syntax = rf"!\[{Path(r.get('nom')).stem}]({r.get('url')})"
+
+            # add row
             table.add_row(
-                r.get("nom"),
+                f"[link={url_add_utm(r.get('url'))}]{r.get('nom')}[/link]",
                 r.get("dimensions"),
                 r.get("score"),
-                r.get("url"),
+                r.get("url")
+                # syntax,
             )
 
         return table
@@ -221,7 +231,7 @@ def run(args: argparse.Namespace):
 
     # recherche
     with console.status(f"Recherche {args.search_term}...", spinner="earth"):
-        search_results: list[dict] = idx.search(f"{args.search_term}")
+        search_results: list[dict] = idx.search(args.search_term)
 
     if not len(search_results):
         print(
@@ -272,6 +282,7 @@ def run(args: argparse.Namespace):
                 result=final_results,
                 format_type=args.format_output,
                 count=args.results_number,
+                search_term=args.search_term,
             )
         )
     else:

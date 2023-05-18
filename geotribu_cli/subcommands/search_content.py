@@ -77,7 +77,7 @@ def format_output_result(
     if format_type == "table":
         table = Table(
             title=f"Recherche de contenus - {count}/{len(result)} résultats "
-            f"avec le terme : {search_term}\n(ctrl+clic sur le nom pour ouvrir l'image)",
+            f"avec le terme : {search_term}\n(ctrl+clic sur le titre pour ouvrir le contenu)",
             show_lines=True,
             highlight=True,
             caption=f"{__title__} {__version__}",
