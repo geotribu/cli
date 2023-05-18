@@ -104,7 +104,7 @@ def format_output_result(
 
         return table
     else:
-        return result
+        return result[:count]
 
 
 def generate_index_from_docs(
