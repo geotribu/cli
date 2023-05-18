@@ -25,7 +25,7 @@ from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.date_from_content import get_date_from_content_location
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
-from geotribu_cli.utils.formatters import convert_octets
+from geotribu_cli.utils.formatters import convert_octets, url_add_utm
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -77,7 +77,7 @@ def format_output_result(
     if format_type == "table":
         table = Table(
             title=f"Recherche de contenus - {count}/{len(result)} résultats "
-            f"avec le terme : {search_term}",
+            f"avec le terme : {search_term}\n(ctrl+clic sur le nom pour ouvrir l'image)",
             show_lines=True,
             highlight=True,
             caption=f"{__title__} {__version__}",
@@ -90,16 +90,16 @@ def format_output_result(
             header="Date de publication", justify="center", style="bright_black"
         )
         table.add_column(header="Score", style="magenta")
-        table.add_column(header="URL", justify="right", style="blue")
+        table.add_column(header="Mots-clés", justify="right", style="blue")
 
         # iterate over results
         for r in result[:count]:
             table.add_row(
-                r.get("titre"),
+                f"[link={url_add_utm(r.get('url'))}]{r.get('titre')}[/link]",
                 r.get("type"),
                 f"{r.get('date'):%d %B %Y}",
                 r.get("score"),
-                r.get("url"),
+                ",".join(r.get("tags")),
             )
 
         return table
@@ -339,46 +339,64 @@ def run(args: argparse.Namespace):
 
     # recherche
     with console.status(f"Recherche {args.search_term}...", spinner="earth"):
-        search_results: list[dict] = idx.search(f"{args.search_term}")
+        search_results: list[dict] = idx.search(args.search_term)
 
     if not len(search_results):
         print(
             f":person_shrugging: Aucun contenu trouvé pour : {args.search_term} {search_results}"
+            "\nRéessayer en utilisant des paramètres de recherche moins stricts. "
+            f"Exemple : '*{args.search_term}*'"
         )
         sys.exit(0)
 
     # résultats : enrichissement et filtre
-    final_results = []
+    with console.status(
+        f"Enrichissement des {len(search_results)} résultats...", spinner="earth"
+    ):
+        final_results: list[dict] = []
 
-    for result in search_results:
-        # filter on content type
-        if args.filter_type == "article" and not result.get("ref").startswith(
-            "articles/"
-        ):
-            logger.debug(
-                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
-            )
-            continue
-        elif args.filter_type == "rdp" and not result.get("ref").startswith("rdp/"):
-            logger.debug(
-                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
-            )
-            continue
-        else:
-            pass
+        for result in search_results:
+            # filter on content type
+            if args.filter_type == "article" and not result.get("ref").startswith(
+                "articles/"
+            ):
+                logger.debug(
+                    f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+                )
+                continue
+            elif args.filter_type == "rdp" and not result.get("ref").startswith("rdp/"):
+                logger.debug(
+                    f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
+                )
+                continue
+            else:
+                pass
 
-        # crée un résultat de sortie
-        out_result = {
-            "titre": result.get("title"),
-            "type": "Article"
-            if result.get("ref").startswith("articles/")
-            else "GeoRDP",
-            "date": get_date_from_content_location(result.get("ref")),
-            "score": f"{result.get('score'):.3}",
-            "url": f"{defaults_settings.site_base_url}{result.get('ref')}",
+            # crée un résultat de sortie
+            out_result = {
+                "titre": result.get("title"),
+                "type": "Article"
+                if result.get("ref").startswith("articles/")
+                else "GeoRDP",
+                "date": get_date_from_content_location(result.get("ref")),
+                "score": f"{result.get('score'):.3}",
+                "url": f"{defaults_settings.site_base_url}{result.get('ref')}",
+            }
+
+            final_results.append(out_result)
+
+        final_urls = [rez.get("url") for rez in final_results]
+        matched_docs = {
+            f"{defaults_settings.site_base_url}{c.get('location')}": (
+                c.get("title"),
+                c.get("tags"),
+            )
+            for c in contents_listing
+            if f"{defaults_settings.site_base_url}{c.get('location')}" in final_urls
         }
 
-        final_results.append(out_result)
+        for rezult in final_results:
+            rezult["titre"], rezult["tags"] = matched_docs.get(rezult.get("url"))
 
     # formatage de la sortie
     if len(final_results):
