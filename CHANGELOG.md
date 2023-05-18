@@ -18,6 +18,23 @@ Unreleased
 
 -->
 
+## 0.16.0 - 2023-05-18
+
+### Bugs fixes 🐛
+
+* Corrige le test en enlevant le numéro de version statique by @Guts in <https://github.com/geotribu/cli/pull/68>
+
+### Features and enhancements 🎉
+
+* Meilleurs résultats de la recherche de contenus : ajout du titre cliquable et des mots-clés by @Guts in <https://github.com/geotribu/cli/pull/72>
+* Améliore des résultats de la recherche d'images : nom cliquable et rappel terme de recherche by @Guts in <https://github.com/geotribu/cli/pull/71>
+* Ajoute l'icône à l'exécutable pour Windows by @Guts in <https://github.com/geotribu/cli/pull/70>
+
+### Documentation 📖
+
+* Documentation : ajoute le graphe des dépendances by @Guts in <https://github.com/geotribu/cli/pull/69>
+* Détaille la description et l'usage du CLI by @Guts in <https://github.com/geotribu/cli/pull/73>
+
 ## 0.15.0 - 2023-05-16
 
 ### Features and enhancements 🎉
