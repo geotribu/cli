@@ -6,6 +6,8 @@
 > **Code source :** {{ repo_url }}  
 > **Date de génération de la documentation :** {{ date_update }}
 
+{{ cli_usage }}
+
 ---
 
 ```{toctree}
