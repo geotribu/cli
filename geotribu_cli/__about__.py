@@ -25,7 +25,11 @@ __executable_name__ = "geotribu"
 __keywords__ = ["cli, Geotribu, GIS"]
 __license__ = "MIT"
 __package_name__ = "geotribu"
-__summary__ = "Des outils pour faciliter les tâches récurrentes des contributeur/ices de Geotribu."
+__summary__ = (
+    "Une ligne de commande pour Geotribu qui offre des outils pour rechercher "
+    "et consulter les contenus et images, et faciliter les tâches récurrentes des "
+    "contributeur/ices."
+)
 __title__ = "Geotribu Toolbelt"
 __title_clean__ = "".join(e for e in __title__ if e.isalnum())
 __uri_homepage__ = "https://cli.geotribu.fr/"
@@ -43,6 +47,7 @@ __version_info__ = tuple(
 )
 
 __cli_usage__ = (
-    "Des outils pour les administrateur/ices, contributeur/ices ou "
-    "les lecteur/ices de Geotribu."
+    "Geotribu en ligne de commande pour rechercher dans les contenus et les images, "
+    "consulter les derniers contenus sans quitter son terminal.\n"
+    "Encore meilleur avec les terminaux gérant les hyperliens : Bash, PowerShell 5+, etc."
 )
