@@ -27,6 +27,7 @@ from geotribu_cli.__about__ import (
 )
 from geotribu_cli.subcommands import (
     parser_latest_content,
+    parser_open_result,
     parser_search_content,
     parser_search_image,
     parser_upgrade,
@@ -49,10 +50,10 @@ def add_common_arguments(parser_to_update: argparse.ArgumentParser):
     """Apply common argument to an existing parser.
 
     Args:
-        parser_to_update (argparse.ArgumentParser): _description_
+        parser_to_update (argparse.ArgumentParser): parser to which arguments need to be added
 
     Returns:
-        argparse.ArgumentParser: _description_
+        argparse.ArgumentParser: parser with added options
     """
     parser_to_update.add_argument(
         "-v",
@@ -193,6 +194,18 @@ def main(args: list[str] = None):
     add_common_arguments(subcmd_search_image)
     parser_search_image(subcmd_search_image)
 
+    # Content reader
+    subcmd_opener = subparsers.add_parser(
+        "ouvrir",
+        aliases=["lire", "open", "or", "read"],
+        help="Ouvre un résultat d'une commande précédente dans le terminal ou "
+        "l'application correspondant au type de contenu.",
+        formatter_class=main_parser.formatter_class,
+        prog="open_result",
+    )
+    add_common_arguments(subcmd_opener)
+    parser_open_result(subcmd_opener)
+
     # Upgrader
     subcmd_upgrade = subparsers.add_parser(
         "upgrade",
@@ -236,7 +249,8 @@ def main(args: list[str] = None):
     logger.debug(f"Log level set: {logging.getLevelName(args.verbosity)}")
 
     # -- RUN LOGIC --
-    args.func(args)
+    if hasattr(args, "func"):
+        args.func(args)
 
 
 # -- Stand alone execution
