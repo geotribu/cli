@@ -16,6 +16,7 @@ from rich.console import Console
 # package
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
+from geotribu_cli.utils.formatters import url_add_utm, url_content_source
 from geotribu_cli.utils.start_uri import open_uri
 
 # ############################################################################
@@ -24,11 +25,6 @@ from geotribu_cli.utils.start_uri import open_uri
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
-
-
-# ############################################################################
-# ########## FUNCTIONS ###########
-# ################################
 
 
 # ############################################################################
@@ -85,7 +81,7 @@ def parser_open_result(
 def run(args: argparse.Namespace):
     """Run the sub command logic.
 
-    Open .
+    Open result of a previous command.
 
     Args:
         args (argparse.Namespace): arguments passed to the subcommand
@@ -104,7 +100,14 @@ def run(args: argparse.Namespace):
         f"Ouverture du résultat précédent n°{args.result_index} : {result_uri}"
     )
 
-    if args.open_with == "app":
+    if args.open_with == "shell" and result_uri.startswith(
+        defaults_settings.site_base_url
+    ):
+        open_uri(url_content_source(result_uri))
+
+    elif args.open_with == "app" and result_uri.startswith("http"):
+        open_uri(url_add_utm(result_uri))
+    else:
         open_uri(result_uri)
 
 
