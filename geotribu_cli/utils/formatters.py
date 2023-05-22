@@ -4,13 +4,23 @@
 
 
 # standard library
+import logging
 from functools import lru_cache
 from math import floor
 from math import log as math_log
+from typing import Literal
 from urllib.parse import parse_qs, urlsplit, urlunsplit
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
+from geotribu_cli.constants import GeotribuDefaults
+
+# ############################################################################
+# ########## GLOBALS #############
+# ################################
+
+logger = logging.getLogger(__name__)
+defaults_settings = GeotribuDefaults()
 
 # ############################################################################
 # ########## FUNCTIONS ###########
@@ -82,3 +92,29 @@ def url_add_utm(in_url: str) -> str:
             f"&utm_campaign=geotribu_cli_{__version__}"
         )
     )
+
+
+@lru_cache(maxsize=256)
+def url_content_source(
+    in_url: str,
+    mode: Literal["blob", "edit", "raw"] = "blob",
+) -> str:
+    """Adds utm_* query parameters to the item URL.
+
+    Args:
+        mode (Literal[&quot;blob&quot;, &quot;edit&quot;, &quot;raw&quot;], optional): display mode for source. Defaults to "blob".
+        url_path (str, optional): content path. Defaults to "".
+
+    Returns:
+        str: URLs with utm_* query parameters to track openings from this package.
+    """
+    parsed_url = urlsplit(url=url_rm_query(in_url))
+
+    # clean trailing slash from path
+    if parsed_url.path.endswith("/"):
+        url_path = parsed_url.path[:-1]
+    else:
+        url_path = parsed_url.path
+
+    if in_url.startswith(defaults_settings.site_base_url):
+        return f"{defaults_settings.site_git_source_base_url(mode=mode)}{url_path}.md"
