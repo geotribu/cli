@@ -15,11 +15,13 @@ from pathlib import Path
 
 # 3rd party
 from rich import print
+from rich.console import Console
 from rich.table import Table
 
 # package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults, RssItem
+from geotribu_cli.history import CliHistory
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm, url_rm_query
 
@@ -173,79 +175,91 @@ def run(args: argparse.Namespace):
     """
     logger.debug(f"Running {args.command} with {args}")
 
+    # local vars
+    console = Console(record=True)
+    history = CliHistory()
+
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
     # get local search index
-    get_or_update_local_search_index = download_remote_file_to_local(
-        remote_url_to_download=args.remote_index_file,
-        local_file_path=args.local_index_file,
-        expiration_rotating_hours=args.expiration_rotating_hours,
-    )
-    if not isinstance(get_or_update_local_search_index, Path):
-        logger.error(
-            f"Le téléchargement du fichier distant {args.remote_index_file} "
-            f"ou la récupération du fichier local {args.local_index_file} a échoué."
+    with console.status("Téléchargement du flux RSS...", spinner="earth"):
+        get_or_update_local_search_index = download_remote_file_to_local(
+            remote_url_to_download=args.remote_index_file,
+            local_file_path=args.local_index_file,
+            expiration_rotating_hours=args.expiration_rotating_hours,
         )
-        if isinstance(get_or_update_local_search_index, Exception):
-            logger.error(get_or_update_local_search_index)
-        sys.exit()
-    logger.info(
-        f"Fichier RSS local : {args.local_index_file}, "
-        f"{convert_octets(args.local_index_file.stat().st_size)}"
-    )
+        if not isinstance(get_or_update_local_search_index, Path):
+            logger.error(
+                f"Le téléchargement du fichier distant {args.remote_index_file} "
+                f"ou la récupération du fichier local {args.local_index_file} a échoué."
+            )
+            if isinstance(get_or_update_local_search_index, Exception):
+                logger.error(get_or_update_local_search_index)
+            sys.exit()
+        logger.info(
+            f"Fichier RSS local : {args.local_index_file}, "
+            f"{convert_octets(args.local_index_file.stat().st_size)}"
+        )
 
     # Parse the feed
-    feed = ET.parse(args.local_index_file)
-    feed_items: list[RssItem] = []
+    with console.status("Lecture du fichier local...", spinner="earth"):
+        feed = ET.parse(args.local_index_file)
+        feed_items: list[RssItem] = []
 
-    # Find all articles in the feed
-    for item in feed.findall(".//item"):
-        try:
-            # filter on content type
-            if args.filter_type == "article" and not item.find("link").text.startswith(
-                f"{defaults_settings.site_base_url}articles/"
-            ):
-                logger.debug(
-                    f"Résultat ignoré par le filtre {args.filter_type}: {item.find('link').text}"
-                )
-                continue
-            elif args.filter_type == "rdp" and not item.find("link").text.startswith(
-                f"{defaults_settings.site_base_url}rdp/"
-            ):
-                logger.debug(
-                    f"Résultat ignoré par le filtre {args.filter_type}: {item.find('link').text}"
-                )
-                continue
-            else:
-                pass
+        # Find all articles in the feed
+        for item in feed.findall(".//item"):
+            try:
+                # filter on content type
+                if args.filter_type == "article" and not item.find(
+                    "link"
+                ).text.startswith(f"{defaults_settings.site_base_url}articles/"):
+                    logger.debug(
+                        f"Résultat ignoré par le filtre {args.filter_type}: {item.find('link').text}"
+                    )
+                    continue
+                elif args.filter_type == "rdp" and not item.find(
+                    "link"
+                ).text.startswith(f"{defaults_settings.site_base_url}rdp/"):
+                    logger.debug(
+                        f"Résultat ignoré par le filtre {args.filter_type}: {item.find('link').text}"
+                    )
+                    continue
+                else:
+                    pass
 
-            # add items to the feed
-            feed_items.append(
-                RssItem(
-                    abstract=item.find("description").text,
-                    author=item.find("author").text or None,
-                    categories=[cat.text for cat in item.findall("category")],
-                    date_pub=parsedate_to_datetime(item.find("pubDate").text),
-                    image_length=item.find("enclosure").attrib.get("length"),
-                    image_type=item.find("enclosure").attrib.get("type"),
-                    image_url=item.find("enclosure").attrib.get("url"),
-                    guid=item.find("guid").text,
-                    title=item.find("title").text,
-                    url=item.find("link").text,
+                # add items to the feed
+                feed_items.append(
+                    RssItem(
+                        abstract=item.find("description").text,
+                        author=item.find("author").text or None,
+                        categories=[cat.text for cat in item.findall("category")],
+                        date_pub=parsedate_to_datetime(item.find("pubDate").text),
+                        image_length=item.find("enclosure").attrib.get("length"),
+                        image_type=item.find("enclosure").attrib.get("type"),
+                        image_url=item.find("enclosure").attrib.get("url"),
+                        guid=item.find("guid").text,
+                        title=item.find("title").text,
+                        url=item.find("link").text,
+                    )
                 )
-            )
-        except Exception as err:
-            err_msg = "Feed item (index = {}) triggers an error. Trace: {}".format(
-                feed_items.index(item), err
-            )
-            logger.error(err_msg)
-            sys.exit(err_msg)
+            except Exception as err:
+                err_msg = "Feed item (index = {}) triggers an error. Trace: {}".format(
+                    feed_items.index(item), err
+                )
+                logger.error(err_msg)
+                sys.exit(err_msg)
 
     # formatage de la sortie
     print(
         format_output_result(
             result=feed_items, format_type=args.format_output, count=args.results_number
         )
+    )
+
+    # save into history
+    history.dump(
+        cmd_name=__name__.split(".")[-1],
+        results_to_dump=[{"url": i.url} for i in feed_items],
     )
 
 

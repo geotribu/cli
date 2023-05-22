@@ -21,6 +21,7 @@ from rich.table import Table
 # package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.history import CliHistory
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm
 
@@ -193,7 +194,10 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
-    console = Console()
+
+    # local vars
+    console = Console(record=True)
+    history = CliHistory()
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -287,6 +291,14 @@ def run(args: argparse.Namespace):
         )
     else:
         print(f":person_shrugging: Aucune image trouvée pour : {args.search_term}")
+        sys.exit(0)
+
+    # save into history
+    history.dump(
+        cmd_name=__name__.split(".")[-1],
+        results_to_dump=final_results,
+        request_performed=args.search_term,
+    )
 
 
 # -- Stand alone execution
