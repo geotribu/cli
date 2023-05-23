@@ -23,7 +23,7 @@ from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults, RssItem
 from geotribu_cli.history import CliHistory
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
-from geotribu_cli.utils.formatters import convert_octets, url_add_utm, url_rm_query
+from geotribu_cli.utils.formatters import convert_octets, url_add_utm
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -63,6 +63,7 @@ def format_output_result(
             caption=f"{__title__} {__version__}",
         )
 
+        table.add_column(header="#", justify="center")
         table.add_column(header="Titre", justify="left", style="default")
         table.add_column(
             header="Date de publication", justify="center", style="bright_black"
@@ -73,10 +74,11 @@ def format_output_result(
         # iterate over results
         for r in result[:count]:
             table.add_row(
-                r.title,
+                f"{result.index(r)}",
+                f"[link={url_add_utm(r.url)}]{r.title}[/link]",
                 f"{r.date_pub:%d %B %Y}",
                 r.author,
-                f"[link={url_add_utm(r.url)}]{url_rm_query(r.url)}[/link]",
+                ",".join(r.categories),
             )
 
         return table

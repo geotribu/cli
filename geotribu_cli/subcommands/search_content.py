@@ -85,6 +85,7 @@ def format_output_result(
         )
 
         # columns
+        table.add_column(header="#", justify="center")
         table.add_column(header="Titre", justify="left", style="default")
         table.add_column(header="Type", justify="center", style="bright_black")
         table.add_column(
@@ -96,6 +97,7 @@ def format_output_result(
         # iterate over results
         for r in result[:count]:
             table.add_row(
+                f"{result.index(r)}",
                 f"[link={url_add_utm(r.get('url'))}]{r.get('titre')}[/link]",
                 r.get("type"),
                 f"{r.get('date'):%d %B %Y}",
