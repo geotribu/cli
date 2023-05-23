@@ -62,10 +62,11 @@ def format_output_result(
         )
 
         # columns
+        table.add_column(header="#", justify="center")
         table.add_column(header="Nom", justify="left", style="default")
         table.add_column(header="Dimensions", justify="center", style="bright_black")
         table.add_column(header="Score", justify="center", style="magenta")
-        table.add_column(header="URL", justify="right", style="blue underline")
+        table.add_column(header="Chemin CDN", justify="left")
         # table.add_column(header="Syntaxe intégration", justify="right", style="blue")
 
         # iterate over results
@@ -79,10 +80,11 @@ def format_output_result(
 
             # add row
             table.add_row(
+                f"{result.index(r)}",
                 f"[link={url_add_utm(r.get('url'))}]{r.get('nom')}[/link]",
                 r.get("dimensions"),
                 r.get("score"),
-                r.get("url")
+                f"[link={defaults_settings.cdn_base_url}/tinyfilemanager.php?p={r.get('cdn_path')}]{r.get('cdn_path')}[/link]",
                 # syntax,
             )
 
@@ -270,6 +272,7 @@ def run(args: argparse.Namespace):
             "nom": result.get("ref").split("/")[-1],
             "dimensions": f"{mapped_img[0]}x{mapped_img[1]}",
             "score": f"{result.get('score'):.3}",
+            "cdn_path": f"{result.get('ref')}",
             "url": f"{defaults_settings.cdn_base_url}"
             f"{defaults_settings.cdn_base_path}/"
             f"{result.get('ref')}",
