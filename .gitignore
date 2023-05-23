@@ -140,4 +140,5 @@ _logs/
 *.exe
 docs/misc/dependencies.md
 docs/misc/licenses.md
+docs/usage/*sample*.txt
 GeotribuToolbelt_*_Python*
