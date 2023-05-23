@@ -18,6 +18,8 @@ python -m pip install -U -r requirements/documentation.txt
 pip install -e .
 geotribu rss --format-output table --results-number 3 > docs/usage/cli_sample_rss.txt
 geotribu rss -f rdp -o table > docs/usage/cli_sample_rss_rdp.txt
+geotribu sc orfeo > docs/usage/cli_sample_search_content_orfeo.txt
+geotribu sc -n 10 "+title:openstreetmap postgis" > docs/usage/cli_sample_search_content_advanced.txt
 geotribu search-image postgis > docs/usage/cli_sample_search_images_postgis.txt
 geotribu search-image postgis -f logo -o json > docs/usage/cli_sample_search_images_postgis_logos_json.txt
 ```

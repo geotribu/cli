@@ -1,5 +1,9 @@
 # Exemples
 
+:::{note}
+Les sorties présentées sur cette page sont générées automatiquement durant la génération de la documentation dans la CI. Elles ne sont donc pas représentatives du rendu sur le terminal de chacun/e.
+:::
+
 ## Consulter les derniers contenus publiés
 
 ### Récupération simple
@@ -26,6 +30,49 @@ Sortie :
 ```{eval-rst}
 .. literalinclude:: ./cli_sample_rss_rdp.txt
   :language: shell
+```
+
+----
+
+## Rechercher un contenu
+
+### Recherche simple
+
+```sh
+geotribu sc orfeo
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_search_content_orfeo.txt
+  :language: shell
+```
+
+### Rechercher avancée : forcer la présence d'un mot dans le titre et afficher jusqu'à 10 résultats
+
+```sh
+geotribu sc -n 10 "+title:openstreetmap postgis"
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_search_content_advanced.txt
+  :language: shell
+```
+
+### Filtrer sur un type et présenter sous forme de JSON
+
+```sh
+geotribu search-image postgis --filter-type logo
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_search_images_postgis_logos_json.txt
+  :language: json
 ```
 
 ----
