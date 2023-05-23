@@ -23,7 +23,6 @@ from urllib.request import Request, urlopen
 
 # 3rd party library
 from packaging.version import Version
-from rich.console import Console
 from rich.markdown import Markdown
 
 # submodules
@@ -34,6 +33,7 @@ from geotribu_cli.__about__ import (
     __uri_repository__,
 )
 from geotribu_cli.__about__ import __version__ as actual_version
+from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.str2bool import str2bool
@@ -202,7 +202,6 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
-    console = Console()
 
     # build API URL from repository
     api_url = replace_domain(url=__uri_repository__, new_domain="api.github.com/repos")

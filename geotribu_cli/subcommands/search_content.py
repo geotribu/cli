@@ -16,11 +16,11 @@ import orjson
 from lunr import lunr
 from lunr.index import Index
 from rich import print
-from rich.console import Console
 from rich.table import Table
 
 # package
 from geotribu_cli.__about__ import __title__, __version__
+from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
 from geotribu_cli.utils.date_from_content import get_date_from_content_location
@@ -258,7 +258,6 @@ def run(args: argparse.Namespace):
     logger.debug(f"Running {args.command} with {args}")
 
     # local vars
-    console = Console(record=True)
     history = CliHistory()
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)

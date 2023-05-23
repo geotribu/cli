@@ -11,10 +11,10 @@ import sys
 from os import getenv
 
 # 3rd party
-from rich.console import Console
 from rich.markdown import Markdown
 
 # package
+from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
@@ -91,7 +91,6 @@ def run(args: argparse.Namespace):
     logger.debug(f"Running {args.command} with {args}")
 
     # local vars
-    console = Console(record=True)
     history = CliHistory()
 
     result_uri: str = history.load(result_index=args.result_index)
