@@ -31,17 +31,17 @@ def convert_octets(octets: int) -> str:
     """Convert a mount of octets in readable size.
 
     Args:
-        octets (int): mount of octets to convert
+        octets: mount of octets to convert
 
     Returns:
-        str: size in a human readable format: ko, Mo, etc.
+        size in a human readable format: ko, Mo, etc.
 
     Example:
 
     .. code-block:: python
 
         >>> convert_octets(1024)
-        "1 ko"
+        1 ko
         >>> from pathlib import Path
         >>> convert_octets(Path(my_file.txt).stat().st_size)
     """
@@ -59,29 +59,21 @@ def convert_octets(octets: int) -> str:
 
 
 @lru_cache(maxsize=256, typed=True)
-def url_rm_query(in_url: str, param_startswith: str = "utm_") -> str:
-    """Remove existing utm_* query parameters from input URL.
-
-    Returns:
-        str: URL without utm_* query parameters
-    """
-    parsed_url = urlsplit(url=in_url)
-    url_query_in = parse_qs(parsed_url.query)
-    url_query_out = {}
-    for param, value in url_query_in.items():
-        if param.startswith(param_startswith):
-            continue
-        url_query_out[param] = value
-
-    return urlunsplit(parsed_url._replace(query=url_query_out))
-
-
-@lru_cache(maxsize=256, typed=True)
 def url_add_utm(in_url: str) -> str:
     """Adds utm_* query parameters to the item URL.
 
+    Args:
+        in_url: input content URL.
+
     Returns:
-        str: URLs with utm_* query parameters to track openings from this package.
+        URL with utm_* query parameters to track openings from this package.
+
+    Example:
+
+    .. code-block:: python
+
+        >>> print(url_add_utm("https://geotribu.fr/articles/test/"))
+        https://geotribu.fr/articles/test/?utm_source=geotribu_cli&utm_medium=GeotribuToolbelt&utm_campaign=geotribu_cli_0.16.0
     """
     parsed_url = urlsplit(url=url_rm_query(in_url))
 
@@ -99,14 +91,25 @@ def url_content_source(
     in_url: str,
     mode: Literal["blob", "edit", "raw"] = "blob",
 ) -> str:
-    """Adds utm_* query parameters to the item URL.
+    """Retrieve remote source file from a content URL.
 
     Args:
-        mode (Literal[&quot;blob&quot;, &quot;edit&quot;, &quot;raw&quot;], optional): display mode for source. Defaults to "blob".
-        url_path (str, optional): content path. Defaults to "".
+        mode: display mode for source. Defaults to "blob".
+        in_url: input content URL. Defaults to "".
 
     Returns:
-        str: URLs with utm_* query parameters to track openings from this package.
+        URLs with utm_* query parameters to track openings from this package.
+
+    Example:
+
+    .. code-block:: python
+
+        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/"))
+        https://github.com/geotribu/website/blob/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
+        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='raw'))
+        https://github.com/geotribu/website/raw/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
+        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='edit'))
+        https://github.com/geotribu/website/edit/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
     """
     parsed_url = urlsplit(url=url_rm_query(in_url))
 
@@ -118,3 +121,40 @@ def url_content_source(
 
     if in_url.startswith(defaults_settings.site_base_url):
         return f"{defaults_settings.site_git_source_base_url(mode=mode)}{url_path}.md"
+
+
+@lru_cache(maxsize=256, typed=True)
+def url_rm_query(in_url: str, param_startswith: str = "utm_") -> str:
+    """Remove existing query parameters (default: utm_*) from input URL.
+
+    Args:
+        in_url: input URL to clean
+        param_startswith: start pattern of param to remove. Defaults to 'utm_'.
+
+    Returns:
+        URL without query parameters
+
+    Example:
+
+    .. code-block:: python
+
+        >>> print(url_rm_query("https://geotribu.fr/articles/test/?utm_source=geotribu_cli&utm_medium=GeotribuToolbelt&utm_campaign=geotribu_cli_0.16.0"))
+        https://geotribu.fr/articles/test/
+    """
+    parsed_url = urlsplit(url=in_url)
+    url_query_in = parse_qs(parsed_url.query)
+    url_query_out = {}
+    for param, value in url_query_in.items():
+        if param.startswith(param_startswith):
+            continue
+        url_query_out[param] = value
+
+    return urlunsplit(parsed_url._replace(query=url_query_out))
+
+
+print(
+    url_content_source(
+        "https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/",
+        mode="raw",
+    )
+)
