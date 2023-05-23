@@ -12,10 +12,12 @@ from os import getenv
 
 # 3rd party
 from rich.console import Console
+from rich.markdown import Markdown
 
 # package
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
+from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.formatters import url_add_utm, url_content_source
 from geotribu_cli.utils.start_uri import open_uri
 
@@ -96,14 +98,27 @@ def run(args: argparse.Namespace):
     if result_uri is None:
         sys.exit(0)
 
-    console.print(
-        f"Ouverture du résultat précédent n°{args.result_index} : {result_uri}"
-    )
+    print(f"Ouverture du résultat précédent n°{args.result_index} : {result_uri}")
 
     if args.open_with == "shell" and result_uri.startswith(
         defaults_settings.site_base_url
     ):
-        open_uri(url_content_source(result_uri))
+        local_file_path = download_remote_file_to_local(
+            remote_url_to_download=url_content_source(in_url=result_uri, mode="raw"),
+            local_file_path=defaults_settings.geotribu_working_folder.joinpath(
+                "remote/to_read.md"
+            ),
+            content_type="text/plain; charset=utf-8",
+        )
+
+        with local_file_path.open(mode="rt", encoding="utf-8") as markdown_file:
+            markdown_body = markdown_file.read()
+
+        markdown = Markdown(
+            markdown_body,
+            hyperlinks=True,
+        )
+        console.print(markdown)
 
     elif args.open_with == "app" and result_uri.startswith("http"):
         open_uri(url_add_utm(result_uri))
