@@ -238,9 +238,7 @@ def run(args: argparse.Namespace):
         search_results: list[dict] = idx.search(args.search_term)
 
     if not len(search_results):
-        print(
-            f":person_shrugging: Aucune image trouvée pour : {args.search_term} {search_results}"
-        )
+        print(f":person_shrugging: Aucune image trouvée pour : {args.search_term}")
         sys.exit(0)
 
     # résultats : enrichissement et filtre

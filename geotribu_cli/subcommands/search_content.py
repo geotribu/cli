@@ -346,7 +346,7 @@ def run(args: argparse.Namespace):
 
     if not len(search_results):
         print(
-            f":person_shrugging: Aucun contenu trouvé pour : {args.search_term} {search_results}"
+            f":person_shrugging: Aucun contenu trouvé pour : {args.search_term}"
             "\nRéessayer en utilisant des paramètres de recherche moins stricts. "
             f"Exemple : '*{args.search_term}*'"
         )
