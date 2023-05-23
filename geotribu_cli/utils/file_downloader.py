@@ -82,6 +82,9 @@ def download_remote_file_to_local(
             )
             return local_file_path
 
+    # make sure parents folder exist
+    local_file_path.parent.mkdir(parents=True, exist_ok=True)
+
     # headers
     headers = {"User-Agent": user_agent}
     if content_type:
