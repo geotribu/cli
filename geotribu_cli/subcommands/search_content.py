@@ -16,6 +16,7 @@ import orjson
 from lunr import lunr
 from lunr.index import Index
 from rich import print
+from rich.prompt import Prompt
 from rich.table import Table
 
 # package
@@ -23,10 +24,12 @@ from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
+from geotribu_cli.subcommands.open_result import open_content
 from geotribu_cli.utils.date_from_content import get_date_from_content_location
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm
+from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -221,6 +224,14 @@ def parser_search_content(
         dest="format_output",
         help="Format de sortie.",
         metavar="GEOTRIBU_RESULTATS_FORMAT",
+    )
+
+    subparser.add_argument(
+        "--no-prompt",
+        default=str2bool(getenv("GEOTRIBU_PROMPT_AFTER_SEARCH", True)),
+        action="store_false",
+        dest="opt_prompt_disabled",
+        help="Désactive le prompt demandant le résultat à ouvrir à la fin de la commande.",
     )
 
     subparser.set_defaults(func=run)
@@ -422,6 +433,18 @@ def run(args: argparse.Namespace):
         results_to_dump=final_results,
         request_performed=args.search_term,
     )
+
+    # prompt to open a result
+    if args.opt_prompt_disabled:
+        result_to_open = Prompt.ask(
+            prompt="Afficher le résultat n°",
+            console=console,
+            choices=[str(i) for i in range(0, args.results_number)],
+        )
+        open_content(
+            content_uri=final_results[int(result_to_open)].get("url"),
+            application=getenv("GEOTRIBU_OPEN_WITH", "shell"),
+        )
 
 
 # -- Stand alone execution
