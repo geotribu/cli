@@ -18,6 +18,22 @@ Unreleased
 
 -->
 
+## 0.17.0 - 2023-05-23
+
+### Features and enhancements 🎉
+
+* Fonctionnalité : ajoute une sous-commande pour ouvrir les résultats des commandes précédentes by @Guts in <https://github.com/geotribu/cli/pull/74>
+* Refacto : utilise une unique instance de l'objet Console by @Guts in <https://github.com/geotribu/cli/pull/77>
+* Amélioration : utilise le nom du contenu distant comme nom du fichier local by @Guts in <https://github.com/geotribu/cli/pull/79>
+
+### Documentation 📖
+
+* Intègre des sorties du CLI générées au moment de la CI by @Guts in <https://github.com/geotribu/cli/pull/78>
+
+### Tooling 🔧
+
+* Ajoute des git hooks pygrep by @Guts in <https://github.com/geotribu/cli/pull/75>
+
 ## 0.16.0 - 2023-05-18
 
 ### Bugs fixes 🐛
