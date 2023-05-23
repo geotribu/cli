@@ -87,6 +87,40 @@ def url_add_utm(in_url: str) -> str:
 
 
 @lru_cache(maxsize=256)
+def url_content_name(
+    in_url: str,
+) -> str:
+    """Retrieve filename from a content URL.
+
+    Args:
+        in_url: input content URL.
+
+    Returns:
+        filename at the end of URL.
+
+    Example:
+
+    .. code-block:: python
+
+        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/"))
+        https://github.com/geotribu/website/blob/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
+        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='raw'))
+        https://github.com/geotribu/website/raw/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
+        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='edit'))
+        https://github.com/geotribu/website/edit/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
+    """
+    parsed_url = urlsplit(url=url_rm_query(in_url))
+
+    # clean trailing slash from path
+    if parsed_url.path.endswith("/"):
+        url_path = parsed_url.path[:-1]
+    else:
+        url_path = parsed_url.path
+
+    return url_rm_query(url_path).split("/")[-1]
+
+
+@lru_cache(maxsize=256)
 def url_content_source(
     in_url: str,
     mode: Literal["blob", "edit", "raw"] = "blob",
