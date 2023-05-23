@@ -5,6 +5,7 @@
 
 # standard library
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Literal
 
 
@@ -28,6 +29,8 @@ class GeotribuDefaults:
     # RSS
     rss_path_created: str = "feed_rss_created.xml"
     rss_path_updated: str = "feed_rss_updated.xml"
+    # local working directory
+    geotribu_working_folder: Path = Path().home() / ".geotribu"
 
     @property
     def cdn_search_index_full_url(self) -> str:
