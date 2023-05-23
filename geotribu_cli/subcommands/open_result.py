@@ -32,6 +32,43 @@ from geotribu_cli.utils.start_uri import open_uri
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
 
+# ############################################################################
+# ########## FUNCTIONS ###########
+# ################################
+
+
+def open_content(content_uri: str, application: str = "shell"):
+    """Open content in the selected application.
+
+    Args:
+        content_uri: URI to the content
+        application: application to open content with. Defaults to "shell".
+    """
+    if application == "shell" and content_uri.startswith(
+        defaults_settings.site_base_url
+    ):
+        local_file_path = download_remote_file_to_local(
+            remote_url_to_download=url_content_source(in_url=content_uri, mode="raw"),
+            local_file_path=defaults_settings.geotribu_working_folder.joinpath(
+                f"remote/{url_content_name(url_content_source(content_uri, mode='raw'))}"
+            ),
+            content_type="text/plain; charset=utf-8",
+        )
+
+        with local_file_path.open(mode="rt", encoding="utf-8") as markdown_file:
+            markdown_body = markdown_file.read()
+
+        markdown = Markdown(
+            markdown_body,
+            hyperlinks=True,
+        )
+        console.print(markdown)
+
+    elif application == "app" and content_uri.startswith("http"):
+        open_uri(url_add_utm(content_uri))
+    else:
+        open_uri(content_uri)
+
 
 # ############################################################################
 # ########## CLI #################
@@ -103,30 +140,7 @@ def run(args: argparse.Namespace):
 
     print(f"Ouverture du résultat précédent n°{args.result_index} : {result_uri}")
 
-    if args.open_with == "shell" and result_uri.startswith(
-        defaults_settings.site_base_url
-    ):
-        local_file_path = download_remote_file_to_local(
-            remote_url_to_download=url_content_source(in_url=result_uri, mode="raw"),
-            local_file_path=defaults_settings.geotribu_working_folder.joinpath(
-                f"remote/{url_content_name(url_content_source(result_uri, mode='raw'))}"
-            ),
-            content_type="text/plain; charset=utf-8",
-        )
-
-        with local_file_path.open(mode="rt", encoding="utf-8") as markdown_file:
-            markdown_body = markdown_file.read()
-
-        markdown = Markdown(
-            markdown_body,
-            hyperlinks=True,
-        )
-        console.print(markdown)
-
-    elif args.open_with == "app" and result_uri.startswith("http"):
-        open_uri(url_add_utm(result_uri))
-    else:
-        open_uri(result_uri)
+    open_content(content_uri=result_uri, application=args.open_with)
 
 
 # -- Stand alone execution
