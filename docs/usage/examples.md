@@ -11,7 +11,7 @@
 ### Dernières GeoRDP sous forme de tableau
 
 ```sh
-$ geotribu read-latest -f rdp -o table
+> geotribu read-latest -f rdp -o table
                                                           5 derniers contenus publiés  
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Titre                               ┃ Date de publication ┃ Auteur/e ┃                                                                  URL ┃
@@ -56,7 +56,7 @@ $ geotribu read-latest -f rdp -o table
 ### Filtrer sur un type
 
 ```sh
-❯ geotribu search-image postgis --filter-type logo
+> geotribu search-image postgis --filter-type logo
 [
     {'nom': 'postgis.png', 'dimensions': '74x74', 'score': '0.934', 'url': 'https://cdn.geotribu.fr/img/logos-icones/logiciels_librairies/postgis.png'},
     {'nom': 'postgis.jpg', 'dimensions': '74x74', 'score': '0.934', 'url': 'https://cdn.geotribu.fr/img/logos-icones/logiciels_librairies/postgis.jpg'},
@@ -85,3 +85,37 @@ $ geotribu read-latest -f rdp -o table
 Sous forme d'images pour se rendre compte des couleurs (Bash, Ubuntu) :
 
 ![Geotribu Toolbelt - Recherche d'images filtrée sous forme de tableau](../static/img/search_image_table_logo.png)
+
+----
+
+## Ouvrir un résultat
+
+Après une commande de recherche, il est possible d'afficher un résultat parmi ceux retournés en utilisant le numéro de ligne (index 0).
+
+```sh
+# recherche de contenu
+> geotribu sc fme
+                                                      Recherche de contenus - 5/61 résultats avec le terme : fme  
+                                                           (ctrl+clic sur le titre pour ouvrir le contenu)  
+┏━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ # ┃ Titre                                                     ┃  Type   ┃ Date de publication ┃ Score ┃                                                  Mots-clés ┃
+┡━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┩
+│ 0 │ Passer les données de bande de FME à GDAL pour créer le   │ Article │    02 août 2022     │ 60.8  │                                     FME,GDAL,Python,raster │
+│   │ raster de proximité                                       │         │                     │       │                                                            │
+├───┼───────────────────────────────────────────────────────────┼─────────┼─────────────────────┼───────┼────────────────────────────────────────────────────────────┤
+│ 1 │ FME World Tour 2020 - Edition Veremes online              │ GeoRDP  │     15 mai 2020     │ 57.8  │                        FME,GDAL,GeoMapFish,GeoServer,GRASS │
+│   │                                                           │         │                     │       │                              GIS,OpenStreetMap,Python,QGIS │
+├───┼───────────────────────────────────────────────────────────┼─────────┼─────────────────────┼───────┼────────────────────────────────────────────────────────────┤
+│ 2 │ API Python de FME : comment travailler avec des rasters   │ Article │    02 août 2022     │ 56.3  │                                     FME,GDAL,Python,raster │
+│   │ et GDAL                                                   │         │                     │       │                                                            │
+├───┼───────────────────────────────────────────────────────────┼─────────┼─────────────────────┼───────┼────────────────────────────────────────────────────────────┤
+│ 3 │ Conférence FME 2021                                       │ GeoRDP  │     21 mai 2021     │ 52.4  │                                             cadastre,carte │
+│   │                                                           │         │                     │       │ routière,CloudCompare,ENSG,GraphHopper,IGN,OpenStreetMap,… │
+│   │                                                           │         │                     │       │                                                       QGIS │
+├───┼───────────────────────────────────────────────────────────┼─────────┼─────────────────────┼───────┼────────────────────────────────────────────────────────────┤
+│ 4 │ Nouveau transformer révolutionnaire pour FME : RRIP       │ GeoRDP  │     12 mai 2023     │ 42.2  │ Afigéo,armée,cybersécurité,Discord,écosystème,FME,géomati… │
+│   │ (Rename, Remarketing and Increase Prices)                 │         │                     │       │                                                            │
+└───┴───────────────────────────────────────────────────────────┴─────────┴─────────────────────┴───────┴────────────────────────────────────────────────────────────┘
+                                                                       Geotribu Toolbelt 0.16.0  
+> geotribu ouvrir 1
+```
