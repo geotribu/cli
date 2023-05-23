@@ -5,6 +5,8 @@
 
 # standard library
 from dataclasses import dataclass
+from pathlib import Path
+from typing import Literal
 
 
 @dataclass
@@ -15,6 +17,7 @@ class GeotribuDefaults:
     git_base_url_organisation: str = "https://github.com/geotribu/"
     # website
     site_base_url: str = "https://static.geotribu.fr/"
+    site_git_default_branch: str = "master"
     site_git_project: str = "website"
     site_search_index: str = "search/search_index.json"
     # CDN
@@ -26,6 +29,8 @@ class GeotribuDefaults:
     # RSS
     rss_path_created: str = "feed_rss_created.xml"
     rss_path_updated: str = "feed_rss_updated.xml"
+    # local working directory
+    geotribu_working_folder: Path = Path().home() / ".geotribu"
 
     @property
     def cdn_search_index_full_url(self) -> str:
@@ -53,6 +58,22 @@ class GeotribuDefaults:
             str: URL as string
         """
         return f"{self.site_base_url}{self.site_search_index}"
+
+    def site_git_source_base_url(
+        self, mode: Literal["blob", "edit", "raw"] = "blob", url_path: str = ""
+    ) -> str:
+        """Returns website git source URL in three flavors: blob, edit or raw.
+
+        Args:
+            mode (Literal[&quot;blob&quot;, &quot;edit&quot;, &quot;raw&quot;], optional): display mode for source. Defaults to "blob".
+
+        Returns:
+            str: URL as string
+        """
+        return (
+            f"{self.git_base_url_organisation}{self.site_git_project}/{mode}/"
+            f"{self.site_git_default_branch}/content"
+        )
 
 
 # Data structures

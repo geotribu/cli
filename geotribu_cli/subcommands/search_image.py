@@ -21,6 +21,7 @@ from rich.table import Table
 # package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.history import CliHistory
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm
 
@@ -61,10 +62,11 @@ def format_output_result(
         )
 
         # columns
+        table.add_column(header="#", justify="center")
         table.add_column(header="Nom", justify="left", style="default")
         table.add_column(header="Dimensions", justify="center", style="bright_black")
         table.add_column(header="Score", justify="center", style="magenta")
-        table.add_column(header="URL", justify="right", style="blue underline")
+        table.add_column(header="Chemin CDN", justify="left")
         # table.add_column(header="Syntaxe intégration", justify="right", style="blue")
 
         # iterate over results
@@ -78,10 +80,11 @@ def format_output_result(
 
             # add row
             table.add_row(
+                f"{result.index(r)}",
                 f"[link={url_add_utm(r.get('url'))}]{r.get('nom')}[/link]",
                 r.get("dimensions"),
                 r.get("score"),
-                r.get("url")
+                f"[link={defaults_settings.cdn_base_url}/tinyfilemanager.php?p={r.get('cdn_path')}]{r.get('cdn_path')}[/link]",
                 # syntax,
             )
 
@@ -193,7 +196,10 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
-    console = Console()
+
+    # local vars
+    console = Console(record=True)
+    history = CliHistory()
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -234,9 +240,7 @@ def run(args: argparse.Namespace):
         search_results: list[dict] = idx.search(args.search_term)
 
     if not len(search_results):
-        print(
-            f":person_shrugging: Aucune image trouvée pour : {args.search_term} {search_results}"
-        )
+        print(f":person_shrugging: Aucune image trouvée pour : {args.search_term}")
         sys.exit(0)
 
     # résultats : enrichissement et filtre
@@ -268,6 +272,7 @@ def run(args: argparse.Namespace):
             "nom": result.get("ref").split("/")[-1],
             "dimensions": f"{mapped_img[0]}x{mapped_img[1]}",
             "score": f"{result.get('score'):.3}",
+            "cdn_path": f"{result.get('ref')}",
             "url": f"{defaults_settings.cdn_base_url}"
             f"{defaults_settings.cdn_base_path}/"
             f"{result.get('ref')}",
@@ -287,6 +292,14 @@ def run(args: argparse.Namespace):
         )
     else:
         print(f":person_shrugging: Aucune image trouvée pour : {args.search_term}")
+        sys.exit(0)
+
+    # save into history
+    history.dump(
+        cmd_name=__name__.split(".")[-1],
+        results_to_dump=final_results,
+        request_performed=args.search_term,
+    )
 
 
 # -- Stand alone execution

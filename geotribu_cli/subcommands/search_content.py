@@ -22,6 +22,7 @@ from rich.table import Table
 # package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.history import CliHistory
 from geotribu_cli.utils.date_from_content import get_date_from_content_location
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
@@ -84,6 +85,7 @@ def format_output_result(
         )
 
         # columns
+        table.add_column(header="#", justify="center")
         table.add_column(header="Titre", justify="left", style="default")
         table.add_column(header="Type", justify="center", style="bright_black")
         table.add_column(
@@ -95,6 +97,7 @@ def format_output_result(
         # iterate over results
         for r in result[:count]:
             table.add_row(
+                f"{result.index(r)}",
                 f"[link={url_add_utm(r.get('url'))}]{r.get('titre')}[/link]",
                 r.get("type"),
                 f"{r.get('date'):%d %B %Y}",
@@ -254,7 +257,9 @@ def run(args: argparse.Namespace):
     """
     logger.debug(f"Running {args.command} with {args}")
 
-    console = Console()
+    # local vars
+    console = Console(record=True)
+    history = CliHistory()
 
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
@@ -343,7 +348,7 @@ def run(args: argparse.Namespace):
 
     if not len(search_results):
         print(
-            f":person_shrugging: Aucun contenu trouvé pour : {args.search_term} {search_results}"
+            f":person_shrugging: Aucun contenu trouvé pour : {args.search_term}"
             "\nRéessayer en utilisant des paramètres de recherche moins stricts. "
             f"Exemple : '*{args.search_term}*'"
         )
@@ -410,6 +415,14 @@ def run(args: argparse.Namespace):
         )
     else:
         print(f":person_shrugging: Aucun contenu trouvé pour : {args.search_term}")
+        sys.exit(0)
+
+    # save into history
+    history.dump(
+        cmd_name=__name__.split(".")[-1],
+        results_to_dump=final_results,
+        request_performed=args.search_term,
+    )
 
 
 # -- Stand alone execution

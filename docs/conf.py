@@ -46,6 +46,7 @@ extensions = [
     "sphinx.ext.napoleon",
     # 3rd party
     "myst_parser",
+    "sphinx_autodoc_typehints",
     "sphinx_argparse_cli",
     "sphinx_copybutton",
     "sphinxcontrib.mermaid",
