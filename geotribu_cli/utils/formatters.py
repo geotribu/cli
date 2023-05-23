@@ -150,11 +150,3 @@ def url_rm_query(in_url: str, param_startswith: str = "utm_") -> str:
         url_query_out[param] = value
 
     return urlunsplit(parsed_url._replace(query=url_query_out))
-
-
-print(
-    url_content_source(
-        "https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/",
-        mode="raw",
-    )
-)
