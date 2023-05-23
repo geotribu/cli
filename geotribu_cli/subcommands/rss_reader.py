@@ -69,7 +69,7 @@ def format_output_result(
             header="Date de publication", justify="center", style="bright_black"
         )
         table.add_column(header="Auteur/e", style="magenta")
-        table.add_column(header="URL", justify="right", style="blue")
+        table.add_column(header="Mots-clés", style="blue")
 
         # iterate over results
         for r in result[:count]:

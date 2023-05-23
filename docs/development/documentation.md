@@ -1,32 +1,72 @@
 # Documentation
 
-Project uses Sphinx to generate documentation from docstrings (documentation in-code) and custom pages written in Markdown (through the [MyST parser](https://myst-parser.readthedocs.io/en/latest/)).
+Le projet utilise Sphinx pour générer de la documentation à partir de docstrings (documentation en code) et de pages personnalisées écrites en Markdown (via [MyST parser](https://myst-parser.readthedocs.io/en/latest/)).
 
-## Build documentation website
+## Générer le site web de documentation
 
-To build it:
+### Installer les dépendances
 
-```bash
-# install aditionnal dependencies
+```sh
 python -m pip install -U -r requirements/documentation.txt
-# build it
+```
+
+### Générer les pages spéciales
+
+#### Exemples des commandes
+
+```sh
+pip install -e .
+geotribu rss --format-output table --results-number 3 > docs/usage/cli_sample_rss.txt
+geotribu rss -f rdp -o table > docs/usage/cli_sample_rss_rdp.txt
+geotribu sc orfeo > docs/usage/cli_sample_search_content_orfeo.txt
+geotribu sc -n 10 "+title:openstreetmap postgis" > docs/usage/cli_sample_search_content_advanced.txt
+geotribu search-image postgis > docs/usage/cli_sample_search_images_postgis.txt
+geotribu search-image postgis -f logo -o json > docs/usage/cli_sample_search_images_postgis_logos_json.txt
+```
+
+#### Diagramme des dépendances
+
+```sh
+python -m pip install -U "pipdeptree<3"
+echo -e "\`\`\`{mermaid}" > docs/misc/dependencies.md
+pipdeptree --exclude pip,pipdeptree,setuptools,wheel --mermaid >> docs/misc/dependencies.md
+echo -e "    lunr -- "any" --> nltk" >> docs/misc/dependencies.md
+echo -e "\`\`\`" >> docs/misc/dependencies.md
+```
+
+#### Table des licences
+
+```sh
+python -m pip install -U "pip-licenses<5"
+pip-licenses --format=markdown --with-authors --with-description --with-urls --ignore-packages geotribu,pipdeptree --output-file=docs/misc/licenses.md
+```
+
+### Générer le site
+
+```sh
 sphinx-build -b html docs docs/_build/html
-# optimized (quiet, multiprocessing, doctrees separated)
+```
+
+Ou avec des options d'optimisatoin (silencieux, multiprocessing, doctrees séparés) :
+
+```sh
 sphinx-build -b html -d docs/_build/cache -j auto -q docs docs/_build/html
 ```
 
-Open `docs/_build/index.html` in a web browser.
+Ouvrir `docs/_build/index.html` dans un navigateur web.
 
-## Write documentation using live render
+----
 
-```bash
+## Ecrire la documentation en utilisant le rendu instantané
+
+Idéal pour la rédaction locale.
+
+```sh
 sphinx-autobuild -b html docs/ docs/_build
 ```
 
-Open <http://localhost:8000> in a web browser to see the HTML render updated when a file is saved.
+Ouvrez <http://localhost:8000> dans un navigateur web pour voir le rendu HTML mis à jour lorsqu'un fichier est enregistré.
 
----
-
-## Deploy documentation website
+## Déployer le site web de documentation
 
 Documentation website is hosted on GitLab Pages for every commit pushed on main branch.
