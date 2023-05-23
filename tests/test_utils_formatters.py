@@ -18,6 +18,7 @@ from geotribu_cli.__about__ import __version__
 from geotribu_cli.utils.formatters import (
     convert_octets,
     url_add_utm,
+    url_content_name,
     url_content_source,
     url_rm_query,
 )
@@ -49,6 +50,22 @@ class TestUtilsFormatters(unittest.TestCase):
                 in_url="https://geotribu.fr/rdp/2023/rdp_2023-05-12/?utm_campaign=feed-syndication&utm_medium=RSS&utm_source=rss-feed",
             ),
             f"https://geotribu.fr/rdp/2023/rdp_2023-05-12/?utm_source=geotribu_cli&utm_medium=GeotribuToolbelt&utm_campaign=geotribu_cli_{__version__}",
+        )
+
+    def test_url_content_name(self):
+        """Test URL content name extraction."""
+        self.assertEqual(
+            url_content_name(
+                "https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/"
+            ),
+            "2023-05-04_annonce-changement-url-site-geotribu",
+        )
+
+        self.assertEqual(
+            url_content_name(
+                "https://cdn.geotribu.fr/img/logos-icones/logiciels_librairies/FME.png"
+            ),
+            "FME.png",
         )
 
     def test_url_content_source(self):
