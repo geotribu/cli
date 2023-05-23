@@ -102,7 +102,7 @@ class CliHistory:
             print(f":person_shrugging: Aucun résultat trouvé dans : {history_file}")
             return None
 
-        if result_index < 0 and len(lines) == 1:
+        if result_index <= 0 and len(lines) == 1:
             logger.debug(
                 "Index du résultat négatif et liste de résultats égale à 1. "
                 "Renvoi du seul résultat."
@@ -121,4 +121,4 @@ class CliHistory:
         elif result_index > len(lines) and len(lines) < 2:
             result_index = -1
 
-        return lines[result_index + 1]
+        return lines[result_index]

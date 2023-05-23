@@ -48,7 +48,7 @@ def parser_open_result(
 
     subparser.add_argument(
         "result_index",
-        help="Numéro du résultat précédent à ouvrir. Valeur par défault : 1.",
+        help="Numéro du résultat précédent à ouvrir. Valeur par défault : 0.",
         metavar="result-index",
         default=1,
         type=int,
