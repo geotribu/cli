@@ -18,6 +18,12 @@ Unreleased
 
 -->
 
+## 0.18.0 - 2023-05-26
+
+### Features and enhancements 🎉
+
+* Fonctionnalité : demande automatiquement quel résultat ouvrir juste après une recherche by @Guts in <https://github.com/geotribu/cli/pull/80>
+
 ## 0.17.0 - 2023-05-23
 
 ### Features and enhancements 🎉
