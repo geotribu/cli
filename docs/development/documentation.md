@@ -16,6 +16,7 @@ python -m pip install -U -r requirements/documentation.txt
 
 ```sh
 pip install -e .
+export GEOTRIBU_PROMPT_AFTER_SEARCH=false
 geotribu rss --format-output table --results-number 3 > docs/usage/cli_sample_rss.txt
 geotribu rss -f rdp -o table > docs/usage/cli_sample_rss_rdp.txt
 geotribu sc orfeo > docs/usage/cli_sample_search_content_orfeo.txt
