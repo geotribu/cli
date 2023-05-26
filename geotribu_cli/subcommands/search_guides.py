@@ -9,7 +9,6 @@ import argparse
 import logging
 import sys
 from pathlib import Path
-from typing import List
 
 # 3rd party
 import orjson
@@ -83,7 +82,7 @@ def generate_index_from_docs(
     input_documents_to_index: dict,
     index_ref_id: str,
     index_configuration: dict,
-    index_fieds_definition: List[dict],
+    index_fieds_definition: list[dict],
 ) -> Index:
     """_summary_
 
