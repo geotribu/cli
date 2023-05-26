@@ -7,6 +7,7 @@
         pytest
 """
 
+# standard
 from pathlib import Path
 
 # 3rd party
@@ -50,7 +51,17 @@ def test_cli_version(capsys, option):
 
 def test_cli_run_contenus_articles_ubuntu(capsys):
     """Test CLI images."""
-    cli.main(["search-content", "-f", "article", "-o", "table", "title:ubuntu"])
+    cli.main(
+        [
+            "search-content",
+            "-f",
+            "article",
+            "-o",
+            "table",
+            "title:ubuntu",
+            "--no-prompt",
+        ]
+    )
 
     out, err = capsys.readouterr()
 
@@ -62,7 +73,7 @@ def test_cli_run_contenus_articles_ubuntu(capsys):
 
 def test_cli_run_images_logo_news(capsys):
     """Test CLI images."""
-    cli.main(["images", "-o", "json", "-f", "logo", "news"])
+    cli.main(["images", "--no-prompt", "-o", "json", "-f", "logo", "news"])
 
     out, err = capsys.readouterr()
 
@@ -74,7 +85,7 @@ def test_cli_run_images_logo_news(capsys):
 
 def test_cli_run_rss(capsys):
     """Test subcommand rss."""
-    cli.main(["rss", "-o", "table"])
+    cli.main(["rss", "--no-prompt", "-o", "table"])
 
     out, err = capsys.readouterr()
 
