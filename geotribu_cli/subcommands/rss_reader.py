@@ -280,7 +280,9 @@ def run(args: argparse.Namespace):
         result_to_open = Prompt.ask(
             prompt="Afficher le résultat n°",
             console=console,
-            choices=[str(i) for i in range(0, args.results_number)],
+            choices=[
+                str(i) for i in range(0, min([len(feed_items), args.results_number]))
+            ],
         )
         open_content(
             content_uri=feed_items[int(result_to_open)].url,

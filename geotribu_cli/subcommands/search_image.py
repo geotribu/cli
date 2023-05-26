@@ -316,7 +316,9 @@ def run(args: argparse.Namespace):
         result_to_open = Prompt.ask(
             prompt="Afficher le résultat n°",
             console=console,
-            choices=[str(i) for i in range(0, args.results_number)],
+            choices=[
+                str(i) for i in range(0, min([len(final_results), args.results_number]))
+            ],
         )
         open_content(
             content_uri=final_results[int(result_to_open)].get("url"),
