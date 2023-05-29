@@ -48,7 +48,7 @@ def format_output_result(
 
     if format_type == "table":
         table = Table(
-            title=f"Derniers commentaires publiés - {len(results)} résultats "
+            title=f"Derniers commentaires publiés - {count}/{len(results)} résultats "
             f"\n(ctrl+clic sur le numéro pour ouvrir dans le navigateur)",
             show_lines=True,
             highlight=True,
@@ -57,6 +57,7 @@ def format_output_result(
 
         # columns
         table.add_column(header="#", justify="center")
+        table.add_column(header="Date", justify="center")
         table.add_column(header="Auteur/e", justify="left", style="default")
         table.add_column(header="Contenu", justify="center", style="magenta")
         table.add_column(header="Réponse à", justify="center")
@@ -68,6 +69,7 @@ def format_output_result(
             # add row
             table.add_row(
                 f"[link={r.url_to_comment}]{r.id}[/link]",
+                f"{r.created_as_datetime:%d %B %Y \nà %H:%m}",
                 r.author,
                 f"[link={r.url_to_comment}]{r.uri}[/link]",
                 str(r.parent),
@@ -170,7 +172,7 @@ def run(args: argparse.Namespace):
 
     try:
         latest_comments = sorted(
-            get_latest_comments(args.results_number),
+            get_latest_comments(number=args.results_number),
             key=lambda x: x.created,
             reverse=True,
         )
