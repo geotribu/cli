@@ -26,6 +26,7 @@ from geotribu_cli.__about__ import (
     __version__,
 )
 from geotribu_cli.subcommands import (
+    parser_comments_latest,
     parser_latest_content,
     parser_open_result,
     parser_search_content,
@@ -217,7 +218,30 @@ def main(args: list[str] = None):
     add_common_arguments(subcmd_upgrade)
     parser_upgrade(subcmd_upgrade)
 
-    # -- PARSE ARGS --
+    # -- NESTED SUBPARSER : COMMENTS ---------------------------------------------------
+    subcmd_comments = subparsers.add_parser(
+        "comments",
+        aliases=["commentaires", "coms"],
+        help="Consulter et gérer les commentaires.",
+        formatter_class=main_parser.formatter_class,
+        prog="comments",
+    )
+    comments_subparsers = subcmd_comments.add_subparsers(
+        title="Commentaires", dest="cmd_comments"
+    )
+
+    # Latest commentaire
+    subcmd_latest_comments = comments_subparsers.add_parser(
+        "latest",
+        aliases=["derniers", "récents"],
+        help="Consulter les derniers commentaires du site",
+        formatter_class=main_parser.formatter_class,
+        prog="comments-latest",
+    )
+    add_common_arguments(subcmd_latest_comments)
+    parser_comments_latest(subcmd_latest_comments)
+
+    # -- PARSE ARGS --------------------------------------------------------------------
     set_default_subparser(
         parser_to_update=main_parser,
         default_subparser_name=getenv("GEOTRIBU_DEFAULT_SUBCOMMAND", "read-latest"),
