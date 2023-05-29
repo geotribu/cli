@@ -3,10 +3,76 @@
 
 """Package constants."""
 
+
 # standard library
+import logging
 from dataclasses import dataclass
+from datetime import datetime
+from html import unescape
 from pathlib import Path
 from typing import Literal
+
+# ############################################################################
+# ########## GLOBALS #############
+# ################################
+
+logger = logging.getLogger(__name__)
+
+# ############################################################################
+# ########## CLASSES #############
+# ################################
+
+
+@dataclass
+class Comment:
+    """Structure of an Isso comment."""
+
+    # mandatory
+    author: str
+    created: float
+    dislikes: int
+    id: str
+    likes: int
+    mode: int
+    text: str
+    uri: str
+    # default args
+    modified: float = None
+    parent: int = None
+    website: str = None
+
+    @property
+    def created_as_datetime(self) -> datetime:
+        """Created date as datetime object.
+
+        Returns:
+            datetime object
+        """
+        if self.created is not None:
+            return datetime.fromtimestamp(self.created)
+
+    @property
+    def modified_as_datetime(self) -> datetime:
+        """Modified date as datetime object.
+
+        Returns:
+            datetime object
+        """
+        if self.modified is not None:
+            return datetime.fromtimestamp(self.modified)
+
+    @property
+    def unescaped_text(self) -> str:
+        """Return text with unescaped HTML tags.
+
+        Returns:
+            text with converted escape chars
+        """
+        try:
+            return unescape(self.text)
+        except Exception as err:
+            logger.error(err)
+            return self.text
 
 
 @dataclass
