@@ -49,6 +49,16 @@ def test_cli_version(capsys, option):
     assert err == ""
 
 
+def test_cli_run_comments_latest(capsys):
+    """Test nested subcommand comments latest."""
+    cli.main(["comments", "latest"])
+
+    out, err = capsys.readouterr()
+
+    # assert err == ""
+    assert Path(Path().home() / ".geotribu/comments/latest.json").exists()
+
+
 def test_cli_run_contenus_articles_ubuntu(capsys):
     """Test CLI images."""
     cli.main(
