@@ -18,6 +18,12 @@ Unreleased
 
 -->
 
+## 0.19.2 - 2023-05-30
+
+### Tooling 🔧
+
+* Corrige la publication de l'image Docker et améliore la doc liée by @Guts in <https://github.com/geotribu/cli/pull/84>
+
 ## 0.19.1 - 2023-05-30
 
 ### Tooling 🔧
