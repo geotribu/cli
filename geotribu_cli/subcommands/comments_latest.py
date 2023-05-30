@@ -12,11 +12,11 @@ import sys
 from os import getenv
 
 # 3rd party
+from rich import print
 from rich.table import Table
 
 # package
 from geotribu_cli.__about__ import __title__, __version__
-from geotribu_cli.console import console
 from geotribu_cli.constants import Comment, GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 
@@ -184,7 +184,7 @@ def run(args: argparse.Namespace):
 
     # formatage de la sortie
     if len(latest_comments):
-        console.print(
+        print(
             format_output_result(
                 results=latest_comments,
                 format_type=args.format_output,
@@ -192,7 +192,7 @@ def run(args: argparse.Namespace):
             )
         )
     else:
-        console.print(":person_shrugging: Aucun commentaire trouvé")
+        print(":person_shrugging: Aucun commentaire trouvé")
         sys.exit(0)
 
 

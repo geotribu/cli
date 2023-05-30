@@ -55,7 +55,7 @@ def test_cli_run_comments_latest(capsys):
 
     out, err = capsys.readouterr()
 
-    # assert err == ""
+    assert err == ""
     assert Path(Path().home() / ".geotribu/comments/latest.json").exists()
 
 
