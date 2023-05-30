@@ -142,3 +142,18 @@ Après une commande de recherche, il est possible d'afficher un résultat parmi 
                                                                        Geotribu Toolbelt 0.16.0  
 > geotribu ouvrir 1
 ```
+
+----
+
+## Consulter les derniers commentaires
+
+```sh
+geotribu comments latest --results-number 5
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_comments_latest.txt
+  :language: shell
+```
