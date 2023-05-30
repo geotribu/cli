@@ -30,6 +30,7 @@ development/setup
 development/contribute
 development/documentation
 development/testing
+development/packaging
 development/releasing
 development/history
 Code documentation <_apidoc/modules>
