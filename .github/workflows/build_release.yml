@@ -232,6 +232,7 @@ jobs:
   release-ghcr:
     name: "🐳 Release as Docker container"
     runs-on: ubuntu-latest
+    needs: [release, release-pypi]
     env:
       REGISTRY: ghcr.io
       IMAGE_NAME: ${{ github.repository }}
