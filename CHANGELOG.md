@@ -18,6 +18,12 @@ Unreleased
 
 -->
 
+## 0.19.1 - 2023-05-30
+
+### Tooling 🔧
+
+* Add release to GitHub Container Registry by @Guts in <https://github.com/geotribu/cli/pull/83>
+
 ## 0.19.0 - 2023-05-30
 
 ### Features and enhancements 🎉
