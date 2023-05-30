@@ -1,8 +1,20 @@
 # Installation
 
-Il est possible d'installer le projet de deux façon différentes, en plus de [celle du mode développement](development/setup).
+Il est possible d'installer le projet de plusieurs façons différentes, en plus de [celle du mode développement](development/setup).
 
-## Pip
+## Utiliser comme exécutable autonome
+
+1. Download the latest release from [GitHub Release](https://github.com/geotribu/cli/releases/latest):
+1. Make sure that it's executable (typically on Linux: `chmod u+x ./GeotribuToolbelt_XXXXXX`)
+1. Run it from your favorite shell if you like the CLI - see [the relevant section](/usage/examples)
+
+:::{warning}
+MacOS version is not tested and is just here to encourage beta-testing and feedback to improve it.
+:::
+
+----
+
+## Utiliser comme package Python
 
 ### Prérequis
 
@@ -15,44 +27,19 @@ Il est possible d'installer le projet de deux façon différentes, en plus de [c
 ### Installer
 
 ```sh
-pip install geotribu
+pip install --user --upgrade geotribu
 ```
+
+L'outil est désormais disponible en ligne de commande. Voir les [exemples](/usage/examples).
 
 ----
 
-## Docker
+## Avec Docker
 
-:::{note}
-L'image est configurée à des fins d'**utilisation** et non à des fins de développement.  
-A ce titre l'image ne contient que le code source et le nécessaire pour installer le programme. Donc, il n'y a pas les dossiers `docs`, `tests`, etc.
-
-Si besoin, ajuster le fichier `.dockerignore`.
-:::
-
-### Prérequis
-
-- Docker >= 20.10
-- dépôt cloné localement
-
-### Builder l'image
+Le paquet est publié sous forme d'image Docker dans le registre du dépôt GitHub (GHCR):
 
 ```sh
-docker build --pull --rm -f "Dockerfile" -t geotribu:latest "."
+docker pull ghcr.io/geotribu/cli
 ```
 
-### Exécuter l'image dans un conteneur
-
-Entrer dans le conteneur et exécuter des commandes de façon interactive :
-
-```sh
-> docker run --rm -it geotribu:latest
-root@55c5de0191ee:/user/app# geotribu --version
-0.2.0
-```
-
-Exécuter le programme dans le conteneur :
-
-```sh
-> docker run --rm geotribu:latest geotribu --version
-0.2.0
-```
+Voir [la page dédié pour plus d'options](https://github.com/geotribu/cli/pkgs/container/cli).
