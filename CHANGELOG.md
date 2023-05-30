@@ -18,6 +18,12 @@ Unreleased
 
 -->
 
+## 0.19.0 - 2023-05-30
+
+### Features and enhancements 🎉
+
+* Ajoute une commande pour consulter les derniers commentaires by @Guts in <https://github.com/geotribu/cli/pull/81>
+
 ## 0.18.0 - 2023-05-26
 
 ### Features and enhancements 🎉
