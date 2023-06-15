@@ -10,6 +10,7 @@ import json
 import logging
 import sys
 from os import getenv
+from typing import Literal
 
 # 3rd party
 from rich import print
@@ -81,11 +82,17 @@ def format_output_result(
         return results
 
 
-def get_latest_comments(number: int = 5) -> list[Comment]:
+def get_latest_comments(
+    number: int = 5,
+    sort_by: Literal[
+        "author_asc", "author_desc", "created_asc", "created_desc"
+    ] = "created_asc",
+) -> list[Comment]:
     """Download and parse latest comments published.
 
     Args:
         number: count of comments to download. Must be > 1. Defaults to 5.
+        sort_by: comments sorting criteria. Defaults to "created_asc".
 
     Returns:
         list of comments objects
@@ -107,7 +114,37 @@ def get_latest_comments(number: int = 5) -> list[Comment]:
     with comments_file.open(mode="r", encoding="UTF-8") as f:
         comments = json.loads(f.read())
 
-    return [Comment(**c) for c in comments]
+    li_comments = [Comment(**c) for c in comments]
+
+    # only one comment or less? no need to sort
+    if len(li_comments < 2):
+        return li_comments
+
+    # sort
+    if sort_by == "author_asc":
+        return sorted(
+            li_comments,
+            key=lambda x: x.author,
+        )
+    elif sort_by == "author_desc":
+        return sorted(
+            li_comments,
+            key=lambda x: x.author,
+            reverse=True,
+        )
+    elif sort_by == "created_asc":
+        return sorted(
+            li_comments,
+            key=lambda x: x.created,
+        )
+    elif sort_by == "created_desc":
+        return sorted(
+            li_comments,
+            key=lambda x: x.created,
+            reverse=True,
+        )
+    else:
+        return li_comments
 
 
 # ############################################################################
@@ -171,10 +208,8 @@ def run(args: argparse.Namespace):
     logger.debug(f"Running {args.command} with {args}")
 
     try:
-        latest_comments = sorted(
-            get_latest_comments(number=args.results_number),
-            key=lambda x: x.created,
-            reverse=True,
+        latest_comments = get_latest_comments(
+            number=args.results_number, sort_by="created_desc"
         )
     except Exception as err:
         logger.error(
