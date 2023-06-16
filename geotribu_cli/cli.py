@@ -26,6 +26,7 @@ from geotribu_cli.__about__ import (
     __version__,
 )
 from geotribu_cli.subcommands import (
+    parser_comments_broadcast,
     parser_comments_latest,
     parser_latest_content,
     parser_open_result,
@@ -230,7 +231,18 @@ def main(args: list[str] = None):
         title="Commentaires", dest="cmd_comments"
     )
 
-    # Latest commentaire
+    # Publier le dernier commentaire
+    subcmd_comments_broadcast = comments_subparsers.add_parser(
+        "broadcast",
+        aliases=["diffuser", "publier"],
+        help="Diffuser le dernier commentaire sur les réseaux sociaux.",
+        formatter_class=main_parser.formatter_class,
+        prog="comments-broadcast",
+    )
+    add_common_arguments(subcmd_comments_broadcast)
+    parser_comments_broadcast(subcmd_comments_broadcast)
+
+    # Derniers commentaires
     subcmd_latest_comments = comments_subparsers.add_parser(
         "latest",
         aliases=["derniers", "récents"],
