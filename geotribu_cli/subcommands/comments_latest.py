@@ -117,7 +117,7 @@ def get_latest_comments(
     li_comments = [Comment(**c) for c in comments]
 
     # only one comment or less? no need to sort
-    if len(li_comments < 2):
+    if len(li_comments) < 2:
         return li_comments
 
     # sort
