@@ -179,20 +179,23 @@ def run(args: argparse.Namespace):
         latest_comment = latest_comment[0]
     except Exception as err:
         logger.error(
-            f"Une erreur a empêché la récupération des derniers commentaires. Trace: {err}"
+            "Une erreur a empêché la récupération des derniers commentaires. "
+            f"Trace: {err}"
         )
         sys.exit(1)
 
     # check credentials
     if args.broadcast_to == "mastodon":
         try:
-            mastodon_post = broadcast_to_mastodon(in_comment=latest_comment)
+            online_post = broadcast_to_mastodon(in_comment=latest_comment)
         except Exception as err:
             logger.error(f"Trace : {err}")
+            sys.exit(1)
 
-        print(
-            f":check-mark-button: Commentaire {latest_comment.id} publié sur Mastodon : {mastodon_post}"
-        )
+    print(
+        f":white_check_mark: :left_speech_bubble: Commentaire {latest_comment.id}"
+        f" publié sur {args.broadcast_to.title()} : {online_post}"
+    )
 
 
 # -- Stand alone execution
