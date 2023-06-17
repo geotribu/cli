@@ -10,6 +10,7 @@ import json
 import logging
 import sys
 from os import getenv
+from textwrap import shorten
 from urllib import request
 
 # 3rd party
@@ -54,10 +55,15 @@ def comment_to_media(in_comment: Comment, media: str) -> str:
     """
     if media == "mastodon":
         logger.info(f"Formatting comment {in_comment.id} for {media}")
+        # 500 caractères - longueur du template = 370
+        max_text_length = (
+            370 - len(in_comment.author) - len(str(in_comment.id)) - 4
+        )  # 4 = placeholder final
+
         return status_mastodon_tmpl.format(
             author=in_comment.author,
             url_to_comment=in_comment.url_to_comment,
-            text=markdownify(in_comment.text),
+            text=shorten(markdownify(in_comment.text), width=max_text_length),
             id=in_comment.id,
         )
 
