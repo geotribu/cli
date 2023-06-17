@@ -68,6 +68,62 @@ def comment_to_media(in_comment: Comment, media: str) -> str:
         )
 
 
+def comment_already_broadcasted(
+    in_comment: Comment = None, media: str = "mastodon"
+) -> dict:
+    """Check if comment has already been broadcasted on the media.
+
+    Args:
+        in_comment: comment to check
+        media: name of the targetted media
+
+    Returns:
+        post on media if it has been already published
+    """
+    if media == "mastodon":
+        if getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN") is None:
+            logger.error(
+                "Le jeton d'accès à l'API Mastodon n'a pas été trouvé en variable "
+                "d'environnement GEOTRIBU_MASTODON_API_ACCESS_TOKEN. "
+                "Le récupérer depuis : https://mapstodon.space/settings/applications/7909"
+            )
+            return None
+
+        # prepare search request
+        request_data = {
+            "local": True,
+            "all": ["commentaire"],
+            "since_id": "110549835686856734",
+        }
+
+        json_data = json.dumps(request_data)
+        json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
+
+        headers = {
+            "User-Agent": f"{__title_clean__}/{__version__}",
+            "Content-Length": len(json_data_bytes),
+            "Content-Type": "application/json; charset=utf-8",
+        }
+        req = request.Request(
+            f"{defaults_settings.mastodon_base_url}/api/v1/timelines/tag/geotribot",
+            method="GET",
+            headers=headers,
+        )
+
+        r = request.urlopen(url=req, data=json_data_bytes)
+        content = json.loads(r.read().decode("utf-8"))
+
+        for status in content:
+            if f"comment-{in_comment.id}</p>" in status.get("content"):
+                logger.info(
+                    f"Le commentaire {in_comment.id} a déjà été publié sur {media} : "
+                    f"{status.get('url')}"
+                )
+                return status
+
+    return None
+
+
 def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
     """Post the latest comment to Mastodon.
 
@@ -85,6 +141,13 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
             "Le récupérer depuis : https://mapstodon.space/settings/applications/7909"
         )
         return None
+
+    # check if comment has not been already published
+    already_broadcasted = comment_already_broadcasted(
+        in_comment=in_comment, media="mastodon"
+    )
+    if isinstance(already_broadcasted, dict):
+        return already_broadcasted.get("url")
 
     # prepare status
     request_data = {
