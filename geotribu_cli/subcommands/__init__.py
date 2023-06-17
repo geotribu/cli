@@ -1,6 +1,7 @@
 #! python3  # noqa: E265
 
 # submodules
+from .comments_broadcast import parser_comments_broadcast  # noqa: F401
 from .comments_latest import parser_comments_latest  # noqa: F401
 from .open_result import parser_open_result  # noqa: F401
 from .rss_reader import parser_latest_content  # noqa: F401

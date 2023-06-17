@@ -45,6 +45,8 @@ class GeotribuDefaults:
     rss_path_updated: str = "feed_rss_updated.xml"
     # local working directory
     geotribu_working_folder: Path = Path().home() / ".geotribu"
+    # social
+    mastodon_base_url: str = "https://mapstodon.space/"
 
     @property
     def cdn_search_index_full_url(self) -> str:
