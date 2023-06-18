@@ -18,6 +18,13 @@ Unreleased
 
 -->
 
+## 0.20.0 - 2023-06-18
+
+### Features and enhancements 🎉
+
+* Fonctionnalité : publier les derniers commentaires publiés sur Mastodon. by @Guts in <https://github.com/geotribu/cli/pull/87>
+* Fonctionnalité : ouvre automatiquement le commentaire en ligne une fois publié by @Guts in <https://github.com/geotribu/cli/pull/88>
+
 ## 0.19.2 - 2023-05-30
 
 ### Tooling 🔧
