@@ -74,7 +74,7 @@ def format_output_result(
                 r.author,
                 f"[link={r.url_to_comment}]{r.uri}[/link]",
                 str(r.parent),
-                r.unescaped_text,
+                r.markdownified_text,
             )
 
         return table

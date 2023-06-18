@@ -14,7 +14,6 @@ from textwrap import shorten
 from urllib import request
 
 # 3rd party
-from markdownify import markdownify
 from rich import print
 
 # package
@@ -65,7 +64,7 @@ def comment_to_media(in_comment: Comment, media: str) -> str:
         return status_mastodon_tmpl.format(
             author=in_comment.author,
             url_to_comment=in_comment.url_to_comment,
-            text=shorten(markdownify(in_comment.text), width=max_text_length),
+            text=shorten(in_comment.markdownified_text, width=max_text_length),
             id=in_comment.id,
         )
 

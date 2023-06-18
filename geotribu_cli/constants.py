@@ -12,6 +12,9 @@ from html import unescape
 from pathlib import Path
 from typing import Literal
 
+# 3rd party
+from markdownify import markdownify
+
 # ############################################################################
 # ########## GLOBALS #############
 # ################################
@@ -129,6 +132,20 @@ class Comment:
         """
         if self.modified is not None:
             return datetime.fromtimestamp(self.modified)
+
+    @property
+    def markdownified_text(self) -> str:
+        """Return text converted into Markdown. If conversion fails, it returns
+            unescaped text.
+
+        Returns:
+            comment text in Markdown
+        """
+        try:
+            return markdownify(self.text)
+        except Exception as err:
+            logger.error(err)
+            return self.unescaped_text
 
     @property
     def unescaped_text(self) -> str:
