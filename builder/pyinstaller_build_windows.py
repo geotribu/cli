@@ -36,14 +36,8 @@ PyInstaller.__main__.run(
         ),
         "--log-level={}".format(getenv("PYINSTALLER_LOG_LEVEL", "WARN")),
         "--manifest={}".format((package_folder / "../builder/manifest.xml").resolve()),
-        "--name={}_{}_{}{}_Python{}-{}".format(
-            __about__.__title_clean__,
-            __about__.__version__.replace(".", "-"),
-            platform.system(),
-            platform.architecture()[0],
-            platform.python_version_tuple()[0],
-            platform.python_version_tuple()[1],
-        ),
+        f"--name={__about__.__title_clean__}_{__about__.__version__.replace('.', '-')}_"
+        f"{platform.system()}{platform.architecture()[0]}",
         "--noconfirm",
         "--noupx",
         "--onefile",

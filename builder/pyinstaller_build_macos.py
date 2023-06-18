@@ -32,12 +32,10 @@ mac_os_version = "-".join(mac_os_version.split(".")[:2])
 PyInstaller.__main__.run(
     [
         "--log-level={}".format(getenv("PYINSTALLER_LOG_LEVEL", "WARN")),
-        "--name={}_{}_MacOS{}_Python{}-{}".format(
+        "--name={}_{}_MacOS{}".format(
             __about__.__title_clean__,
             __about__.__version__.replace(".", "-"),
             mac_os_version,
-            platform.python_version_tuple()[0],
-            platform.python_version_tuple()[1],
         ),
         "--noconfirm",
         "--noupx",

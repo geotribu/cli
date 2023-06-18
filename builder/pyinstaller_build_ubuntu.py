@@ -9,7 +9,6 @@
 # ##################################
 
 # Standard library
-import platform
 import sys
 from os import getenv
 from pathlib import Path
@@ -30,14 +29,12 @@ package_folder = Path("geotribu_cli")
 PyInstaller.__main__.run(
     [
         "--log-level={}".format(getenv("PYINSTALLER_LOG_LEVEL", "WARN")),
-        "--name={}_{}_{}{}_{}_Python{}".format(
+        "--name={}_{}_{}{}.bin".format(
             __about__.__title_clean__,
-            __about__.__version__,
+            __about__.__version__.replace(".", "-"),
             distro.name(),
             distro.version(),
-            platform.architecture()[0],
-            platform.python_version(),
-        ).replace(".", "-"),
+        ),
         "--noconfirm",
         "--noupx",
         "--onefile",
