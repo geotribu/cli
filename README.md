@@ -35,8 +35,16 @@ Via un exécutable pré-compilé : [télécharger pour son système d'exploitati
 
 ## Utiliser
 
+Installation locale :
+
 ```sh
 geotribu --help
+```
+
+Ou avec l'image Docker :
+
+```sh
+docker run --rm ghcr.io/geotribu/cli:latest geotribu --help
 ```
 
 Pour plus d'informations, [consulter la documentation](https://cli.geotribu.fr/).
