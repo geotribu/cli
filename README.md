@@ -31,7 +31,7 @@ Via Docker :
 docker pull ghcr.io/geotribu/cli
 ```
 
-Via un exécutable pré-compilé : [télécharger pour son système d'exploitation](./releases/latest).
+Via un exécutable pré-compilé : [télécharger pour son système d'exploitation](https://github.com/geotribu/cli/releases/latest).
 
 ## Utiliser
 
