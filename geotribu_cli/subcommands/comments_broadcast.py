@@ -21,6 +21,8 @@ from rich import print
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.constants import Comment, GeotribuDefaults
 from geotribu_cli.subcommands.comments_latest import get_latest_comments
+from geotribu_cli.subcommands.open_result import open_content
+from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -147,7 +149,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         in_comment=in_comment, media="mastodon"
     )
     if isinstance(already_broadcasted, dict):
-        return already_broadcasted.get("url")
+        return already_broadcasted
 
     # prepare status
     request_data = {
@@ -206,11 +208,21 @@ def parser_comments_broadcast(
     )
 
     subparser.add_argument(
+        "--no-auto-open",
+        default=str2bool(getenv("GEOTRIBU_AUTO_OPEN_AFTER_POST", True)),
+        action="store_false",
+        dest="opt_auto_open_disabled",
+        help="Désactive l'ouverture automatique du post à la fin de la commande.",
+    )
+
+    subparser.add_argument(
         "--no-public",
+        "--private",
         default=True,
         action="store_false",
         dest="opt_no_public",
-        help="Publie le commentaire en mode privé (ne fonctionne pas avec tous les canaux de diffusion).",
+        help="Publie le commentaire en mode privé (ne fonctionne pas avec tous les "
+        "canaux de diffusion).",
     )
 
     subparser.set_defaults(func=run)
@@ -257,8 +269,15 @@ def run(args: argparse.Namespace):
 
     print(
         f":white_check_mark: :left_speech_bubble: Commentaire {latest_comment.id}"
-        f" publié sur {args.broadcast_to.title()} : {online_post}"
+        f" publié sur {args.broadcast_to.title()} : {online_post.get('url')}"
     )
+
+    # prompt to open a result
+    if args.opt_prompt_disabled:
+        open_content(
+            content_uri=online_post.get("url"),
+            application="app",
+        )
 
 
 # -- Stand alone execution
