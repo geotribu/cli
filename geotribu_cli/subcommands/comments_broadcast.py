@@ -177,7 +177,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
 
     r = request.urlopen(url=req, data=json_data_bytes)
     content = json.loads(r.read().decode("utf-8"))
-    return content.get("uri")
+    return content
 
 
 # ############################################################################
@@ -209,6 +209,7 @@ def parser_comments_broadcast(
 
     subparser.add_argument(
         "--no-auto-open",
+        "--stay",
         default=str2bool(getenv("GEOTRIBU_AUTO_OPEN_AFTER_POST", True)),
         action="store_false",
         dest="opt_auto_open_disabled",
