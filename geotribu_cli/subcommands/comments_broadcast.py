@@ -273,7 +273,7 @@ def run(args: argparse.Namespace):
     )
 
     # prompt to open a result
-    if args.opt_prompt_disabled:
+    if args.opt_auto_open_disabled:
         open_content(
             content_uri=online_post.get("url"),
             application="app",
