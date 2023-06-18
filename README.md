@@ -12,3 +12,31 @@ Outil en ligne de commande pour les tâches récurrentes du projet Geotribu.
 [![📦 Build & 🚀 Release](https://github.com/geotribu/cli/actions/workflows/build_release.yml/badge.svg)](https://github.com/geotribu/cli/actions/workflows/build_release.yml)
 [![📚 Documentation](https://github.com/geotribu/cli/actions/workflows/documentation.yml/badge.svg)](https://github.com/geotribu/cli/actions/workflows/documentation.yml)
 [![codecov](https://codecov.io/gh/geotribu/cli/branch/main/graph/badge.svg?token=YRLQ6OPFRL)](https://codecov.io/gh/geotribu/cli)
+
+[![PyPi version badge](https://badgen.net/pypi/v/geotribu)](https://pypi.org/project/geotribu/)
+[![PyPI - Downloads](https://img.shields.io/pypi/dm/geotribu)](https://pypi.org/project/geotribu/)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/geotribu)](https://pypi.org/project/geotribu/)
+
+## Installer
+
+Via _pip_ :
+
+```sh
+pip install geotribu
+```
+
+Via Docker :
+
+```sh
+docker pull ghcr.io/geotribu/cli
+```
+
+Via un exécutable pré-compilé : [télécharger pour son système d'exploitation](./releases/latest).
+
+## Utiliser
+
+```sh
+geotribu --help
+```
+
+Pour plus d'informations, [consulter la documentation](https://cli.geotribu.fr/).
