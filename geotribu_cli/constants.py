@@ -32,22 +32,36 @@ class GeotribuDefaults:
 
     # git
     git_base_url_organisation: str = "https://github.com/geotribu/"
+
     # website
     site_base_url: str = "https://static.geotribu.fr/"
     site_git_default_branch: str = "master"
     site_git_project: str = "website"
     site_search_index: str = "search/search_index.json"
+
     # CDN
     cdn_base_url: str = "https://cdn.geotribu.fr/"
     cdn_base_path: str = "img"
     cdn_search_index: str = "search-index.json"
+
     # comments
     comments_base_url: str = "https://comments.geotribu.fr/"
+
     # RSS
     rss_path_created: str = "feed_rss_created.xml"
     rss_path_updated: str = "feed_rss_updated.xml"
+
+    # images
+    images_body_extensions: tuple = (".png", ".jpg", ".jpeg", ".webp")
+    images_body_dimensions_max: tuple = (".png", ".jpg", ".jpeg", ".webp")
+    images_header_extensions: tuple = (".png", ".jpg", ".jpeg")
+    images_header_dimensions_ratio: int = 400 * 800
+    images_icon_extensions: tuple = (".png", ".jpg", ".jpeg", ".webp")
+    images_icon_dimensions_ratio: int = 400 * 800
+
     # local working directory
     geotribu_working_folder: Path = Path().home() / ".geotribu"
+
     # social
     mastodon_base_url: str = "https://mapstodon.space/"
 

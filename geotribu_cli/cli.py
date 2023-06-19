@@ -28,6 +28,7 @@ from geotribu_cli.__about__ import (
 from geotribu_cli.subcommands import (
     parser_comments_broadcast,
     parser_comments_latest,
+    parser_images_optimizer,
     parser_latest_content,
     parser_open_result,
     parser_search_content,
@@ -188,7 +189,7 @@ def main(args: list[str] = None):
     # Search Image
     subcmd_search_image = subparsers.add_parser(
         "search-image",
-        aliases=["images", "img", "si"],
+        aliases=["si"],
         help="Rechercher dans les images de Geotribu",
         formatter_class=main_parser.formatter_class,
         prog="search-image",
@@ -252,6 +253,38 @@ def main(args: list[str] = None):
     )
     add_common_arguments(subcmd_latest_comments)
     parser_comments_latest(subcmd_latest_comments)
+
+    # -- NESTED SUBPARSER : IMAGES ---------------------------------------------------
+    subcmd_images = subparsers.add_parser(
+        "images",
+        aliases=["img"],
+        help="Chercher, gérer et optimiser les images.",
+        formatter_class=main_parser.formatter_class,
+        prog="images",
+    )
+    images_subparsers = subcmd_images.add_subparsers(title="Images", dest="cmd_images")
+
+    # Optimize Image
+    subcmd_image_optimizer = images_subparsers.add_parser(
+        "optimize",
+        aliases=["process"],
+        help="Optimiser une ou plusieurs images pour les téléverser sur le CDN.",
+        formatter_class=main_parser.formatter_class,
+        prog="optimize-image",
+    )
+    add_common_arguments(subcmd_image_optimizer)
+    parser_images_optimizer(subcmd_image_optimizer)
+
+    # Search Image
+    subcmd_search_image = images_subparsers.add_parser(
+        "search",
+        aliases=["si"],
+        help="Rechercher dans les images de Geotribu",
+        formatter_class=main_parser.formatter_class,
+        prog="search-image",
+    )
+    add_common_arguments(subcmd_search_image)
+    parser_search_image(subcmd_search_image)
 
     # -- PARSE ARGS --------------------------------------------------------------------
     set_default_subparser(

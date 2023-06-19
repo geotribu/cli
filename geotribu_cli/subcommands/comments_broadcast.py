@@ -20,7 +20,7 @@ from rich import print
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.constants import Comment, GeotribuDefaults
 from geotribu_cli.subcommands.comments_latest import get_latest_comments
-from geotribu_cli.subcommands.open_result import open_content
+from geotribu_cli.utils.start_uri import open_uri
 from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
@@ -272,12 +272,9 @@ def run(args: argparse.Namespace):
         f" publié sur {args.broadcast_to.title()} : {online_post.get('url')}"
     )
 
-    # prompt to open a result
+    # open a result
     if args.opt_auto_open_disabled:
-        open_content(
-            content_uri=online_post.get("url"),
-            application="app",
-        )
+        open_uri(in_filepath=online_post.get("url"))
 
 
 # -- Stand alone execution

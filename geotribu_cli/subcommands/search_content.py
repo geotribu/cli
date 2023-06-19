@@ -25,7 +25,7 @@ from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
 from geotribu_cli.subcommands.open_result import open_content
-from geotribu_cli.utils.date_from_content import get_date_from_content_location
+from geotribu_cli.utils.dates_manipulation import get_date_from_content_location
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm

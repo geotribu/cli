@@ -85,6 +85,29 @@ def get_date_from_content_location(input_content_location: str) -> date:
         return None
 
 
+def get_days_until_next_month(
+    from_date: date = None,
+) -> int:
+    """Return the number of days until the next month.
+
+    Args:
+        from_date: date to compare to next month. If not set,
+            datetime.date.today() is used.
+
+    Returns:
+        number of days until next month
+    """
+    if from_date is None:
+        from_date = date.today()
+
+    next_month: datetime.date = datetime.date(
+        from_date.year, from_date.month, 1
+    ) + datetime.timedelta(days=31)
+    diff = next_month - from_date
+
+    return diff.days
+
+
 # #############################################################################
 # ##### Stand alone program ########
 # ##################################
