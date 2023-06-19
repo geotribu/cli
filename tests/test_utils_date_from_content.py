@@ -15,7 +15,7 @@ import unittest
 from datetime import date
 
 # project
-from geotribu_cli.utils.date_from_content import get_date_from_content_location
+from geotribu_cli.utils.dates_manipulation import get_date_from_content_location
 
 # ############################################################################
 # ########## Classes #############
