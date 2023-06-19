@@ -16,6 +16,7 @@ from urllib.parse import unquote, urlsplit
 import tinify
 
 # package
+from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.check_path import check_path
 
@@ -103,9 +104,9 @@ def optimize_with_tinify(
         output_filepath.parent.mkdir(parents=True, exist_ok=True)
 
         # save output
-        output_optimized_image_path = resized.to_file(str(output_filepath.resolve()))
+        resized.to_file(str(output_filepath.resolve()))
 
-        return output_optimized_image_path
+        return output_filepath
     except tinify.AccountError as error:
         logger.critical(f"Account error: {error}")
         exit("Account error. Check your API key!")
@@ -146,6 +147,14 @@ def parser_images_optimizer(
     )
 
     subparser.add_argument(
+        "-o",
+        "--output-path",
+        help="Fichier de sortie. Par défaut, stocke dans le dossier de travail local "
+        "de Geotribu.",
+        dest="output_path",
+    )
+
+    subparser.add_argument(
         "-t",
         "--to",
         choices=["body", "header", "icon"],
@@ -156,11 +165,12 @@ def parser_images_optimizer(
     )
 
     subparser.add_argument(
-        "-o",
-        "--output-path",
-        help="Fichier de sortie. Par défaut, stocke dans le dossier de travail local "
-        "de Geotribu.",
-        dest="output_path",
+        "-w",
+        "--with",
+        choices=["tinypng"],
+        default="tinypng",
+        dest="tool_to_use",
+        help="Outil à utiliser pour réaliser l'optimisation.",
     )
 
     subparser.set_defaults(func=run)
@@ -184,15 +194,30 @@ def run(args: argparse.Namespace):
     logger.debug(f"Running {args.command} with {args}")
 
     # check Tinify API KEY
-    if not getenv("TINIFY_API_KEY"):
-        logger.critical(
-            "La clé d'API de Tinify n'est pas configurée en variable "
-            "d'environnement 'TINIFY_API_KEY'."
-        )
-        sys.exit(1)
+    if args.tool_to_use == "tinypng":
+        if not getenv("TINIFY_API_KEY"):
+            logger.critical(
+                "La clé d'API de Tinify n'est pas configurée en variable "
+                "d'environnement 'TINIFY_API_KEY'."
+            )
+            sys.exit(1)
 
-    tinify.key = getenv("TINIFY_API_KEY")
-    logger.info(f"Clé d'API Tinify utilisée : {tinify.key[:5]}...")
+        tinify.key = getenv("TINIFY_API_KEY")
+        logger.info(f"Clé d'API Tinify utilisée : {tinify.key[:5]}...")
+
+        try:
+            optimized_image = optimize_with_tinify(
+                image_path_or_url=args.image_path, image_type=args.image_type
+            )
+            console.print(
+                f":clamp: L'image {args.image_path} a été redimensionnée et "
+                f"compressée avec {args.tool_to_use} : {optimized_image}"
+            )
+        except Exception as err:
+            logger.error(
+                f"La compression de l'image {args.image_path} avec "
+                f"{args.tool_to_use} a échoué. Trace : {err}"
+            )
 
 
 # -- Stand alone execution
