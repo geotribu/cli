@@ -4,4 +4,5 @@ markdownify>=0.11,<0.12
 orjson>=3.8,<3.10
 packaging>=20,<24
 rich_argparse>=0.6,<1.2
+tinify>=1.6,<2
 typing-extensions>=4,<5 ; python_version < '3.11'
