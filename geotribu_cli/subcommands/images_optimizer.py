@@ -10,12 +10,14 @@ import logging
 import sys
 from os import getenv
 from pathlib import Path
+from urllib.parse import unquote, urlsplit
 
 # 3rd party
 import tinify
 
 # package
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.utils.check_path import check_path
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -52,17 +54,71 @@ def tinify_check_api_limit() -> int:
     return compressions_this_month
 
 
-def optimize_with_tinify(image_path: Path) -> Path:
+def optimize_with_tinify(
+    image_path_or_url: str | Path, image_type: str = "body"
+) -> Path:
     """Optimize image using Tinify API (tinypng.com).
 
     Args:
-        image_path: image to optimize
+        image_path_or_url: image to optimize
+        image_type: type of image. Defaults to body.
 
     Returns:
         path to the optimized image
     """
     # check API consumption
     tinify_check_api_limit()
+    tinify.key = getenv("TINIFY_API_KEY")
+
+    try:
+        if image_path_or_url.startswith("https"):
+            img_source = tinify.from_url(image_path_or_url)
+            img_filename = unquote(urlsplit(image_path_or_url).path.split("/")[-1])
+
+        else:
+            if check_path(
+                input_path=image_path_or_url,
+                must_be_a_file=True,
+                must_be_a_folder=False,
+                must_be_readable=True,
+            ):
+                image_path_or_url = Path(image_path_or_url)
+
+            img_source = tinify.from_file(str(image_path_or_url.resolve()))
+            img_filename = image_path_or_url.name
+
+        # preserve some metadata
+        img_source_preserved = img_source.preserve("copyright", "creation")
+
+        # scale it
+        resized = img_source_preserved.resize(
+            method="scale",
+            width=1000,
+        )
+
+        # prepare output path
+        output_filepath = defaults_settings.geotribu_working_folder.joinpath(
+            f"images/optim/{img_filename}"
+        )
+        output_filepath.parent.mkdir(parents=True, exist_ok=True)
+
+        # save output
+        output_optimized_image_path = resized.to_file(str(output_filepath.resolve()))
+
+        return output_optimized_image_path
+    except tinify.AccountError as error:
+        logger.critical(f"Account error: {error}")
+        exit("Account error. Check your API key!")
+    except tinify.ClientError as error:
+        logger.error(f"Client error: {error}. Ignoring {image_path_or_url}.")
+    except tinify.ServerError as error:
+        logger.critical(f"Server error: {error}")
+        exit("Server error. Check the log!")
+    except tinify.ConnectionError as error:
+        logger.critical(f"Connection error: {error}")
+        exit("Connection error. Check the log!")
+    except tinify.Error as error:
+        logger.error(f"Error: {error}")
 
 
 # ############################################################################
