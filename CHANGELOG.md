@@ -18,6 +18,17 @@ Unreleased
 
 -->
 
+## 0.21.0 - 2023-06-19
+
+### Features and enhancements 🎉
+
+* Factorise la conversion des commentaires en Markdown by @Guts in <https://github.com/geotribu/cli/pull/90>
+* Fonctionnalité : optimisation des images pour la publication by @Guts in <https://github.com/geotribu/cli/pull/91>
+
+### Tooling 🔧
+
+* Améliore le README et le raccourcit le nom des exécutables by @Guts in <https://github.com/geotribu/cli/pull/89>
+
 ## 0.20.0 - 2023-06-18
 
 ### Features and enhancements 🎉
