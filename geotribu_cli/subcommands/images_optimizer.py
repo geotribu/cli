@@ -67,9 +67,18 @@ def optimize_with_tinify(
     Returns:
         path to the optimized image
     """
+    # check tinify credentials
+    if not getenv("TINIFY_API_KEY"):
+        logger.critical(
+            "La clé d'API de Tinify n'est pas configurée en variable "
+            "d'environnement 'TINIFY_API_KEY'."
+        )
+        sys.exit(1)
+
+    tinify.key = getenv("TINIFY_API_KEY")
+
     # check API consumption
     tinify_check_api_limit()
-    tinify.key = getenv("TINIFY_API_KEY")
 
     try:
         if image_path_or_url.startswith("https"):
@@ -195,16 +204,7 @@ def run(args: argparse.Namespace):
 
     # check Tinify API KEY
     if args.tool_to_use == "tinypng":
-        if not getenv("TINIFY_API_KEY"):
-            logger.critical(
-                "La clé d'API de Tinify n'est pas configurée en variable "
-                "d'environnement 'TINIFY_API_KEY'."
-            )
-            sys.exit(1)
-
-        tinify.key = getenv("TINIFY_API_KEY")
-        logger.info(f"Clé d'API Tinify utilisée : {tinify.key[:5]}...")
-
+        # optimize the image
         try:
             optimized_image = optimize_with_tinify(
                 image_path_or_url=args.image_path, image_type=args.image_type
