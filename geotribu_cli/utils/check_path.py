@@ -49,7 +49,7 @@ def check_var_can_be_path(input_var: str, raise_error: bool = True) -> bool:
         if raise_error:
             raise TypeError(error_message)
         else:
-            logger.error(error_message)
+            logger.info(error_message)
             return False
 
 
@@ -79,7 +79,7 @@ def check_path_exists(input_path: Union[str, Path], raise_error: bool = True) ->
         if raise_error:
             raise FileExistsError(error_message)
         else:
-            logger.error(error_message)
+            logger.info(error_message)
             return False
     else:
         return True
@@ -113,7 +113,7 @@ def check_path_is_readable(input_path: Path, raise_error: bool = True) -> bool:
         if raise_error:
             raise OSError(error_message)
         else:
-            logger.error(f"{input_path.resolve()} isn't readable.")
+            logger.info(f"{input_path.resolve()} isn't readable.")
             return False
     else:
         return True
@@ -147,7 +147,7 @@ def check_path_is_writable(input_path: Path, raise_error: bool = True) -> bool:
         if raise_error:
             raise OSError(error_message)
         else:
-            logger.error(error_message)
+            logger.info(error_message)
             return False
     else:
         return True
@@ -208,14 +208,14 @@ def check_path(
         if raise_error:
             raise FileNotFoundError(error_message)
         else:
-            logger.error(error_message)
+            logger.info(error_message)
             return False
     if must_be_a_folder and not input_path.is_dir():
         error_message = f"{input_path.resolve()} is not a folder."
         if raise_error:
             raise NotADirectoryError(error_message)
         else:
-            logger.error(error_message)
+            logger.info(error_message)
             return False
 
     # check chmod
