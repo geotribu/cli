@@ -157,3 +157,33 @@ Sortie :
 .. literalinclude:: ./cli_sample_comments_latest.txt
   :language: shell
 ```
+
+----
+
+## Optimiser des images pour le CDN Geotribu
+
+:::{note}
+Le redimensionnement et l'optimisation des images font appel à l'API Tinify (<https://tinypng.com>) et requièrent une clé d'authentification à stocker en variable d'environnement `TINIFY_API_KEY`.
+:::
+
+Cette commande permet de conformer les images aux bonnes pratiques et de les optimiser.
+
+> Voir [la section dédiée du guide de contribution](https://contribuer.geotribu.fr/guides/cdn-images-hebergement/#bonnes-pratiques)
+
+A partir d'une URL :
+
+```sh
+geotribu images optimize https://cdn.geotribu.fr/img/tuto/aerialod/oceania_aerialod.jpg
+```
+
+A partir d'un fichier local :
+
+```sh
+geotribu images optimize ~/Images/Geotribu/images/illustration_rdp.png
+```
+
+A partir d'un dossier local :
+
+```sh
+geotribu images optimize ~/Images/Geotribu/images/
+```
