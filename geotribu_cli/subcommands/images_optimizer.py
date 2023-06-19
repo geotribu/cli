@@ -215,6 +215,13 @@ def run(args: argparse.Namespace):
 
     # check Tinify API KEY
     if args.tool_to_use == "tinypng":
+        if not getenv("TINIFY_API_KEY"):
+            logger.critical(
+                "La clé d'API de Tinify n'est pas configurée en variable "
+                "d'environnement 'TINIFY_API_KEY'."
+            )
+            sys.exit(1)
+
         if check_path(
             input_path=args.image_path,
             must_be_a_folder=True,
