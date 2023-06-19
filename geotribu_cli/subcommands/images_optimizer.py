@@ -19,6 +19,7 @@ import tinify
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.check_path import check_path
+from geotribu_cli.utils.start_uri import open_uri
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -61,7 +62,7 @@ def optimize_with_tinify(
     """Optimize image using Tinify API (tinypng.com).
 
     Args:
-        image_path_or_url: image to optimize
+        image_path_or_url: path or URL to the image to optimize
         image_type: type of image. Defaults to body.
 
     Returns:
@@ -81,7 +82,7 @@ def optimize_with_tinify(
     tinify_check_api_limit()
 
     try:
-        if image_path_or_url.startswith("https"):
+        if isinstance(image_path_or_url, str) and image_path_or_url.startswith("https"):
             img_source = tinify.from_url(image_path_or_url)
             img_filename = unquote(urlsplit(image_path_or_url).path.split("/")[-1])
 
@@ -204,19 +205,52 @@ def run(args: argparse.Namespace):
 
     # check Tinify API KEY
     if args.tool_to_use == "tinypng":
-        # optimize the image
-        try:
-            optimized_image = optimize_with_tinify(
-                image_path_or_url=args.image_path, image_type=args.image_type
-            )
-            console.print(
-                f":clamp: L'image {args.image_path} a été redimensionnée et "
-                f"compressée avec {args.tool_to_use} : {optimized_image}"
-            )
-        except Exception as err:
-            logger.error(
-                f"La compression de l'image {args.image_path} avec "
-                f"{args.tool_to_use} a échoué. Trace : {err}"
+        if check_path(
+            input_path=args.image_path,
+            must_be_a_folder=True,
+            must_be_a_file=False,
+            must_be_readable=True,
+            must_exists=True,
+            raise_error=False,
+        ):
+            logger.info("Dossier d'images passé. L")
+            li_images = [
+                image.resolve()
+                for image in Path(args.image_path).glob("*")
+                if image.suffix.lower() in defaults_settings.images_body_extensions
+            ]
+            if not li_images:
+                print(":person_shrugging: Aucune image trouvée dans {args.image_path}")
+                sys.exit(0)
+        else:
+            li_images = [args.image_path]
+
+        # optimize the image(s)
+        count_optim_success = 0
+        count_optim_error = 0
+        for img in li_images:
+            try:
+                optimized_image = optimize_with_tinify(
+                    image_path_or_url=img, image_type=args.image_type
+                )
+                console.print(
+                    f":clamp: L'image {img} a été redimensionnée et "
+                    f"compressée avec {args.tool_to_use} : {optimized_image}"
+                )
+                count_optim_success += 1
+            except Exception as err:
+                logger.error(
+                    f"La compression de l'image {img} avec "
+                    f"{args.tool_to_use} a échoué. Trace : {err}"
+                )
+                count_optim_error += 1
+
+        # open output folder
+        if count_optim_success > 0:
+            open_uri(
+                in_filepath=defaults_settings.geotribu_working_folder.joinpath(
+                    "images/optim"
+                )
             )
 
 
