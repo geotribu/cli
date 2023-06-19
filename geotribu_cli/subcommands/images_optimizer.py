@@ -20,6 +20,7 @@ from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.check_path import check_path
 from geotribu_cli.utils.start_uri import open_uri
+from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -157,6 +158,15 @@ def parser_images_optimizer(
     )
 
     subparser.add_argument(
+        "--no-auto-open",
+        "--stay",
+        default=str2bool(getenv("GEOTRIBU_AUTO_OPEN_AFTER", True)),
+        action="store_false",
+        dest="opt_auto_open_disabled",
+        help="Désactive l'ouverture automatique à la fin de la commande.",
+    )
+
+    subparser.add_argument(
         "-o",
         "--output-path",
         help="Fichier de sortie. Par défaut, stocke dans le dossier de travail local "
@@ -245,8 +255,8 @@ def run(args: argparse.Namespace):
                 )
                 count_optim_error += 1
 
-        # open output folder
-        if count_optim_success > 0:
+        # open output folder if success and not disabled
+        if args.opt_auto_open_disabled and count_optim_success > 0:
             open_uri(
                 in_filepath=defaults_settings.geotribu_working_folder.joinpath(
                     "images/optim"
