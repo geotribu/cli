@@ -91,7 +91,7 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
         # prepare search request
         request_data = {
             "all": ["commentaire"],
-            "lmit": 40,
+            "limit": 40,
             "local": True,
             "since_id": "110549835686856734",
         }
