@@ -156,6 +156,19 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         "status": comment_to_media(in_comment=in_comment, media="mastodon"),
         "language": "fr",
     }
+
+    # check if parent comment has been posted
+    if in_comment.parent is not None:
+        comment_parent_broadcasted = comment_already_broadcasted(
+            in_comment=Comment(id=in_comment.parent), media="mastodon"
+        )
+        if (
+            isinstance(comment_already_broadcasted, dict)
+            and "id" in comment_already_broadcasted
+        ):
+            request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
+
+    # unlisted or direct
     if not public:
         logger.debug("Comment will be posted as DIRECT message.")
         request_data["visibility"] = "direct"
