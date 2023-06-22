@@ -156,8 +156,11 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         "language": "fr",
     }
     if not public:
-        logger.debug("Comment will be posted as direct message.")
+        logger.debug("Comment will be posted as DIRECT message.")
         request_data["visibility"] = "direct"
+    else:
+        logger.debug("Comment will be posted as UNLISTED message.")
+        request_data["visibility"] = "unlisted"
 
     json_data = json.dumps(request_data)
     json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
@@ -262,7 +265,9 @@ def run(args: argparse.Namespace):
     # check credentials
     if args.broadcast_to == "mastodon":
         try:
-            online_post = broadcast_to_mastodon(in_comment=latest_comment)
+            online_post = broadcast_to_mastodon(
+                in_comment=latest_comment, public=args.opt_no_public
+            )
         except Exception as err:
             logger.error(f"Trace : {err}")
             sys.exit(1)
