@@ -148,6 +148,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         in_comment=in_comment, media="mastodon"
     )
     if isinstance(already_broadcasted, dict):
+        already_broadcasted["cli_newly_posted"] = False
         return already_broadcasted
 
     # prepare status
@@ -179,6 +180,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
 
     r = request.urlopen(url=req, data=json_data_bytes)
     content = json.loads(r.read().decode("utf-8"))
+    content["cli_newly_posted"] = True
     return content
 
 
@@ -212,7 +214,7 @@ def parser_comments_broadcast(
     subparser.add_argument(
         "--no-auto-open",
         "--stay",
-        default=str2bool(getenv("GEOTRIBU_AUTO_OPEN_AFTER_POST", True)),
+        default=str2bool(getenv("GEOTRIBU_AUTO_OPEN_AFTER", True)),
         action="store_false",
         dest="opt_auto_open_disabled",
         help="Désactive l'ouverture automatique du post à la fin de la commande.",
@@ -250,7 +252,7 @@ def run(args: argparse.Namespace):
 
     # get latest comment
     try:
-        latest_comment = get_latest_comments(number=1, sort_by="created_desc")
+        latest_comment = get_latest_comments(number=5, sort_by="created_desc")
         if not len(latest_comment):
             print(":person_shrugging: Aucun commentaire trouvé")
             sys.exit(0)
@@ -274,7 +276,8 @@ def run(args: argparse.Namespace):
 
     print(
         f":white_check_mark: :left_speech_bubble: Commentaire {latest_comment.id}"
-        f" publié sur {args.broadcast_to.title()} : {online_post.get('url')}"
+        f" {'déjà publié précédemment' if online_post.get('cli_newly_posted') is False else 'publié'}"
+        f" sur {args.broadcast_to.title()} : {online_post.get('url')}"
     )
 
     # open a result
