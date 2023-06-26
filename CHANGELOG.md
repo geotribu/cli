@@ -18,6 +18,20 @@ Unreleased
 
 -->
 
+## 0.22.0 - 202-06-26
+
+### Features and enhancements 🎉
+
+* Commentaires --> Mastodon : définit la visibilité par défaut sur `unlisted` by @Guts in <https://github.com/geotribu/cli/pull/92>
+* Commentaires --> Mastodon : indique si le commentaire a déjà été posté by @Guts in <https://github.com/geotribu/cli/pull/93>
+* Commentaires --> Mastodon : gérer le fil de discussion by @Guts in <https://github.com/geotribu/cli/pull/94>
+* Retire l'en-tête des contenus Markdown avant de les afficher dans le terminal by @Guts in <https://github.com/geotribu/cli/pull/96>
+* Améliore la structure du code lié aux commentaires by @Guts in <https://github.com/geotribu/cli/pull/97>
+
+### Documentation 📖
+
+* Add Geotribot manifest by @Guts in <https://github.com/geotribu/cli/pull/95>
+
 ## 0.21.0 - 2023-06-19
 
 ### Features and enhancements 🎉
