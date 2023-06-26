@@ -42,5 +42,6 @@ caption: Divers
 maxdepth: 1
 ---
 misc/credits
+misc/geotribot_manifest.md
 Site Geotribu <http://geotribu.fr>
 ```
