@@ -1,8 +1,11 @@
 #! python3  # noqa: E265
 
 # submodules
-from .comments_broadcast import parser_comments_broadcast  # noqa: F401
-from .comments_latest import parser_comments_latest  # noqa: F401
+from geotribu_cli.comments import (  # noqa: F401
+    parser_comments_broadcast,
+    parser_comments_latest,
+)
+
 from .images_optimizer import parser_images_optimizer  # noqa: F401
 from .open_result import parser_open_result  # noqa: F401
 from .rss_reader import parser_latest_content  # noqa: F401

@@ -18,8 +18,9 @@ from rich import print
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
-from geotribu_cli.constants import Comment, GeotribuDefaults
-from geotribu_cli.subcommands.comments_latest import get_latest_comments
+from geotribu_cli.comments.comments_latest import get_latest_comments
+from geotribu_cli.comments.mdl_comment import Comment
+from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.start_uri import open_uri
 from geotribu_cli.utils.str2bool import str2bool
 
