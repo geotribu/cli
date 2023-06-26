@@ -120,6 +120,32 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
                     f"{status.get('url')}"
                 )
                 return status
+            if status.get("replies_count", 0) < 1:
+                logger.debug(
+                    f"Le statut {status.get('id')} n'a aucune réponse. Au suivant !"
+                )
+                continue
+            else:
+                logger.info(
+                    f"Le statut {status.get('id')} a {status.get('replies_count')} "
+                    "réponse(s). Cherchons parmi les réponses si le commentaire "
+                    f"{comment_id} n'y est pas..."
+                )
+                req = request.Request(
+                    f"{defaults_settings.mastodon_base_url}/api/v1/statuses/"
+                    f"{status.get('id')}/context",
+                    method="GET",
+                    headers=headers,
+                )
+                r = request.urlopen(url=req, data=json_data_bytes)
+                content = json.loads(r.read().decode("utf-8"))
+                for reply_status in content.get("descendants", []):
+                    if f"comment-{comment_id}</p>" in reply_status.get("content"):
+                        print(
+                            f"Le commentaire {comment_id} a déjà été publié sur {media} : "
+                            f"{reply_status.get('url')}, en réponse à {status.get('id')}"
+                        )
+                        return reply_status
 
     return None
 
