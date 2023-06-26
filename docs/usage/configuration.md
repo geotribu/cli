@@ -10,6 +10,7 @@
 | `GEOTRIBU_DEFAULT_SUBCOMMAND` | Sous-commande à exécuter par défaut quand on lance le CLI sans argument | | `read-latest` |
 | `GEOTRIBU_IMAGES_DEFAULT_TYPE` | Type d'image sur lequel filtrer. | `--filter-type` de `search-images`  | `None` |
 | `GEOTRIBU_IMAGES_INDEX_EXPIRATION_HOURS` | Nombre d'heures à partir duquel considérer le fichier local comme périmé. | `--expiration-rotating-hours` de `search-images`  | `24` (1 jour) |
+| `GEOTRIBU_MASTODON_STATUS_VISIBILITY` | Visibilité des statuts postés sur Mastodon. Voir [la doc officielle](https://docs.joinmastodon.org/user/posting/#unlisted). |  | `unlisted` |
 | `GEOTRIBU_OPEN_WITH` | Avec quoi ouvrir le contenu. | `--with` de `ouvrir` | `shell` |
 | `GEOTRIBU_PROMPT_AFTER_SEARCH` | Activer/désactiver l'invite pour sélectionner une action à la fin d'une commande de recherche. | `--no-prompt` | `True` |
 | `GEOTRIBU_RESULTATS_FORMAT` | Format de résultat des commandes de recherche | `--format-output` | `table` |

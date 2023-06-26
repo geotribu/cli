@@ -69,13 +69,11 @@ def comment_to_media(in_comment: Comment, media: str) -> str:
         )
 
 
-def comment_already_broadcasted(
-    in_comment: Comment = None, media: str = "mastodon"
-) -> dict:
+def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dict:
     """Check if comment has already been broadcasted on the media.
 
     Args:
-        in_comment: comment to check
+        comment_id: id of the comment to check
         media: name of the targetted media
 
     Returns:
@@ -92,8 +90,9 @@ def comment_already_broadcasted(
 
         # prepare search request
         request_data = {
-            "local": True,
             "all": ["commentaire"],
+            "limit": 40,
+            "local": True,
             "since_id": "110549835686856734",
         }
 
@@ -115,12 +114,38 @@ def comment_already_broadcasted(
         content = json.loads(r.read().decode("utf-8"))
 
         for status in content:
-            if f"comment-{in_comment.id}</p>" in status.get("content"):
+            if f"comment-{comment_id}</p>" in status.get("content"):
                 logger.info(
-                    f"Le commentaire {in_comment.id} a déjà été publié sur {media} : "
+                    f"Le commentaire {comment_id} a déjà été publié sur {media} : "
                     f"{status.get('url')}"
                 )
                 return status
+            if status.get("replies_count", 0) < 1:
+                logger.debug(
+                    f"Le statut {status.get('id')} n'a aucune réponse. Au suivant !"
+                )
+                continue
+            else:
+                logger.info(
+                    f"Le statut {status.get('id')} a {status.get('replies_count')} "
+                    "réponse(s). Cherchons parmi les réponses si le commentaire "
+                    f"{comment_id} n'y est pas..."
+                )
+                req = request.Request(
+                    f"{defaults_settings.mastodon_base_url}/api/v1/statuses/"
+                    f"{status.get('id')}/context",
+                    method="GET",
+                    headers=headers,
+                )
+                r = request.urlopen(url=req, data=json_data_bytes)
+                content = json.loads(r.read().decode("utf-8"))
+                for reply_status in content.get("descendants", []):
+                    if f"comment-{comment_id}</p>" in reply_status.get("content"):
+                        print(
+                            f"Le commentaire {comment_id} a déjà été publié sur {media} : "
+                            f"{reply_status.get('url')}, en réponse à {status.get('id')}"
+                        )
+                        return reply_status
 
     return None
 
@@ -145,7 +170,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
 
     # check if comment has not been already published
     already_broadcasted = comment_already_broadcasted(
-        in_comment=in_comment, media="mastodon"
+        comment_id=in_comment.id, media="mastodon"
     )
     if isinstance(already_broadcasted, dict):
         already_broadcasted["cli_newly_posted"] = False
@@ -156,12 +181,32 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         "status": comment_to_media(in_comment=in_comment, media="mastodon"),
         "language": "fr",
     }
+
+    # check if parent comment has been posted
+    if in_comment.parent is not None:
+        comment_parent_broadcasted = comment_already_broadcasted(
+            comment_id=in_comment.parent, media="mastodon"
+        )
+        if (
+            isinstance(comment_parent_broadcasted, dict)
+            and "id" in comment_parent_broadcasted
+        ):
+            print(
+                "Le commentaire parent a été posté précédemment sur Mastodon : "
+                f"{comment_parent_broadcasted.get('url')}. Le commentaire actuel sera "
+                "posté en réponse."
+            )
+            request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
+
+    # unlisted or direct
     if not public:
         logger.debug("Comment will be posted as DIRECT message.")
         request_data["visibility"] = "direct"
     else:
         logger.debug("Comment will be posted as UNLISTED message.")
-        request_data["visibility"] = "unlisted"
+        request_data["visibility"] = getenv(
+            "GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"
+        )
 
     json_data = json.dumps(request_data)
     json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
@@ -172,6 +217,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         "Content-Type": "application/json; charset=utf-8",
         "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
     }
+
     req = request.Request(
         f"{defaults_settings.mastodon_base_url}/api/v1/statuses",
         method="POST",
