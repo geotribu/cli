@@ -11,6 +11,7 @@ import sys
 from os import getenv
 
 # 3rd party
+import frontmatter
 from rich.markdown import Markdown
 
 # package
@@ -56,13 +57,13 @@ def open_content(content_uri: str, application: str = "shell"):
         )
 
         with local_file_path.open(mode="rt", encoding="utf-8") as markdown_file:
-            markdown_body = markdown_file.read()
+            markdown_body = frontmatter.loads(markdown_file.read())
 
         markdown = Markdown(
-            markdown_body,
+            markdown_body.content,
             hyperlinks=True,
         )
-        console.print(markdown)
+        console.print(markdown, emoji=True)
 
     elif application == "app" and content_uri.startswith("http"):
         open_uri(url_add_utm(content_uri))
