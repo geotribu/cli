@@ -204,7 +204,9 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         request_data["visibility"] = "direct"
     else:
         logger.debug("Comment will be posted as UNLISTED message.")
-        request_data["visibility"] = "unlisted"
+        request_data["visibility"] = getenv(
+            "GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"
+        )
 
     json_data = json.dumps(request_data)
     json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
