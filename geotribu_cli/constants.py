@@ -104,23 +104,6 @@ class GeotribuDefaults:
         )
 
 
-# Data structures
-@dataclass
-class RssItem:
-    """Model for an RSS item."""
-
-    abstract: str = None
-    author: str = None
-    categories: list = None
-    date_pub: str = None
-    guid: str = None
-    image_length: str = None
-    image_type: str = None
-    image_url: str = None
-    title: str = None
-    url: str = None
-
-
 @dataclass
 class MkdocsSearchConfiguration:
     """Search configuration in Mkdocs."""

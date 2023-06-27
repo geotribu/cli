@@ -22,8 +22,9 @@ from rich.table import Table
 # package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.console import console
-from geotribu_cli.constants import GeotribuDefaults, RssItem
+from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
+from geotribu_cli.rss.mdl_rss import RssItem
 from geotribu_cli.subcommands.open_result import open_content
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm
