@@ -93,7 +93,7 @@ class GeotribuDefaults:
         """Returns website git source URL in three flavors: blob, edit or raw.
 
         Args:
-            mode (Literal[&quot;blob&quot;, &quot;edit&quot;, &quot;raw&quot;], optional): display mode for source. Defaults to "blob".
+            mode: display mode for source. Defaults to "blob".
 
         Returns:
             str: URL as string
@@ -102,32 +102,6 @@ class GeotribuDefaults:
             f"{self.git_base_url_organisation}{self.site_git_project}/{mode}/"
             f"{self.site_git_default_branch}/content"
         )
-
-
-@dataclass
-class MkdocsSearchConfiguration:
-    """Search configuration in Mkdocs."""
-
-    lang: list
-    separator: str
-
-
-@dataclass
-class MkdocsSearchDocument:
-    """Search document structure in Mkdocs."""
-
-    title: str
-    text: str
-    location: str
-    tags: list
-
-
-@dataclass
-class MkdocsSearchListing:
-    """Mkdocs listing search."""
-
-    config: MkdocsSearchConfiguration
-    docs: list[MkdocsSearchDocument]
 
 
 # -- Stand alone execution
