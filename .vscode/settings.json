@@ -33,7 +33,7 @@
     "python.testing.pytestEnabled": true,
     // extensions
     "autoDocstring.guessTypes": true,
-    "autoDocstring.docstringFormat": "google",
+    "autoDocstring.docstringFormat": "google-notypes",
     "autoDocstring.generateDocstringOnEnter": false,
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
