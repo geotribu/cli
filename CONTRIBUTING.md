@@ -1,33 +1,37 @@
-# Contributing Guidelines
+# Directives de contribution
 
-First off, thanks for considering to contribute to this project!
+Tout d'abord, merci d'envisager de contribuer à ce projet !
 
-These are mostly guidelines, not rules. Use your best judgment, and feel free to propose changes to this document in a pull request.
+Il s'agit principalement de lignes directrices, et non de règles. Faites preuve de discernement, et n'hésitez pas à proposer des modifications à ce document dans une pull request.
+
+## GPF pratiques partagées
+
+Merci de tenir compte de la documentation de l'Usine Logicielle sur les pratiques Git partagées : <https://geoplateforme.pages.gpf-tech.ign.fr/documentation/developer/git_guidelines/>.
 
 ## Git hooks
 
-We use git hooks through [pre-commit](https://pre-commit.com/) to enforce and automatically check some "rules". Please install it before to push any commit.
+Nous utilisons les git hooks via [pre-commit](https://pre-commit.com/) pour appliquer et vérifier automatiquement certaines "règles". Veuillez l'installer avant de pousser un commit.
 
-See the relevant configuration file: `.pre-commit-config.yaml`.
+Voir le fichier de configuration correspondant : `.pre-commit-config.yaml`.
 
-## Code Style
+## Style de code
 
-Make sure your code *roughly* follows [PEP-8](https://www.python.org/dev/peps/pep-0008/) and keeps things consistent with the rest of the code:
+Assurez-vous que votre code suit à peu près la PEP-8 [PEP-8](https://www.python.org/dev/peps/pep-0008/) et reste cohérent avec le reste du code :
 
-- docstrings: [google-style](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html) is used to write technical documentation.
-- formatting: [black](https://black.readthedocs.io/) is used to automatically format the code without debate.
-- sorted imports: [isort](https://pycqa.github.io/isort/) is used to sort imports
-- static analysis: [flake8](https://flake8.pycqa.org/en/latest/) is used to catch some dizziness and keep the source code healthy.
+- docstrings: [google-style](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html) est utilisé pour écrire la documentation technique.
+- formatage: [black](https://black.readthedocs.io/) est utilisé pour formater automatiquement le code sans débat.
+- tri des imports: [isort](https://pycqa.github.io/isort/) est utilisé pour trier les imports.
+- analyse statique: [flake8](https://flake8.pycqa.org/en/latest/) est utilisé pour identifier les écarts vis à vis de PEP-8 et maintenir un code source de qualité.
 
-## Branching
+## Branches
 
-The pattern is: `{category}/{slugified-description}`. Where:
+Le modèle est : `{category}/{slugified-description}`. Où :
 
-- `category` is the type of work. Can be: `feature`, `bug`, `tooling`, `refactor`, `test`, `chore`, `release`, `hotfix`, `docs`, `ci`, `deploy` or `release-candidate`.
-- `slugified-description` is the description of the work, slugified.
+- `category` est le type de travail. Il peut s'agir de : `feature`, `bug`, `tooling`, `refactor`, `test`, `chore`, `release`, `hotfix`, `docs`, `ci`, `deploy` ou `release-candidate`.
+- `slugified-description` est la description du travail, sous forme de slug.
 
-Example: `feature/authentication-logic`
+Exemple : `feature/authentication-logic`
 
-### Special branches
+### Branches spéciales
 
-- `main`: the main branch.
+- `main`: la branche principale.
