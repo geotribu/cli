@@ -16,6 +16,7 @@ import frontmatter
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.content.yaml_handler import IndentedYAMLHandler
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
+from geotribu_cli.utils.slugger import sluggy
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -101,6 +102,10 @@ def run(args: argparse.Namespace):
         today_2w = datetime.today() + timedelta(weeks=3)
         args.publication_date = f"{today_2w:%Y-%m-%d}"
 
+    # if no title specified
+    if args.titre is None:
+        args.titre = "Projet d'article"
+
     # load template
     with article_tpl_local.open(encoding="UTF-8") as f:
         article = frontmatter.load(f)
@@ -110,7 +115,7 @@ def run(args: argparse.Namespace):
 
     # write output
     out_filepath = defaults_settings.geotribu_working_folder.joinpath(
-        f"drafts/{args.publication_date}_titre.md"
+        f"drafts/{args.publication_date}_{sluggy(args.titre)}.md"
     )
     out_filepath.parent.mkdir(parents=True, exist_ok=True)
     with out_filepath.open(mode="w", encoding="UTF-8") as out_file:
