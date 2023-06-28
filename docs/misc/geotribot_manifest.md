@@ -15,7 +15,7 @@ It's related to the [Geotribu website](http://geotribu.fr/) and powered by the t
 - it perform fixes on Markdown syntax during Pull Requests in Geotribu new content workflow
 - it creates the backup of website and CDN releases on GitHub
 
-### What it does not do?
+### What it does not
 
 - it doesn't read content on platforms
 - it never stores anything anywhere, it just processes the data
