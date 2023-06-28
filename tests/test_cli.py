@@ -15,6 +15,13 @@ import pytest
 
 # project
 from geotribu_cli import __about__, cli
+from geotribu_cli.constants import GeotribuDefaults
+
+# ############################################################################
+# ########## Globals #############
+# ################################
+
+defaults_settings = GeotribuDefaults()
 
 # ############################################################################
 # ########## Classes #############
@@ -91,6 +98,28 @@ def test_cli_run_images_logo_news(capsys):
     assert err == ""
 
     assert Path(Path().home() / ".geotribu/search/cdn_search_index.json").exists()
+
+
+def test_cli_run_new_article(capsys):
+    """Test subcommand creating new article."""
+    cli.main(
+        [
+            "new",
+            "article",
+            "--titre",
+            f"Test Unitaire de {__about__.__title__} {__about__.__version__}",
+        ]
+    )
+
+    out, err = capsys.readouterr()
+
+    assert err == ""
+    assert defaults_settings.geotribu_working_folder.joinpath(
+        "drafts"
+    ).is_dir(), "Le dossier drafts devrait avoir été créé"
+    assert len(
+        list(defaults_settings.geotribu_working_folder.joinpath("drafts").glob("*.md"))
+    ), "Le dossier drafts devrait contenir au moins un fichier Markdown"
 
 
 def test_cli_run_rss(capsys):
