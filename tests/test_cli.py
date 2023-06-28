@@ -115,6 +115,7 @@ def test_cli_run_new_article(capsys):
             f"{datetime.today():%Y-%m-%d}",
             "--titre",
             art_title,
+            "--stay",
         ]
     )
 
