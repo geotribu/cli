@@ -17,4 +17,4 @@ from rich.console import Console
 # ########## GLOBALS #############
 # ################################
 
-console = Console(record=True, stderr=True)
+console = Console(record=True, stderr=False)

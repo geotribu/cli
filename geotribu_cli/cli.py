@@ -30,6 +30,7 @@ from geotribu_cli.subcommands import (
     parser_comments_latest,
     parser_images_optimizer,
     parser_latest_content,
+    parser_new_article,
     parser_open_result,
     parser_search_content,
     parser_search_image,
@@ -219,6 +220,28 @@ def main(args: list[str] = None):
     )
     add_common_arguments(subcmd_upgrade)
     parser_upgrade(subcmd_upgrade)
+
+    # -- NESTED SUBPARSER : CREATE ---------------------------------------------------
+    subcmd_content_manager = subparsers.add_parser(
+        "creer",
+        aliases=["new", "nouveau"],
+        help="Créer un nouveau contenu.",
+        formatter_class=main_parser.formatter_class,
+        prog="content_manager",
+    )
+    content_manager_subparsers = subcmd_content_manager.add_subparsers(
+        title="Gestion de contenu", dest="cmd_content_manager"
+    )
+
+    # Créer un nouvel article
+    subcmd_content_new_article = content_manager_subparsers.add_parser(
+        "article",
+        help="Créer un nouvel article.",
+        formatter_class=main_parser.formatter_class,
+        prog="new-article",
+    )
+    add_common_arguments(subcmd_content_new_article)
+    parser_new_article(subcmd_content_new_article)
 
     # -- NESTED SUBPARSER : COMMENTS ---------------------------------------------------
     subcmd_comments = subparsers.add_parser(

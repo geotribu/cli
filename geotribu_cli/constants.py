@@ -60,6 +60,11 @@ class GeotribuDefaults:
     # social
     mastodon_base_url: str = "https://mapstodon.space/"
 
+    # templates
+    template_article: str = "/articles/templates/template_article.md"
+    template_rdp: str = "/rdp/templates/template_rdp.md"
+    template_rdp_news: str = "/rdp/templates/template_rdp_news.md"
+
     @property
     def cdn_search_index_full_url(self) -> str:
         """Returns CDN search index full URL.
