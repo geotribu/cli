@@ -8,6 +8,7 @@
 """
 
 # standard
+from datetime import datetime
 from pathlib import Path
 
 # 3rd party
@@ -16,6 +17,7 @@ import pytest
 # project
 from geotribu_cli import __about__, cli
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.utils.slugger import sluggy
 
 # ############################################################################
 # ########## Globals #############
@@ -102,24 +104,34 @@ def test_cli_run_images_logo_news(capsys):
 
 def test_cli_run_new_article(capsys):
     """Test subcommand creating new article."""
+
+    art_title = f"Test Unitaire de {__about__.__title__} {__about__.__version__}"
+
     cli.main(
         [
             "new",
             "article",
+            "--date",
+            f"{datetime.today():%Y-%m-%d}",
             "--titre",
-            f"Test Unitaire de {__about__.__title__} {__about__.__version__}",
+            art_title,
         ]
     )
 
     out, err = capsys.readouterr()
 
+    out_file = defaults_settings.geotribu_working_folder.joinpath(
+        f"drafts/{datetime.today():%Y-%m-%d}_{sluggy(art_title)}.md"
+    )
+
     assert err == ""
-    assert defaults_settings.geotribu_working_folder.joinpath(
-        "drafts"
-    ).is_dir(), "Le dossier drafts devrait avoir été créé"
-    assert len(
-        list(defaults_settings.geotribu_working_folder.joinpath("drafts").glob("*.md"))
-    ), "Le dossier drafts devrait contenir au moins un fichier Markdown"
+    assert (
+        out_file.parent.is_dir()
+    ), f"Le dossier {out_file.parent} devrait avoir été créé"
+    assert out_file.is_file(), f"Le fichier {out_file} devrait avoir été créé"
+
+    # clean up
+    out_file.unlink(missing_ok=True)
 
 
 def test_cli_run_rss(capsys):
