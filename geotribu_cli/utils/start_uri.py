@@ -28,13 +28,29 @@ def open_uri(in_filepath: Union[str, Path]):
         return webbrowser.open(url)
 
     # check if the file or the directory exists
-    check_path(
-        input_path=in_filepath,
-        must_exists=True,
-        must_be_readable=True,
-        must_be_a_file=False,
-        must_be_a_folder=True,
-    )
+    if not any(
+        [
+            check_path(
+                input_path=in_filepath,
+                must_exists=True,
+                must_be_readable=True,
+                must_be_a_file=True,
+                must_be_a_folder=False,
+                raise_error=False,
+            ),
+            check_path(
+                input_path=in_filepath,
+                must_exists=True,
+                must_be_readable=True,
+                must_be_a_file=False,
+                must_be_a_folder=True,
+                raise_error=False,
+            ),
+        ]
+    ):
+        raise OSError(
+            f"Ce chemin ne pointe ni sur un dossier, ni sur un fichier : {in_filepath}"
+        )
 
     # open the directory or the file according to the os
     if opersys == "win32":  # Windows
