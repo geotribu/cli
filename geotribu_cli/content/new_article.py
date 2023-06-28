@@ -9,14 +9,13 @@ import argparse
 import logging
 from datetime import datetime, timedelta
 
+# 3rd party
 import frontmatter
 
 # package
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.content.yaml_handler import IndentedYAMLHandler
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
-
-# 3rd party
-
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -115,7 +114,11 @@ def run(args: argparse.Namespace):
     )
     out_filepath.parent.mkdir(parents=True, exist_ok=True)
     with out_filepath.open(mode="w", encoding="UTF-8") as out_file:
-        out_file.write(frontmatter.dumps(article))
+        out_file.write(
+            frontmatter.dumps(
+                post=article, sort_keys=False, handler=IndentedYAMLHandler()
+            )
+        )
 
 
 # -- Stand alone execution
