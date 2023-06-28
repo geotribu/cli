@@ -18,7 +18,16 @@ Unreleased
 
 -->
 
-## 0.22.0 - 202-06-26
+## 0.23.0 - 2023-06-28
+
+### Features and enhancements 🎉
+
+* Refacto images module by @Guts in <https://github.com/geotribu/cli/pull/98>
+* Refactorize RSS subcmd and related model by @Guts in <https://github.com/geotribu/cli/pull/99>
+* Refactorize search related modules by @Guts in <https://github.com/geotribu/cli/pull/100>
+* Ajoute une sous-commande pour créer un nouvel article by @Guts in <https://github.com/geotribu/cli/pull/101>
+
+## 0.22.0 - 2023-06-26
 
 ### Features and enhancements 🎉
 
