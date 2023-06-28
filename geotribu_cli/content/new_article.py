@@ -8,15 +8,19 @@
 import argparse
 import logging
 from datetime import datetime, timedelta
+from os import getenv
 
 # 3rd party
 import frontmatter
 
 # package
+from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.content.yaml_handler import IndentedYAMLHandler
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.slugger import sluggy
+from geotribu_cli.utils.start_uri import open_uri
+from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -64,6 +68,15 @@ def parser_new_article(
         type=str,
         help="Date de publication envisagée au format AAAA-MM-JJ. Exemple : "
         f"{datetime.today():%Y-%m-%d}. Si vide, 2 semaines à compter de la date du jour.",
+    )
+
+    subparser.add_argument(
+        "--no-auto-open",
+        "--stay",
+        default=str2bool(getenv("GEOTRIBU_AUTO_OPEN_AFTER", True)),
+        action="store_false",
+        dest="opt_auto_open_disabled",
+        help="Désactive l'ouverture automatique du post à la fin de la commande.",
     )
 
     subparser.set_defaults(func=run)
@@ -124,6 +137,12 @@ def run(args: argparse.Namespace):
                 post=article, sort_keys=False, handler=IndentedYAMLHandler()
             )
         )
+
+    console.print(f":fountain_pen: Brouillon d'article créé : {out_filepath.resolve()}")
+
+    # open a result
+    if args.opt_auto_open_disabled:
+        open_uri(in_filepath=out_filepath)
 
 
 # -- Stand alone execution
