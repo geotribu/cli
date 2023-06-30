@@ -12,6 +12,7 @@ import sys
 from os import getenv
 from textwrap import shorten
 from urllib import request
+from urllib.error import HTTPError
 
 # 3rd party
 from rich import print
@@ -21,6 +22,7 @@ from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.comments_latest import get_latest_comments
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.utils.file_downloader import BetterHTTPErrorProcessor
 from geotribu_cli.utils.start_uri import open_uri
 from geotribu_cli.utils.str2bool import str2bool
 
@@ -235,9 +237,28 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         headers=headers,
     )
 
-    r = request.urlopen(url=req, data=json_data_bytes)
-    content = json.loads(r.read().decode("utf-8"))
+    # install custom processor to handle 401 responses
+    opener = request.build_opener(BetterHTTPErrorProcessor)
+    request.install_opener(opener)
+    with request.urlopen(url=req, data=json_data_bytes) as response:
+        try:
+            content = json.loads(response.read().decode("utf-8"))
+        except Exception as err:
+            logger.warning(f"L'objet réponse ne semble pas être un JSON valide : {err}")
+            content = response.read().decode("utf-8")
+
+    if isinstance(content, dict) and "error" in content:
+        raise HTTPError(
+            url=req.full_url,
+            code="401",
+            msg=content,
+            hdrs=headers,
+            fp=None,
+        )
+
+    # set comment as newly posted
     content["cli_newly_posted"] = True
+
     return content
 
 
@@ -321,7 +342,7 @@ def run(args: argparse.Namespace):
             "Une erreur a empêché la récupération des derniers commentaires. "
             f"Trace: {err}"
         )
-        sys.exit(1)
+        sys.exit(err)
 
     # check credentials
     if args.broadcast_to == "mastodon":
@@ -330,7 +351,10 @@ def run(args: argparse.Namespace):
                 in_comment=latest_comment, public=args.opt_no_public
             )
         except Exception as err:
-            logger.error(f"Trace : {err}")
+            logger.error(
+                f"La publication du commentaire {latest_comment.id} a échoué. "
+                f"Trace : {err}"
+            )
             sys.exit(1)
 
     print(

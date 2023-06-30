@@ -6,7 +6,6 @@
 # ################################
 
 # standard library
-import json
 import logging
 from http.client import HTTPMessage, HTTPResponse
 from pathlib import Path
@@ -171,15 +170,8 @@ class BetterHTTPErrorProcessor(BaseHandler):
         Returns:
             response object
         """
-        try:
-            decoded_response = json.loads(response.read().decode("utf-8"))
-        except Exception as err:
-            logger.warning(f"L'objet réponse ne semble pas être un JSON valide : {err}")
-            decoded_response = response.read().decode("utf-8")
-
         logger.error(
             f"La requête {request.method} vers {request.full_url} a retourné une erreur "
             f"{code} avec le message : {msg}."
-            f" Détails : {decoded_response}"
         )
         return response
