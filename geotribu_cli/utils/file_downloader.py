@@ -7,9 +7,11 @@
 
 # standard library
 import logging
+from http.client import HTTPMessage, HTTPResponse
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import (
+    BaseHandler,
     ProxyHandler,
     Request,
     build_opener,
@@ -131,3 +133,45 @@ def download_remote_file_to_local(
         )
         raise error
     return local_file_path
+
+
+# ############################################################################
+# ########## CLASSES #############
+# ################################
+
+
+class BetterHTTPErrorProcessor(BaseHandler):
+    """A custom processor for HTTP error to avoid raising exception when response code
+        is 40*. Especially for 401 (authentication issue).
+
+    Inspired by https://stackoverflow.com/a/7033063/2556577.
+
+    Args:
+        BaseHandler: base class
+    """
+
+    def http_error_401(
+        self,
+        request: Request,
+        response: HTTPResponse,
+        code: int,
+        msg: str,
+        headers: HTTPMessage,
+    ) -> HTTPResponse:
+        """Handle 401 responses.
+
+        Args:
+            request: request object
+            response: response object
+            code: HTTP response code
+            msg: message
+            headers: response headers
+
+        Returns:
+            response object
+        """
+        logger.error(
+            f"La requête {request.method} vers {request.full_url} a retourné une erreur "
+            f"{code} avec le message : {msg}."
+        )
+        return response

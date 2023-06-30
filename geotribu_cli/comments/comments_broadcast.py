@@ -12,6 +12,7 @@ import sys
 from os import getenv
 from textwrap import shorten
 from urllib import request
+from urllib.error import HTTPError
 
 # 3rd party
 from rich import print
@@ -21,6 +22,7 @@ from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.comments_latest import get_latest_comments
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.utils.file_downloader import BetterHTTPErrorProcessor
 from geotribu_cli.utils.start_uri import open_uri
 from geotribu_cli.utils.str2bool import str2bool
 
@@ -106,7 +108,7 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
             "Content-Type": "application/json; charset=utf-8",
         }
         req = request.Request(
-            f"{defaults_settings.mastodon_base_url}/api/v1/timelines/tag/geotribot",
+            f"{defaults_settings.mastodon_base_url}api/v1/timelines/tag/geotribot",
             method="GET",
             headers=headers,
         )
@@ -133,7 +135,7 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
                     f"{comment_id} n'y est pas..."
                 )
                 req = request.Request(
-                    f"{defaults_settings.mastodon_base_url}/api/v1/statuses/"
+                    f"{defaults_settings.mastodon_base_url}api/v1/statuses/"
                     f"{status.get('id')}/context",
                     method="GET",
                     headers=headers,
@@ -148,6 +150,10 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
                         )
                         return reply_status
 
+    logger.info(
+        f"Le commentaire {comment_id} n'a pas été trouvé. "
+        "Il est donc considéré comme nouveau."
+    )
     return None
 
 
@@ -193,11 +199,17 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
             and "id" in comment_parent_broadcasted
         ):
             print(
-                "Le commentaire parent a été posté précédemment sur Mastodon : "
-                f"{comment_parent_broadcasted.get('url')}. Le commentaire actuel sera "
-                "posté en réponse."
+                f"Le commentaire parent {in_comment.parent}a été posté précédemment sur "
+                f"Mastodon : {comment_parent_broadcasted.get('url')}. Le commentaire "
+                "actuel sera posté en réponse."
             )
             request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
+        else:
+            print(
+                f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
+                "sur Mastodon. Le commentaire actuel sera donc posté comme nouveau fil "
+                "de discussion."
+            )
 
     # unlisted or direct
     if not public:
@@ -220,14 +232,33 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
     }
 
     req = request.Request(
-        f"{defaults_settings.mastodon_base_url}/api/v1/statuses",
+        f"{defaults_settings.mastodon_base_url}api/v1/statuses",
         method="POST",
         headers=headers,
     )
 
-    r = request.urlopen(url=req, data=json_data_bytes)
-    content = json.loads(r.read().decode("utf-8"))
+    # install custom processor to handle 401 responses
+    opener = request.build_opener(BetterHTTPErrorProcessor)
+    request.install_opener(opener)
+    with request.urlopen(url=req, data=json_data_bytes) as response:
+        try:
+            content = json.loads(response.read().decode("utf-8"))
+        except Exception as err:
+            logger.warning(f"L'objet réponse ne semble pas être un JSON valide : {err}")
+            content = response.read().decode("utf-8")
+
+    if isinstance(content, dict) and "error" in content:
+        raise HTTPError(
+            url=req.full_url,
+            code="401",
+            msg=content,
+            hdrs=headers,
+            fp=None,
+        )
+
+    # set comment as newly posted
     content["cli_newly_posted"] = True
+
     return content
 
 
@@ -311,7 +342,7 @@ def run(args: argparse.Namespace):
             "Une erreur a empêché la récupération des derniers commentaires. "
             f"Trace: {err}"
         )
-        sys.exit(1)
+        sys.exit(err)
 
     # check credentials
     if args.broadcast_to == "mastodon":
@@ -320,7 +351,10 @@ def run(args: argparse.Namespace):
                 in_comment=latest_comment, public=args.opt_no_public
             )
         except Exception as err:
-            logger.error(f"Trace : {err}")
+            logger.error(
+                f"La publication du commentaire {latest_comment.id} a échoué. "
+                f"Trace : {err}"
+            )
             sys.exit(1)
 
     print(
