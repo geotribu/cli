@@ -92,7 +92,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         else:
             print(
                 f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
-                "sur Mastodon. Le commentaire actuel sera donc posté comme nouveau fil "
+                f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc posté comme nouveau fil "
                 "de discussion."
             )
 
