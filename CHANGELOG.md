@@ -18,6 +18,13 @@ Unreleased
 
 -->
 
+## 0.24.0 - 2023-06-30
+
+### Features and enhancements 🎉
+
+* Add expiration_rotating_hours option to comments latest by @Guts in <https://github.com/geotribu/cli/pull/102>
+* Améliore la gestion des réponses HTTP 40* by @Guts in <https://github.com/geotribu/cli/pull/103>
+
 ## 0.23.0 - 2023-06-28
 
 ### Features and enhancements 🎉
