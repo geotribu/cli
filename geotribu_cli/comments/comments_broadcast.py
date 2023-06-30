@@ -148,6 +148,10 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
                         )
                         return reply_status
 
+    logger.info(
+        f"Le commentaire {comment_id} n'a pas été trouvé. "
+        "Il est donc considéré comme nouveau."
+    )
     return None
 
 
@@ -193,11 +197,17 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
             and "id" in comment_parent_broadcasted
         ):
             print(
-                "Le commentaire parent a été posté précédemment sur Mastodon : "
-                f"{comment_parent_broadcasted.get('url')}. Le commentaire actuel sera "
-                "posté en réponse."
+                f"Le commentaire parent {in_comment.parent}a été posté précédemment sur "
+                f"Mastodon : {comment_parent_broadcasted.get('url')}. Le commentaire "
+                "actuel sera posté en réponse."
             )
             request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
+        else:
+            print(
+                f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
+                "sur Mastodon. Le commentaire actuel sera donc posté comme nouveau fil "
+                "de discussion."
+            )
 
     # unlisted or direct
     if not public:
