@@ -88,12 +88,15 @@ def get_latest_comments(
     sort_by: Literal[
         "author_asc", "author_desc", "created_asc", "created_desc"
     ] = "created_asc",
+    expiration_rotating_hours: int = 1,
 ) -> list[Comment]:
     """Download and parse latest comments published.
 
     Args:
         number: count of comments to download. Must be > 1. Defaults to 5.
         sort_by: comments sorting criteria. Defaults to "created_asc".
+        expiration_rotating_hours (int, optional): number in hours to consider the \
+            local file outdated. Defaults to 1.
 
     Returns:
         list of comments objects
@@ -108,7 +111,7 @@ def get_latest_comments(
         local_file_path=defaults_settings.geotribu_working_folder.joinpath(
             "comments/latest.json"
         ),
-        expiration_rotating_hours=1,
+        expiration_rotating_hours=expiration_rotating_hours,
         content_type="application/json",
     )
 
@@ -188,6 +191,15 @@ def parser_comments_latest(
         metavar="GEOTRIBU_RESULTATS_FORMAT",
     )
 
+    subparser.add_argument(
+        "-x",
+        "--expiration-rotating-hours",
+        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
+        default=1,
+        type=int,
+        dest="expiration_rotating_hours",
+    )
+
     subparser.set_defaults(func=run)
 
     return subparser
@@ -210,7 +222,9 @@ def run(args: argparse.Namespace):
 
     try:
         latest_comments = get_latest_comments(
-            number=args.results_number, sort_by="created_desc"
+            number=args.results_number,
+            sort_by="created_desc",
+            expiration_rotating_hours=args.expiration_rotating_hours,
         )
     except Exception as err:
         logger.error(
