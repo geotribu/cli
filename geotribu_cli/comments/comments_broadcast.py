@@ -299,7 +299,9 @@ def run(args: argparse.Namespace):
 
     # get latest comment
     try:
-        latest_comment = get_latest_comments(number=5, sort_by="created_desc")
+        latest_comment = get_latest_comments(
+            number=5, sort_by="created_desc", expiration_rotating_hours=1
+        )
         if not len(latest_comment):
             print(":person_shrugging: Aucun commentaire trouvé")
             sys.exit(0)
