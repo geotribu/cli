@@ -106,7 +106,7 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
             "Content-Type": "application/json; charset=utf-8",
         }
         req = request.Request(
-            f"{defaults_settings.mastodon_base_url}/api/v1/timelines/tag/geotribot",
+            f"{defaults_settings.mastodon_base_url}api/v1/timelines/tag/geotribot",
             method="GET",
             headers=headers,
         )
@@ -133,7 +133,7 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
                     f"{comment_id} n'y est pas..."
                 )
                 req = request.Request(
-                    f"{defaults_settings.mastodon_base_url}/api/v1/statuses/"
+                    f"{defaults_settings.mastodon_base_url}api/v1/statuses/"
                     f"{status.get('id')}/context",
                     method="GET",
                     headers=headers,
@@ -220,7 +220,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
     }
 
     req = request.Request(
-        f"{defaults_settings.mastodon_base_url}/api/v1/statuses",
+        f"{defaults_settings.mastodon_base_url}api/v1/statuses",
         method="POST",
         headers=headers,
     )
