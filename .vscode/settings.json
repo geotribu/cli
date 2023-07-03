@@ -18,7 +18,11 @@
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.terminal.activateEnvironment": true,
     // Formatter
+    "python.analysis.autoFormatStrings": true,
     "python.formatting.provider": "none",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
     // Linter
     "python.linting.enabled": true,
     "python.linting.flake8Enabled": true,
@@ -35,7 +39,4 @@
     "autoDocstring.guessTypes": true,
     "autoDocstring.docstringFormat": "google-notypes",
     "autoDocstring.generateDocstringOnEnter": false,
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter"
-    }
 }
