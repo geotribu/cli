@@ -12,7 +12,8 @@
 
 # Standard library
 import logging
-from datetime import date, datetime
+from calendar import monthrange
+from datetime import date, datetime, timedelta
 from functools import lru_cache
 
 # #############################################################################
@@ -21,7 +22,6 @@ from functools import lru_cache
 
 # logs
 logger = logging.getLogger(__name__)
-
 
 # #############################################################################
 # ########## Functions #############
@@ -99,24 +99,23 @@ def get_date_from_content_location(input_content_location: str) -> date:
         return None
 
 
-def get_days_until_next_month(
-    from_date: date = None,
-) -> int:
+def get_days_until_next_month(from_date: date = None) -> int:
     """Return the number of days until the next month.
 
     Args:
-        from_date: date to compare to next month. If not set,
-            datetime.date.today() is used.
+        from_date: date to compare to next month. If not set, datetime.date.today()
+            is used.
 
     Returns:
         number of days until next month
     """
     if from_date is None:
+        logger.debug("Aucune date passée. Date du jour utilisée.")
         from_date = date.today()
 
-    next_month: datetime.date = datetime.date(
-        from_date.year, from_date.month, 1
-    ) + datetime.timedelta(days=31)
+    next_month = date(from_date.year, from_date.month, 1) + timedelta(
+        days=monthrange(year=from_date.year, month=from_date.month)[1]
+    )
     diff = next_month - from_date
 
     return diff.days
@@ -128,30 +127,4 @@ def get_days_until_next_month(
 
 if __name__ == "__main__":
     """Standalone execution."""
-    # good
-    sample_content_location = (
-        "articles/2008/2008-08-22_1-introduction-a-l-api-google-maps/"
-    )
-    sample_content_date = get_date_from_content_location(sample_content_location)
-    print(type(sample_content_date), sample_content_date)
-    assert isinstance(sample_content_date, date)
-
-    # good with content folder prefix and md suffix
-    sample_content_location = (
-        "/content/articles/2008/2008-08-22_1-introduction-a-l-api-google-maps.md"
-    )
-    sample_content_date = get_date_from_content_location(sample_content_location)
-    print(type(sample_content_date), sample_content_date)
-    assert isinstance(sample_content_date, date)
-
-    # good with content folder prefix and md suffix
-    sample_content_location = "content/rdp/2023/rdp_2023-01-06.md"
-    sample_content_date = get_date_from_content_location(sample_content_location)
-    print(type(sample_content_date), sample_content_date)
-    assert isinstance(sample_content_date, date)
-
-    # bad
-    sample_content_location = "2008-08-22_1-introduction-a-l-api-google-maps"
-    sample_content_date = get_date_from_content_location(sample_content_location)
-    print(type(sample_content_date), sample_content_date)
-    assert sample_content_date is None
+    pass

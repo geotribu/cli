@@ -5,9 +5,9 @@
 
     .. code-block:: bash
         # for whole tests
-        python -m unittest tests.test_utils_date_from_content
+        python -m unittest tests.test_utils_date_helpers
         # for specific test
-        python -m unittest tests.test_utils_date_from_content.TestUtilsDateFromContent.test_date_from_content_location
+        python -m unittest tests.test_utils_date_helpers.TestUtilsDateHelpers.test_date_from_content_location
 """
 
 # standard library
@@ -15,15 +15,18 @@ import unittest
 from datetime import date
 
 # project
-from geotribu_cli.utils.dates_manipulation import get_date_from_content_location
+from geotribu_cli.utils.dates_manipulation import (
+    get_date_from_content_location,
+    get_days_until_next_month,
+)
 
 # ############################################################################
 # ########## Classes #############
 # ################################
 
 
-class TestUtilsDateFromContent(unittest.TestCase):
-    """Test package utilities."""
+class TestUtilsDateHelpers(unittest.TestCase):
+    """Test date utilities."""
 
     def test_date_from_content_location(self):
         """Test minimalist slugify function."""
@@ -54,6 +57,11 @@ class TestUtilsDateFromContent(unittest.TestCase):
         sample_content_date = get_date_from_content_location(sample_content_location)
         print(type(sample_content_date), sample_content_date)
         self.assertIsNone(sample_content_date)
+
+    def test_days_until_next_month(self):
+        """Test count days until net month."""
+        self.assertIsInstance(get_days_until_next_month(), int)
+        self.assertEqual(get_days_until_next_month(date(2023, 12, 22)), 10)
 
 
 # ############################################################################
