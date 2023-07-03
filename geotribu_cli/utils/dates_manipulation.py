@@ -29,6 +29,20 @@ logger = logging.getLogger(__name__)
 
 
 @lru_cache(maxsize=512)
+def is_more_recent(date_ref: date, date_to_compare: date) -> bool:
+    """Détermine si la date à comparer est plus récent que la date de référence.
+
+    Args:
+        date_ref: date de référence
+        date_to_compare: date à comparer
+
+    Returns:
+        résultat de la comparaison
+    """
+    return date_to_compare > date_ref
+
+
+@lru_cache(maxsize=512)
 def get_date_from_content_location(input_content_location: str) -> date:
     """Extract date from content location string.
 
