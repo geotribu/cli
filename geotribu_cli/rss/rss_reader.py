@@ -279,12 +279,16 @@ def run(args: argparse.Namespace):
     # prompt to open a result
     if args.opt_prompt_disabled:
         result_to_open = Prompt.ask(
-            prompt="Afficher le résultat n°",
+            prompt="Afficher le résultat n° (q pour quitter)",
             console=console,
-            choices=[
-                str(i) for i in range(0, min([len(feed_items), args.results_number]))
-            ],
+            choices=["q"]
+            + [str(i) for i in range(0, min([len(feed_items), args.results_number]))],
+            default="q",
         )
+
+        if result_to_open == "q":
+            sys.exit(0)
+
         open_content(
             content_uri=feed_items[int(result_to_open)].url,
             application=getenv("GEOTRIBU_OPEN_WITH", "shell"),
