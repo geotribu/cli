@@ -8,6 +8,7 @@
 import argparse
 import logging
 import sys
+from datetime import date
 from os import getenv
 from pathlib import Path
 
@@ -25,7 +26,11 @@ from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
 from geotribu_cli.subcommands.open_result import open_content
-from geotribu_cli.utils.dates_manipulation import get_date_from_content_location
+from geotribu_cli.utils.args_types import arg_date_iso_max_today
+from geotribu_cli.utils.dates_manipulation import (
+    get_date_from_content_location,
+    is_more_recent,
+)
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
 from geotribu_cli.utils.formatters import convert_octets, url_add_utm
@@ -141,6 +146,11 @@ def generate_index_from_docs(
     return idx
 
 
+# def translate_filter_year_pattern(in_filter_years):
+#     if isinstance(in_filter_years, str) and in_filter_years.endswith("*"):
+#         return
+
+
 # ############################################################################
 # ########## CLI #################
 # ################################
@@ -179,18 +189,45 @@ def parser_search_content(
         "-l",
         "--local-index-file",
         help="Emplacement du fichier local.",
-        default=Path().home() / ".geotribu/search/site_search_index.json",
+        default=defaults_settings.geotribu_working_folder.joinpath(
+            "search/site_search_index.json"
+        ),
         type=Path,
         dest="local_index_file",
     )
 
     subparser.add_argument(
         "-f",
+        "-ft",
         "--filter-type",
         choices=["article", "rdp"],
         default=getenv("GEOTRIBU_CONTENUS_DEFAULT_TYPE", None),
         help="Filtrer sur un type de contenu en particulier.",
         metavar="GEOTRIBU_CONTENUS_DEFAULT_TYPE",
+    )
+
+    subparser.add_argument(
+        "-ds",
+        "--depuis",
+        "--date-start",
+        default=getenv("GEOTRIBU_CONTENUS_START_DATE", "2020-01-01"),
+        dest="filter_date_start",
+        help="Date la plus ancienne sur laquelle filtrer les contenus "
+        "(format: AAAA-MM-JJ). Valeur par défaut : 2020-01-01",
+        metavar="GEOTRIBU_CONTENUS_DATE_START",
+        type=arg_date_iso_max_today,
+    )
+
+    subparser.add_argument(
+        "-de",
+        "--jusqua",
+        "--date-end",
+        default=getenv("GEOTRIBU_CONTENUS_END_DATE", f"{date.today():%Y-%m-%d}"),
+        dest="filter_date_end",
+        help="Date la plus récente sur laquelle filtrer les contenus "
+        "(format: AAAA-MM-JJ). Valeur par défault : date du jour.",
+        metavar="GEOTRIBU_CONTENUS_DATE_END",
+        type=arg_date_iso_max_today,
     )
 
     subparser.add_argument(
@@ -270,7 +307,6 @@ def run(args: argparse.Namespace):
 
     # local vars
     history = CliHistory()
-
     args.local_index_file.parent.mkdir(parents=True, exist_ok=True)
 
     #  local contents listing file
@@ -365,6 +401,7 @@ def run(args: argparse.Namespace):
         sys.exit(0)
 
     # résultats : enrichissement et filtre
+    count_ignored_results = 0
     with console.status(
         f"Enrichissement des {len(search_results)} résultats...", spinner="earth"
     ):
@@ -378,22 +415,44 @@ def run(args: argparse.Namespace):
                 logger.debug(
                     f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
                 )
+                count_ignored_results += 1
                 continue
             elif args.filter_type == "rdp" and not result.get("ref").startswith("rdp/"):
                 logger.debug(
                     f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
                 )
+                count_ignored_results += 1
                 continue
             else:
                 pass
 
+            # filtrer les contenus qui ne correspondent pas aux années sélectionnées
+            rezult_date = get_date_from_content_location(result.get("ref"))
+            if isinstance(args.filter_date_start, date) and not is_more_recent(
+                date_ref=args.filter_date_start, date_to_compare=rezult_date
+            ):
+                logger.info(
+                    f"Résultat {result.get('ref')} plus ancien ({rezult_date})"
+                    f"que la date minimum {args.filter_date_start}"
+                )
+                count_ignored_results += 1
+                continue
+            elif isinstance(args.filter_date_end, date) and is_more_recent(
+                date_ref=args.filter_date_end, date_to_compare=rezult_date
+            ):
+                logger.info(
+                    f"Résultat {result.get('ref')} plus récent ({rezult_date})"
+                    f"que la date maximum {args.filter_date_end}"
+                )
+                count_ignored_results += 1
+                continue
+
             # crée un résultat de sortie
             out_result = {
-                "titre": result.get("title"),
                 "type": "Article"
                 if result.get("ref").startswith("articles/")
                 else "GeoRDP",
-                "date": get_date_from_content_location(result.get("ref")),
+                "date": rezult_date,
                 "score": f"{result.get('score'):.3}",
                 "url": f"{defaults_settings.site_base_url}{result.get('ref')}",
             }
@@ -424,7 +483,11 @@ def run(args: argparse.Namespace):
             )
         )
     else:
-        print(f":person_shrugging: Aucun contenu trouvé pour : {args.search_term}")
+        print(
+            f":person_shrugging: Aucun contenu trouvé pour : {args.search_term} parmi "
+            f"les {len(search_results)} résultats de recherche. "
+            f"{count_ignored_results} résultats ignorés par les filtres (type, dates)..."
+        )
         sys.exit(0)
 
     # save into history
