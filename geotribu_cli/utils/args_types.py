@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################
-def arg_date_iso(date_str: str, max_today: bool = True) -> date:
+def arg_date_iso(date_str: str) -> date:
     """
     Valide le format d'une date au format AAAA-MM-JJ.
 
