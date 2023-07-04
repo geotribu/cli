@@ -39,12 +39,13 @@ repos:
     rev: "v0.0.276"
     hooks:
       - id: ruff
-        args: ["--fix-only"]
+        args: ["--fix-only", "--target-version=py39"]
 
   - repo: https://github.com/psf/black
     rev: 23.3.0
     hooks:
       - id: black
+        args: ["--target-version=py39"]
 
   - repo: https://github.com/pycqa/isort
     rev: 5.12.0
