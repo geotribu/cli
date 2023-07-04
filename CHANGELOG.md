@@ -18,6 +18,18 @@ Unreleased
 
 -->
 
+## 0.25.0 - 2023-07-04
+
+### Features and enhancements 🎉
+
+* Refactorise le code lié à Mastodon by @Guts in <https://github.com/geotribu/cli/pull/104>
+* Ajoute une option 'q' aux prompts pour permettre de quitter sans ctrl+c by @Guts in <https://github.com/geotribu/cli/pull/108>
+* Ajoute les filtres par date à la recherche de contenus by @Guts in <https://github.com/geotribu/cli/pull/109>
+
+### Tooling 🔧
+
+* Affine la configuration des git hooks et corrige la compatibilité avec Python 3.9 by @Guts in <https://github.com/geotribu/cli/pull/112>
+
 ## 0.24.0 - 2023-06-30
 
 ### Features and enhancements 🎉
