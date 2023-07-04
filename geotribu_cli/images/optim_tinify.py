@@ -9,6 +9,7 @@ import logging
 import sys
 from os import getenv
 from pathlib import Path
+from typing import Union
 from urllib.parse import unquote, urlsplit
 
 # 3rd party
@@ -53,7 +54,7 @@ def tinify_check_api_limit() -> int:
 
 
 def optimize_with_tinify(
-    image_path_or_url: str | Path, image_type: str = "body"
+    image_path_or_url: Union[str, Path], image_type: str = "body"
 ) -> Path:
     """Optimize image using Tinify API (tinypng.com).
 
