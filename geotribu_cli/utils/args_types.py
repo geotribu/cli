@@ -88,7 +88,7 @@ def arg_type_path_folder(input_path: Union[Path, str]) -> Path:
         doesn't exist.
 
     Returns:
-        Union[Path, ArgumentTypeError]: _description_
+        Path: path to the folder as pathlib.Path
     """
     if not check_path(
         input_path=input_path,

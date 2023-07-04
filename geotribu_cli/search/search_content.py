@@ -146,11 +146,6 @@ def generate_index_from_docs(
     return idx
 
 
-# def translate_filter_year_pattern(in_filter_years):
-#     if isinstance(in_filter_years, str) and in_filter_years.endswith("*"):
-#         return
-
-
 # ############################################################################
 # ########## CLI #################
 # ################################
