@@ -18,6 +18,7 @@ from datetime import date
 from geotribu_cli.utils.dates_manipulation import (
     get_date_from_content_location,
     get_days_until_next_month,
+    is_more_recent,
 )
 
 # ############################################################################
@@ -62,6 +63,11 @@ class TestUtilsDateHelpers(unittest.TestCase):
         """Test count days until net month."""
         self.assertIsInstance(get_days_until_next_month(), int)
         self.assertEqual(get_days_until_next_month(date(2023, 12, 22)), 10)
+
+    def test_date_si_more_recen(self):
+        """Test date comparison."""
+        self.assertTrue(is_more_recent(date(2020, 8, 9), date(2023, 12, 24)))
+        self.assertFalse(is_more_recent(date(2020, 8, 9), date(2013, 3, 31)))
 
 
 # ############################################################################
