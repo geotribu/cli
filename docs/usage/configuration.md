@@ -5,8 +5,10 @@
 | Nom de la variable  | Description | Option CLI correspondante | Valeur par défaut |
 | :------------------ | :---------- | :-----------------------: | :---------------: |
 | `GEOTRIBU_AUTO_OPEN_AFTER` | Activer/désactiver l'ouverture automatique du contenu publié à la fin d'une commande de publication (commentaire...). | `--no-auto-open` | `True` |
-| `GEOTRIBU_CONTENUS_INDEX_EXPIRATION_HOURS` | Nombre d'heures à partir duquel considérer le fichier local comme périmé. | `--expiration-rotating-hours` de `search-content`  | `24*7` (1 semaine) |
+| `GEOTRIBU_CONTENUS_DATE_END` | Date de publication la plus récente sur laquelle filtrer les contenus (format: AAAA-MM-JJ). | `--date-end` de `search-content`  | date du jour |
+| `GEOTRIBU_CONTENUS_DATE_START` | Date de publication la plus ancienne sur laquelle filtrer les contenus (format: AAAA-MM-JJ). | `--date-start` de `search-content`  | `2020-01-01` |
 | `GEOTRIBU_CONTENUS_DEFAULT_TYPE` | Type de contenu sur lequel filtrer. | `--filter-type` de `search-images`  | `None` |
+| `GEOTRIBU_CONTENUS_INDEX_EXPIRATION_HOURS` | Nombre d'heures à partir duquel considérer le fichier local comme périmé. | `--expiration-rotating-hours` de `search-content`  | `24*7` (1 semaine) |
 | `GEOTRIBU_DEFAULT_SUBCOMMAND` | Sous-commande à exécuter par défaut quand on lance le CLI sans argument | | `read-latest` |
 | `GEOTRIBU_IMAGES_DEFAULT_TYPE` | Type d'image sur lequel filtrer. | `--filter-type` de `search-images`  | `None` |
 | `GEOTRIBU_IMAGES_INDEX_EXPIRATION_HOURS` | Nombre d'heures à partir duquel considérer le fichier local comme périmé. | `--expiration-rotating-hours` de `search-images`  | `24` (1 jour) |
