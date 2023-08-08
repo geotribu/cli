@@ -29,7 +29,7 @@ class GeotribuDefaults:
     git_base_url_organisation: str = "https://github.com/geotribu/"
 
     # website
-    site_base_url: str = "https://static.geotribu.fr/"
+    site_base_url: str = "https://geotribu.fr/"
     site_git_default_branch: str = "master"
     site_git_project: str = "website"
     site_search_index: str = "search/search_index.json"
