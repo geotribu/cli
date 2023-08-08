@@ -102,11 +102,11 @@ def url_content_name(
 
     .. code-block:: python
 
-        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/"))
+        >>> print(url_content_source("https://geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/"))
         https://github.com/geotribu/website/blob/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
-        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='raw'))
+        >>> print(url_content_source("https://geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='raw'))
         https://github.com/geotribu/website/raw/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
-        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='edit'))
+        >>> print(url_content_source("https://geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='edit'))
         https://github.com/geotribu/website/edit/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
     """
     parsed_url = urlsplit(url=url_rm_query(in_url))
@@ -138,11 +138,11 @@ def url_content_source(
 
     .. code-block:: python
 
-        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/"))
+        >>> print(url_content_source("https://geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/"))
         https://github.com/geotribu/website/blob/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
-        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='raw'))
+        >>> print(url_content_source("https://geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='raw'))
         https://github.com/geotribu/website/raw/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
-        >>> print(url_content_source("https://static.geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='edit'))
+        >>> print(url_content_source("https://geotribu.fr/articles/2023/2023-05-04_annonce-changement-url-site-geotribu/", mode='edit'))
         https://github.com/geotribu/website/edit/master/content/articles/2023/2023-05-04_annonce-changement-url-site-geotribu.md
     """
     parsed_url = urlsplit(url=url_rm_query(in_url))
