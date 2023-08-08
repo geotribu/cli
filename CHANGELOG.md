@@ -18,6 +18,16 @@ Unreleased
 
 -->
 
+## 0.26.0 - 2023-08-08
+
+### Features and enhancements 🎉
+
+* Ajoute les tests sur les types personnalisés argparse by @Guts in <https://github.com/geotribu/cli/pull/113>
+
+### Other Changes
+
+* Bascule sur la nouvelle URL du site Geotribu by @Guts in <https://github.com/geotribu/cli/pull/116>
+
 ## 0.25.0 - 2023-07-04
 
 ### Features and enhancements 🎉
