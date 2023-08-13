@@ -69,7 +69,12 @@ def filter_content_listing(json_filepath: Path) -> filter:
 
 
 def format_output_result(
-    result: list[dict], search_term: str = None, format_type: str = None, count: int = 5
+    result: list[dict],
+    search_term: str = None,
+    format_type: str = None,
+    count: int = 5,
+    search_filter_dates: tuple = None,
+    search_filter_type: str = None,
 ) -> str:
     """Format result according to output option.
 
@@ -78,15 +83,29 @@ def format_output_result(
         search_term (str, optional): term used for search. Defaults to None.
         format_type (str, optional): format output option. Defaults to None.
         count (int, optional): default number of results to display. Defaults to 5.
+        search_filter_dates: dates used to filter search. Defaults to None.
+        search_filter_type: type used to filter search. Defaults to None.
 
     Returns:
         str: formatted result ready to print
     """
 
     if format_type == "table":
+        # formatte le titre - plus lisible qu'une grosse f-string des familles
+        titre = f"Recherche de contenus - {count}/{len(result)} résultats "
+        if search_term:
+            titre += f"avec le terme : {search_term}"
+        if any([search_filter_dates[0], search_filter_dates[1], search_filter_type]):
+            titre += "\nFiltres : "
+            if search_filter_type:
+                titre += f"de type {search_filter_type}, "
+            if search_filter_dates[0]:
+                titre += f"plus récents que {search_filter_dates[0]:%d %B %Y}, "
+            if search_filter_dates[1]:
+                titre += f"plus anciens que {search_filter_dates[1]:%d %B %Y}"
+
         table = Table(
-            title=f"Recherche de contenus - {count}/{len(result)} résultats "
-            f"avec le terme : {search_term}\n(ctrl+clic sur le titre pour ouvrir le contenu)",
+            title=titre,
             show_lines=True,
             highlight=True,
             caption=f"{__title__} {__version__}",
@@ -475,6 +494,8 @@ def run(args: argparse.Namespace):
                 search_term=args.search_term,
                 format_type=args.format_output,
                 count=args.results_number,
+                search_filter_dates=(args.filter_date_start, args.filter_date_end),
+                search_filter_type=args.filter_type,
             )
         )
     else:
