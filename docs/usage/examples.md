@@ -4,6 +4,21 @@
 Les sorties présentées sur cette page sont générées automatiquement durant la génération de la documentation dans la CI. Elles ne sont donc pas représentatives du rendu sur le terminal de chacun/e.
 :::
 
+## Aide
+
+```sh
+geotribu --help
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_help.txt
+  :language: shell
+```
+
+----
+
 ## Consulter les derniers contenus publiés
 
 ### Récupération simple

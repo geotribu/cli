@@ -59,6 +59,7 @@ jobs:
         env:
           GEOTRIBU_PROMPT_AFTER_SEARCH: false
         run: |
+          geotribu --help > docs/usage/cli_sample_help.txt
           geotribu comments latest --results-number 5 > docs/usage/cli_sample_comments_latest.txt
           geotribu rss --format-output table --results-number 3 > docs/usage/cli_sample_rss.txt
           geotribu rss -f rdp -o table > docs/usage/cli_sample_rss_rdp.txt
