@@ -345,6 +345,7 @@ def run(args: argparse.Namespace):
 
     # résultats : enrichissement et filtre
     count_ignored_results = 0
+    unique_ref: list = []
     with console.status(
         f"Enrichissement des {len(search_results)} résultats...", spinner="earth"
     ):
@@ -389,6 +390,21 @@ def run(args: argparse.Namespace):
                 )
                 count_ignored_results += 1
                 continue
+
+            if (
+                result.get("ref").startswith("articles/")
+                and "#" in result.get("ref")
+                and result.get("ref").split("#")[0] in unique_ref
+            ):
+                logger.info(
+                    f"Résultat {result.get('ref')} ignoré car il s'agit d'une "
+                    f"sous-partie ({result.get('ref').split('#')[1]}) d'un article déjà "
+                    "présent dans les résultats."
+                )
+                count_ignored_results += 1
+                continue
+
+            unique_ref.append(result.get("ref").split("#")[0])
 
             # crée un résultat de sortie
             out_result = {
