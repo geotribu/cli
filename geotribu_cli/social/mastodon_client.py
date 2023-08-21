@@ -84,16 +84,16 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
             and "id" in comment_parent_broadcasted
         ):
             print(
-                f"Le commentaire parent {in_comment.parent}a été posté précédemment sur "
+                f"Le commentaire parent {in_comment.parent} a été posté précédemment sur "
                 f"Mastodon : {comment_parent_broadcasted.get('url')}. Le commentaire "
-                "actuel sera posté en réponse."
+                "actuel sera donc posté en réponse."
             )
             request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
         else:
             print(
-                f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
-                f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc posté comme nouveau fil "
-                "de discussion."
+                f"Le commentaire parent {in_comment.parent} n'a pas été posté "
+                f"précédemment sur Mastodon. Le commentaire actuel ({in_comment.id}) "
+                "sera donc posté comme nouveau fil de discussion."
             )
 
     # unlisted or direct
