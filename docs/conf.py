@@ -101,8 +101,10 @@ pygments_style = "sphinx"
 html_baseurl = __about__.__uri_homepage__
 
 # Theme
-html_favicon = "https://cdn.geotribu.fr/img/internal/charte/geotribu_logo_orange_LQ.png"
-html_logo = "https://cdn.geotribu.fr/img/internal/charte/geotribu_logo_64x64.png"
+html_favicon = (
+    "https://cdn.geotribu.fr/img/internal/charte/geotribu_cli_logo_200x200.png"
+)
+html_logo = "https://cdn.geotribu.fr/img/internal/charte/geotribu_cli_logo_200x200.png"
 
 html_theme = "furo"
 html_theme_options = {
