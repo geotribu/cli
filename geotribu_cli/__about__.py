@@ -38,7 +38,7 @@ __uri_tracker__ = f"{__uri_repository__}issues/"
 
 __uri__ = __uri_repository__
 
-__version__ = "0.26.0"
+__version__ = "0.27.0"
 __version_info__ = tuple(
     [
         int(num) if num.isdigit() else num

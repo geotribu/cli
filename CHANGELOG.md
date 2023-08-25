@@ -18,6 +18,26 @@ Unreleased
 
 -->
 
+## 0.27.0 - 2023-08-25
+
+### Bugs fixes 🐛
+
+* Corrige la comparaison des dates de dernière modification des fichiers selon les systèmes d'exploitation by @Guts in <https://github.com/geotribu/cli/pull/125>
+* Améliore la gestion des locales sur Windows et Linux pour éviter certaines erreurs d'encodage by @Guts in <https://github.com/geotribu/cli/pull/126>
+
+### Features and enhancements 🎉
+
+* Recherche de contenus : affiche les filtres de la recherche au-dessus du tableau des résultats by @Guts in <https://github.com/geotribu/cli/pull/117>
+
+### Tooling 🔧
+
+* Améliore les exemples donnés dans la documentation by @Guts in <https://github.com/geotribu/cli/pull/118>
+* Applique la nouvelle icône à l'exécutable by @Guts in <https://github.com/geotribu/cli/pull/121>
+
+### Documentation 📖
+
+* Utilise le logo dédié by @Guts in <https://github.com/geotribu/cli/pull/120>
+
 ## 0.26.0 - 2023-08-08
 
 ### Features and enhancements 🎉
