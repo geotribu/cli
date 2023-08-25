@@ -16,7 +16,6 @@ from pathlib import Path
 import orjson
 from lunr import lunr
 from lunr.index import Index
-from rich import print
 from rich.prompt import Prompt
 from rich.table import Table
 
@@ -407,7 +406,7 @@ def run(args: argparse.Namespace):
         search_results: list[dict] = idx.search(args.search_term)
 
     if not len(search_results):
-        print(
+        console.print(
             f":person_shrugging: Aucun contenu trouvé pour : {args.search_term}"
             "\nRéessayer en utilisant des paramètres de recherche moins stricts. "
             f"Exemple : '*{args.search_term}*'"
@@ -488,7 +487,7 @@ def run(args: argparse.Namespace):
 
     # formatage de la sortie
     if len(final_results):
-        print(
+        console.print(
             format_output_result(
                 result=final_results,
                 search_term=args.search_term,
@@ -499,7 +498,7 @@ def run(args: argparse.Namespace):
             )
         )
     else:
-        print(
+        console.print(
             f":person_shrugging: Aucun contenu trouvé pour : {args.search_term} parmi "
             f"les {len(search_results)} résultats de recherche. "
             f"{count_ignored_results} résultats ignorés par les filtres (type, dates)..."
