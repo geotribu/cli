@@ -6,7 +6,6 @@
 
 # standard library
 import argparse
-import locale
 import logging
 import sys
 import xml.etree.ElementTree as ET
@@ -15,7 +14,6 @@ from os import getenv
 from pathlib import Path
 
 # 3rd party
-from rich import print
 from rich.prompt import Prompt
 from rich.table import Table
 
@@ -36,10 +34,6 @@ from geotribu_cli.utils.str2bool import str2bool
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
-try:
-    locale.setlocale(locale.LC_TIME, "fr_FR.utf8")
-except Exception as error:
-    logger.warning(f"Unable to set the French locale. Trace: {error}")
 
 # ############################################################################
 # ########## FUNCTIONS ###########
@@ -264,7 +258,7 @@ def run(args: argparse.Namespace):
                 sys.exit(err_msg)
 
     # formatage de la sortie
-    print(
+    console.print(
         format_output_result(
             result=feed_items, format_type=args.format_output, count=args.results_number
         )

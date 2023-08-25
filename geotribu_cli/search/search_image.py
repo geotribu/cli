@@ -14,7 +14,6 @@ from pathlib import Path
 # 3rd party
 import orjson
 from lunr.index import Index
-from rich import print
 from rich.prompt import Prompt
 from rich.table import Table
 
@@ -250,7 +249,9 @@ def run(args: argparse.Namespace):
         search_results: list[dict] = idx.search(args.search_term)
 
     if not len(search_results):
-        print(f":person_shrugging: Aucune image trouvée pour : {args.search_term}")
+        console.print(
+            f":person_shrugging: Aucune image trouvée pour : {args.search_term}"
+        )
         sys.exit(0)
 
     # résultats : enrichissement et filtre
@@ -292,7 +293,7 @@ def run(args: argparse.Namespace):
 
     # formatage de la sortie
     if len(final_results):
-        print(
+        console.print(
             format_output_result(
                 result=final_results,
                 format_type=args.format_output,
@@ -301,7 +302,9 @@ def run(args: argparse.Namespace):
             )
         )
     else:
-        print(f":person_shrugging: Aucune image trouvée pour : {args.search_term}")
+        console.print(
+            f":person_shrugging: Aucune image trouvée pour : {args.search_term}"
+        )
         sys.exit(0)
 
     # save into history
