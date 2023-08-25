@@ -9,6 +9,7 @@
 import logging
 from http.client import HTTPMessage, HTTPResponse
 from pathlib import Path
+from sys import platform as opersys
 from urllib.error import HTTPError, URLError
 from urllib.request import (
     BaseHandler,
@@ -67,9 +68,18 @@ def download_remote_file_to_local(
         Path: path to the local file (should be the same as local_file_path)
     """
     if local_file_path.exists():
+        # modification date varies depending on operating system: on some systems (like
+        # Unix) creation date is the time of the last metadata change, and, on others
+        # (like Windows), is the creation time for path.
+        if opersys == "win32":
+            mod_date_reference = "m"
+        else:
+            mod_date_reference = "c"
+
         if is_file_older_than(
             local_file_path=local_file_path,
             expiration_rotating_hours=expiration_rotating_hours,
+            dt_reference_mode=mod_date_reference,
         ):
             logger.info(
                 f"Local search index ({local_file_path}) is outdated: "
