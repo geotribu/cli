@@ -27,7 +27,7 @@ MacOS version is not tested and is just here to encourage beta-testing and feedb
 ### Installer
 
 ```sh
-pip install --user --upgrade geotribu
+pip install --upgrade geotribu
 ```
 
 L'outil est désormais disponible en ligne de commande. Voir les [exemples](/usage/examples).
