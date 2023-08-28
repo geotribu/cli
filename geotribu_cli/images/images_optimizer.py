@@ -15,6 +15,7 @@ from pathlib import Path
 from geotribu_cli.__about__ import __package_name__
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.images.optim_pillow import PILLOW_INSTALLED, pil_redimensionner_image
 from geotribu_cli.images.optim_tinify import TINIFY_INSTALLED, optimize_with_tinify
 from geotribu_cli.utils.check_path import check_path
 from geotribu_cli.utils.start_uri import open_uri
@@ -82,10 +83,12 @@ def parser_images_optimizer(
     subparser.add_argument(
         "-w",
         "--with",
-        choices=["tinypng"],
-        default="tinypng",
+        choices=["local", "tinypng"],
+        default=getenv("GEOTRIBU_DEFAULT_IMAGE_OPTIMIZER", "tinypng"),
         dest="tool_to_use",
-        help="Outil à utiliser pour réaliser l'optimisation.",
+        help="Outil à utiliser pour réaliser l'optimisation. Local (pillow), ou tinypng "
+        "(service distant nécessitant une clé d'API)",
+        metavar="GEOTRIBU_DEFAULT_IMAGE_OPTIMIZER",
     )
 
     subparser.set_defaults(func=run)
@@ -108,7 +111,29 @@ def run(args: argparse.Namespace):
     """
     logger.debug(f"Running {args.command} with {args}")
 
-    # check Tinify API KEY
+    # liste l'image ou les images à optimiser
+    if check_path(
+        input_path=args.image_path,
+        must_be_a_folder=True,
+        must_be_a_file=False,
+        must_be_readable=True,
+        must_exists=True,
+        raise_error=False,
+    ):
+        logger.info(f"Dossier d'images passé : {args.image_path}")
+        li_images = [
+            image.resolve()
+            for image in Path(args.image_path).glob("*")
+            if image.suffix.lower() in defaults_settings.images_body_extensions
+        ]
+        if not li_images:
+            print(":person_shrugging: Aucune image trouvée dans {args.image_path}")
+            sys.exit(0)
+    else:
+        logger.debug(f"Image unique passée : {args.image_path}")
+        li_images = [args.image_path]
+
+    # Utilise l'outil d'optimisation
     if args.tool_to_use == "tinypng":
         if not TINIFY_INSTALLED:
             logger.critical(
@@ -125,26 +150,6 @@ def run(args: argparse.Namespace):
                 "d'environnement 'TINIFY_API_KEY'."
             )
             sys.exit(1)
-
-        if check_path(
-            input_path=args.image_path,
-            must_be_a_folder=True,
-            must_be_a_file=False,
-            must_be_readable=True,
-            must_exists=True,
-            raise_error=False,
-        ):
-            logger.info("Dossier d'images passé. L")
-            li_images = [
-                image.resolve()
-                for image in Path(args.image_path).glob("*")
-                if image.suffix.lower() in defaults_settings.images_body_extensions
-            ]
-            if not li_images:
-                print(":person_shrugging: Aucune image trouvée dans {args.image_path}")
-                sys.exit(0)
-        else:
-            li_images = [args.image_path]
 
         # optimize the image(s)
         count_optim_success = 0
@@ -165,14 +170,41 @@ def run(args: argparse.Namespace):
                     f"{args.tool_to_use} a échoué. Trace : {err}"
                 )
                 count_optim_error += 1
-
-        # open output folder if success and not disabled
-        if args.opt_auto_open_disabled and count_optim_success > 0:
-            open_uri(
-                in_filepath=defaults_settings.geotribu_working_folder.joinpath(
-                    "images/optim"
-                )
+    elif args.tool_to_use == "local":
+        if not PILLOW_INSTALLED:
+            logger.critical(
+                "Pillow n'est pas installé. "
+                "Pour l'utiliser, installer l'outil avec les dépendances "
+                f"supplémentaires : pip install {__package_name__}[img-local] ou "
+                f"pip install {__package_name__}[all]"
             )
+            sys.exit(1)
+
+        # optimize the image(s)
+        count_optim_success = 0
+        count_optim_error = 0
+        for img in li_images:
+            try:
+                optimized_image = pil_redimensionner_image(image_path_or_url=img)
+                console.print(
+                    f":clamp: L'image {img} a été redimensionnée et "
+                    f"compressée avec {args.tool_to_use} : {optimized_image}"
+                )
+                count_optim_success += 1
+            except Exception as err:
+                logger.error(
+                    f"La compression de l'image {img} avec "
+                    f"{args.tool_to_use} a échoué. Trace : {err}"
+                )
+                count_optim_error += 1
+
+    # open output folder if success and not disabled
+    if args.opt_auto_open_disabled and count_optim_success > 0:
+        open_uri(
+            in_filepath=defaults_settings.geotribu_working_folder.joinpath(
+                "images/optim"
+            )
+        )
 
 
 # -- Stand alone execution
