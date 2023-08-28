@@ -12,9 +12,10 @@ from os import getenv
 from pathlib import Path
 
 # package
+from geotribu_cli.__about__ import __package_name__
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
-from geotribu_cli.images.optim_tinify import optimize_with_tinify
+from geotribu_cli.images.optim_tinify import TINIFY_INSTALLED, optimize_with_tinify
 from geotribu_cli.utils.check_path import check_path
 from geotribu_cli.utils.start_uri import open_uri
 from geotribu_cli.utils.str2bool import str2bool
@@ -109,6 +110,15 @@ def run(args: argparse.Namespace):
 
     # check Tinify API KEY
     if args.tool_to_use == "tinypng":
+        if not TINIFY_INSTALLED:
+            logger.critical(
+                "Tinify n'est pas installé, le service ne peut donc pas être utilisé. "
+                "Pour l'utiliser, installer l'outil avec les dépendances "
+                f"supplémentaires : pip install {__package_name__}[img-remote] ou "
+                f"pip install {__package_name__}[all]"
+            )
+            sys.exit(1)
+
         if not getenv("TINIFY_API_KEY"):
             logger.critical(
                 "La clé d'API de Tinify n'est pas configurée en variable "

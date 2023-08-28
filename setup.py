@@ -100,9 +100,15 @@ setup(
     include_package_data=True,
     install_requires=load_requirements(HERE / "requirements/base.txt"),
     extras_require={
+        # tooling
         "dev": load_requirements(HERE / "requirements/development.txt"),
         "doc": load_requirements(HERE / "requirements/documentation.txt"),
         "test": load_requirements(HERE / "requirements/testing.txt"),
+        # functional
+        "all": load_requirements(
+            list(HERE.joinpath("requirements").glob("extra.*.txt"))
+        ),
+        "img-remote": load_requirements(HERE / "requirements/extra.img-remote.txt"),
     },
     # cli
     entry_points={

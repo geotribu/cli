@@ -26,6 +26,6 @@ source .venv/bin/activate
 python -m pip install -U pip setuptools wheel
 # installation des dépendances de base
 python -m pip install -U -r requirements.txt
-# installation du projet en mode développement
-python -m pip install -e .
+# installation du projet en mode développement avec toutes les dépendances fonctionnelles
+python -m pip install -e .[all,dev,doc,test]
 ```

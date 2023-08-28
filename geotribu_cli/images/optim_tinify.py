@@ -13,7 +13,12 @@ from typing import Union
 from urllib.parse import unquote, urlsplit
 
 # 3rd party
-import tinify
+try:
+    import tinify
+
+    TINIFY_INSTALLED = True
+except ImportError:
+    TINIFY_INSTALLED = False
 
 # package
 from geotribu_cli.constants import GeotribuDefaults
