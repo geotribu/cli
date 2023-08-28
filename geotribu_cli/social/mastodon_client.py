@@ -5,12 +5,15 @@
 # ################################
 
 # standard library
+import csv
 import json
 import logging
+import xml.etree.ElementTree as ET
+from email.utils import parsedate_to_datetime
 from os import getenv
+from pathlib import Path
 from textwrap import shorten
 from urllib import request
-from urllib.error import HTTPError
 
 # 3rd party
 from rich import print
@@ -18,8 +21,11 @@ from rich import print
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
+from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
-from geotribu_cli.utils.file_downloader import BetterHTTPErrorProcessor
+from geotribu_cli.rss.mdl_rss import RssItem
+from geotribu_cli.utils.file_downloader import download_remote_file_to_local
+from geotribu_cli.utils.formatters import convert_octets
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -28,7 +34,12 @@ from geotribu_cli.utils.file_downloader import BetterHTTPErrorProcessor
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
 
-
+path_local_mastodon_rss = defaults_settings.geotribu_working_folder.joinpath(
+    "rss/mastodon.xml"
+)
+path_local_matrix_comments_toots = defaults_settings.geotribu_working_folder.joinpath(
+    "comments/matrix_mastodon.keep.csv"
+)
 status_mastodon_tmpl = """🗨️ :geotribu: Nouveau commentaire de {author} :
 
 {text}
@@ -36,6 +47,8 @@ status_mastodon_tmpl = """🗨️ :geotribu: Nouveau commentaire de {author} :
 Poursuivre la discussion : {url_to_comment}.
 
 \n#Geotribot #commentaire comment-{id}"""
+
+url_remote_mastodon_rss = f"{defaults_settings.mastodon_base_url}users/geotribu.rss"
 
 # ############################################################################
 # ########## FUNCTIONS ###########
@@ -79,6 +92,7 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
         comment_parent_broadcasted = comment_already_broadcasted(
             comment_id=in_comment.parent, media="mastodon"
         )
+        print(in_comment.parent)
         if (
             isinstance(comment_parent_broadcasted, dict)
             and "id" in comment_parent_broadcasted
@@ -109,42 +123,41 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
     json_data = json.dumps(request_data)
     json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
 
-    headers = {
+    {
         "User-Agent": f"{__title_clean__}/{__version__}",
         "Content-Length": len(json_data_bytes),
         "Content-Type": "application/json; charset=utf-8",
-        "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
     }
 
-    req = request.Request(
-        f"{defaults_settings.mastodon_base_url}api/v1/statuses",
-        method="POST",
-        headers=headers,
-    )
+    # req = request.Request(
+    #     f"{defaults_settings.mastodon_base_url}api/v1/statuses",
+    #     method="POST",
+    #     headers=headers,
+    # )
 
-    # install custom processor to handle 401 responses
-    opener = request.build_opener(BetterHTTPErrorProcessor)
-    request.install_opener(opener)
-    with request.urlopen(url=req, data=json_data_bytes) as response:
-        try:
-            content = json.loads(response.read().decode("utf-8"))
-        except Exception as err:
-            logger.warning(f"L'objet réponse ne semble pas être un JSON valide : {err}")
-            content = response.read().decode("utf-8")
+    # # install custom processor to handle 401 responses
+    # opener = request.build_opener(BetterHTTPErrorProcessor)
+    # request.install_opener(opener)
+    # with request.urlopen(url=req, data=json_data_bytes) as response:
+    #     try:
+    #         content = json.loads(response.read().decode("utf-8"))
+    #     except Exception as err:
+    #         logger.warning(f"L'objet réponse ne semble pas être un JSON valide : {err}")
+    #         content = response.read().decode("utf-8")
 
-    if isinstance(content, dict) and "error" in content:
-        raise HTTPError(
-            url=req.full_url,
-            code="401",
-            msg=content,
-            hdrs=headers,
-            fp=None,
-        )
+    # if isinstance(content, dict) and "error" in content:
+    #     raise HTTPError(
+    #         url=req.full_url,
+    #         code="401",
+    #         msg=content,
+    #         hdrs=headers,
+    #         fp=None,
+    #     )
 
-    # set comment as newly posted
-    content["cli_newly_posted"] = True
+    # # set comment as newly posted
+    # content["cli_newly_posted"] = True
 
-    return content
+    # return content
 
 
 def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dict:
@@ -181,6 +194,7 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
             "User-Agent": f"{__title_clean__}/{__version__}",
             "Content-Length": len(json_data_bytes),
             "Content-Type": "application/json; charset=utf-8",
+            "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
         }
         req = request.Request(
             f"{defaults_settings.mastodon_base_url}api/v1/timelines/tag/geotribot",
@@ -190,6 +204,7 @@ def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dic
 
         r = request.urlopen(url=req, data=json_data_bytes)
         content = json.loads(r.read().decode("utf-8"))
+        print(content)
 
         for status in content:
             if f"comment-{comment_id}</p>" in status.get("content"):
@@ -255,3 +270,122 @@ def comment_to_media(in_comment: Comment, media: str) -> str:
             text=shorten(in_comment.markdownified_text, width=max_text_length),
             id=in_comment.id,
         )
+
+
+def download_user_rss() -> list[RssItem]:
+    """Download and parse RSS feed from Mastodon profile.
+
+    See: https://www.reddit.com/r/Mastodon/comments/ynb0wm/how_would_i_get_only_a_single_users_statuses_with/
+
+    Raises:
+        Exception: if RSS download failed or parsing failed.
+
+    Returns:
+        list of RSS items
+    """
+    # download
+    with console.status("Téléchargement du flux RSS...", spinner="earth"):
+        local_rss = download_remote_file_to_local(
+            remote_url_to_download=url_remote_mastodon_rss,
+            local_file_path=path_local_mastodon_rss,
+            expiration_rotating_hours=0,
+        )
+
+    # check download or existing file
+    if not isinstance(local_rss, Path):
+        logger.error(
+            f"Le téléchargement du fichier distant {url_remote_mastodon_rss} "
+            f"ou la récupération du fichier local {path_local_mastodon_rss} a échoué."
+        )
+        if isinstance(local_rss, Exception):
+            logger.error(local_rss)
+            raise local_rss
+
+        raise FileNotFoundError(path_local_mastodon_rss)
+
+    logger.info(
+        f"Fichier RSS local du compte Mastodon : {path_local_mastodon_rss}, "
+        f"{convert_octets(path_local_mastodon_rss.stat().st_size)}"
+    )
+
+    # Parse the feed
+    with console.status("Lecture du fichier local...", spinner="earth"):
+        feed = ET.parse(path_local_mastodon_rss)
+        feed_items: list[RssItem] = []
+
+        # Find all articles in the feed
+        for item in feed.findall(".//item"):
+            try:
+                # add items to the feed
+                feed_items.append(
+                    RssItem(
+                        abstract=item.find("description").text,
+                        categories=[cat.text for cat in item.findall("category")],
+                        date_pub=parsedate_to_datetime(item.find("pubDate").text),
+                        guid=item.find("guid").text,
+                        url=item.find("link").text,
+                    )
+                )
+            except Exception as err:
+                err_msg = (
+                    f"L'élément {item.find('guid')} provoque une erreur à la lecture du "
+                    f"fichier RSS. Trace: {err}"
+                )
+                logger.error(err_msg)
+                continue
+
+    return feed_items
+
+
+def download_user_toots():
+    # prepare search request
+    request_data = {
+        "exclude_replies": True,
+        "limit": 40,
+        "tagged": "geotribot",
+    }
+
+    json_data = json.dumps(request_data)
+    json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
+
+    headers = {
+        "User-Agent": f"{__title_clean__}/{__version__}",
+        "Content-Length": len(json_data_bytes),
+        "Content-Type": "application/json; charset=utf-8",
+        # "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
+    }
+    req = request.Request(
+        f"{defaults_settings.mastodon_base_url}api/v1/accounts/"
+        f"{getenv('GEOTRIBU_MASTODON_API_ACCOUNT_ID', defaults_settings.mastodon_user_id)}/"
+        "statuses",
+        method="GET",
+        headers=headers,
+    )
+    r = request.urlopen(url=req, data=json_data_bytes)
+
+    try:
+        print(type(r), r.getheaders(), type(r.getheader("Link")))
+        content = json.loads(r.read().decode("utf-8"))
+    except Exception as err:
+        logger.error(
+            "Impossible de récupérer les toots du compte Geotribu. "
+            f"Requête : {req.full_url} {req.data}. Trace : {err}"
+        )
+        content = []
+
+    return content
+
+
+def write_matrix_comment_posts():
+    # crée le(s) dossier(s) parent(s)
+    path_local_matrix_comments_toots.parent.mkdir(parents=True, exist_ok=True)
+
+    with path_local_matrix_comments_toots.open(mode="w", encoding="UTF-8") as csvfile:
+        colonnes = ["comment_id", "comment_parent_id", "toot_id", "toot_parent_id"]
+        writer = csv.DictWriter(csvfile, fieldnames=colonnes)
+
+        writer.writeheader()
+
+
+download_user_toots()
+# download_user_rss()

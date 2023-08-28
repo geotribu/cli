@@ -59,6 +59,7 @@ class GeotribuDefaults:
 
     # social
     mastodon_base_url: str = "https://mapstodon.space/"
+    mastodon_user_id: str = "109302481997311431"
 
     # templates
     template_article: str = "/articles/templates/template_article.md"

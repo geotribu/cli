@@ -9,6 +9,7 @@ import argparse
 import logging
 import sys
 from datetime import date
+from functools import lru_cache
 from os import getenv
 from pathlib import Path
 
@@ -46,6 +47,35 @@ defaults_settings = GeotribuDefaults()
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################
+
+
+@lru_cache
+def add_search_criteria_as_str(
+    in_txt: str,
+    search_results_total: int = None,
+    search_results_displayed: int = None,
+    search_term: str = None,
+    search_filter_dates: tuple = None,
+    search_filter_type: str = None,
+) -> str:
+    if all([search_results_displayed, search_results_total]):
+        in_txt += "{search_results_displayed}/{search_results_total} résultats"
+
+    if search_term:
+        in_txt += f"avec le terme : {search_term}"
+
+    if any([search_filter_dates[0], search_filter_dates[1], search_filter_type]):
+        in_txt += "\nFiltres : "
+        if search_filter_type:
+            in_txt += f"de type {search_filter_type}, "
+        if search_filter_dates[0]:
+            in_txt += f"plus récents que {search_filter_dates[0]:%d %B %Y}, "
+        if search_filter_dates[1]:
+            in_txt += f"plus anciens que {search_filter_dates[1]:%d %B %Y}"
+    else:
+        in_txt += "Aucun filtre de recherche appliqué."
+
+    return in_txt
 
 
 def filter_content_listing(json_filepath: Path) -> filter:
@@ -92,17 +122,14 @@ def format_output_result(
 
     if format_type == "table":
         # formatte le titre - plus lisible qu'une grosse f-string des familles
-        titre = f"Recherche de contenus - {count}/{len(result)} résultats "
-        if search_term:
-            titre += f"avec le terme : {search_term}"
-        if any([search_filter_dates[0], search_filter_dates[1], search_filter_type]):
-            titre += "\nFiltres : "
-            if search_filter_type:
-                titre += f"de type {search_filter_type}, "
-            if search_filter_dates[0]:
-                titre += f"plus récents que {search_filter_dates[0]:%d %B %Y}, "
-            if search_filter_dates[1]:
-                titre += f"plus anciens que {search_filter_dates[1]:%d %B %Y}"
+        titre = add_search_criteria_as_str(
+            in_txt="Recherche de contenus",
+            search_filter_dates=search_filter_dates,
+            search_filter_type=search_filter_type,
+            search_term=search_term,
+            search_results_total=len(result),
+            search_results_displayed=count,
+        )
 
         table = Table(
             title=titre,
@@ -384,8 +411,8 @@ def run(args: argparse.Namespace):
             fd.write(orjson.dumps(serialized_idx))
 
         logger.info(
-            f"Local index generated into {args.local_index_file} "
-            f"from contents listing ({local_listing_file})."
+            f"Index local généré et stocké dans {args.local_index_file} "
+            f"à partir des contenus listés dans ({local_listing_file})."
         )
     else:
         # load
@@ -394,9 +421,9 @@ def run(args: argparse.Namespace):
 
         # load previously built index
         logger.info(
-            f"Local index file ({args.local_index_file}) exists and is not "
-            f"older than {args.expiration_rotating_hours} hour(s). "
-            "Lets use it to perform search."
+            f"L'index local ({args.local_index_file}) existe et est plus récent "
+            f"que la limite de {args.expiration_rotating_hours} heure(s). "
+            "Il est donc utilisé pour la recherche locale."
         )
         with args.local_index_file.open("rb") as fd:
             serialized_idx = orjson.loads(fd.read())
@@ -407,11 +434,19 @@ def run(args: argparse.Namespace):
         search_results: list[dict] = idx.search(args.search_term)
 
     if not len(search_results):
-        print(
+        msg_no_result = (
             f":person_shrugging: Aucun contenu trouvé pour : {args.search_term}"
-            "\nRéessayer en utilisant des paramètres de recherche moins stricts. "
-            f"Exemple : '*{args.search_term}*'"
         )
+        if not args.search_term.startswith("*") or not args.search_term.endswith("*"):
+            msg_no_result += (
+                "\nRéessayer en utilisant des paramètres de recherche moins stricts. "
+            )
+            if not args.search_term.endswith("*"):
+                msg_no_result += f"Exemple : '{args.search_term}*'"
+            elif not args.search_term.startsswith("*"):
+                msg_no_result += f"Exemple : '*{args.search_term}'"
+
+        print(msg_no_result)
         sys.exit(0)
 
     # résultats : enrichissement et filtre
@@ -502,7 +537,8 @@ def run(args: argparse.Namespace):
         print(
             f":person_shrugging: Aucun contenu trouvé pour : {args.search_term} parmi "
             f"les {len(search_results)} résultats de recherche. "
-            f"{count_ignored_results} résultats ignorés par les filtres (type, dates)..."
+            f"{count_ignored_results} résultats ignorés par les filtres :\n"
+            f"type={args.filter_type}"
         )
         sys.exit(0)
 
