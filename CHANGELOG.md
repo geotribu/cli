@@ -18,6 +18,17 @@ Unreleased
 
 -->
 
+## 0.28.0 - 2023-08-28
+
+### Features and enhancements 🎉
+
+* Fonctionnalité : ajoute la possibilité de redimensionner des images sans faire d'appel à un service externe by @Guts in <https://github.com/geotribu/cli/pull/130>
+
+### Tooling 🔧
+
+* Packaging : utilise une fonction pour lister les dépendances depuis les fichiers requirements by @Guts in <https://github.com/geotribu/cli/pull/128>
+* Packaging : rend l'installation de tinify optionnelle by @Guts in <https://github.com/geotribu/cli/pull/129>
+
 ## 0.27.0 - 2023-08-25
 
 ### Bugs fixes 🐛
