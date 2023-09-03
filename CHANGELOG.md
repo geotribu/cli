@@ -18,6 +18,16 @@ Unreleased
 
 -->
 
+## 0.29.0 - 2023-09-03
+
+### Features and enhancements 🎉
+
+* Amélioration : supprime automatiquement les balises de l'extension attr_list avant l'affichage dans le terminal by @Guts in <https://github.com/geotribu/cli/pull/131>
+
+### Documentation 📖
+
+* Documentation : traduit et complète la page d'installation by @Guts in <https://github.com/geotribu/cli/pull/132>
+
 ## 0.28.0 - 2023-08-28
 
 ### Features and enhancements 🎉
