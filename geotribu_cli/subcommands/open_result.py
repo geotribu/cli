@@ -7,6 +7,7 @@
 # standard library
 import argparse
 import logging
+import re
 import sys
 from os import getenv
 
@@ -32,6 +33,9 @@ from geotribu_cli.utils.start_uri import open_uri
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
+
+# regex
+attr_list_pattern = r"{:[^}]*}"
 
 # ############################################################################
 # ########## FUNCTIONS ###########
@@ -60,7 +64,7 @@ def open_content(content_uri: str, application: str = "shell"):
             markdown_body = frontmatter.loads(markdown_file.read())
 
         markdown = Markdown(
-            markdown_body.content,
+            re.sub(attr_list_pattern, "", markdown_body.content, flags=re.DOTALL),
             hyperlinks=True,
         )
         console.print(markdown, emoji=True)
