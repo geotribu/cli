@@ -8,6 +8,10 @@
 
 {{ cli_usage }}
 
+Présentation en vidéo :
+
+<iframe width="100%" height="400" src="https://www.youtube.com/embed/eWNBpUVYakY?si=A5BXKx9ff1NeQfBC" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ---
 
 ```{toctree}
@@ -44,4 +48,5 @@ maxdepth: 1
 misc/credits
 misc/geotribot_manifest.md
 Site Geotribu <http://geotribu.fr>
+Article d'introduction <https://geotribu.fr/articles/2023/2023-08-25_geotribu-cli-en-ligne-de-commande/>
 ```
