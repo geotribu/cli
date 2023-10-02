@@ -68,6 +68,11 @@ jobs:
           geotribu search-image postgis > docs/usage/cli_sample_search_images_postgis.txt
           geotribu search-image postgis -f logo -o json > docs/usage/cli_sample_search_images_postgis_logos_json.txt
 
+          geotribu img search name:qgis > docs/usage/cli_sample_search_images_name_qgis.txt
+          geotribu img search "openstreetmap logo" > docs/usage/cli_sample_search_images_openstreetmap_or_logo.txt
+          geotribu img search "+openstreetmap +logo" > docs/usage/cli_sample_search_images_openstreetmap_and_logo.txt
+          geotribu img search "+path:logo +name:qgis" > docs/usage/cli_sample_search_images_path_logo_name_qgis.txt
+
       - name: Generates dependencies graph page with pipdetree
         run: |
           python -m pip install -U "pipdeptree<3"

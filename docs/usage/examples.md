@@ -124,6 +124,68 @@ Sortie :
   :language: json
 ```
 
+### Recherches avancées
+
+#### Seulement dans le nom du fichier
+
+On peut préfixer avec le champ sur lequel faire correspondre le terme de recherche. Exemple pour ne chercher que dans le nom du fichier :
+
+```sh
+geotribu img search name:qgis
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_search_images_name_qgis.txt
+  :language: shell
+```
+
+#### Deux termes avec _OR_
+
+Quand il y a 2 termes, c'est la clause `OR` qui s'applique. Exemple, les images qui correspondent à `openstreetmap` **ou** `logo` :
+
+```sh
+geotribu img search "openstreetmap logo"
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_search_images_openstreetmap_or_logo.txt
+  :language: shell
+```
+
+#### Deux termes avec _AND_
+
+Pour rechercher les images qui correspondent à `openstreetmap` **et** `logo`, on utilise le préfixe `+` :
+
+```sh
+geotribu img search "+openstreetmap +logo"
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_search_images_openstreetmap_and_logo.txt
+  :language: shell
+```
+
+#### Dans le nom du fichier ET dans le chemin
+
+On peut ainsi cumuler des filtres sur des champs et des opérateurs de présence :
+
+```sh
+geotribu img search "+path:logo +name:qgis"
+```
+
+Sortie :
+
+```{eval-rst}
+.. literalinclude:: ./cli_sample_search_images_path_logo_name_qgis.txt
+  :language: shell
+```
+
 ----
 
 ## Ouvrir un résultat
@@ -178,7 +240,7 @@ Sortie :
 ## Optimiser des images pour le CDN Geotribu
 
 :::{note}
-Le redimensionnement et l'optimisation des images font appel à l'API Tinify (<https://tinypng.com>) et requièrent une clé d'authentification à stocker en variable d'environnement `TINIFY_API_KEY`.
+Par défaut, le redimensionnement et l'optimisation des images font appel à l'API Tinify (<https://tinypng.com>) et requièrent une clé d'authentification à stocker en variable d'environnement `TINIFY_API_KEY`.
 :::
 
 Cette commande permet de conformer les images aux bonnes pratiques et de les optimiser.
