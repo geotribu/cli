@@ -2,7 +2,7 @@
 # -------------
 
 furo==2023.*
-myst-parser[linkify]>=0.14,<2.1
+myst-parser[linkify]>=2,<2.1
 sphinx-argparse-cli>=1,<2
 sphinx-autobuild==2021.3.14
 sphinx-autodoc-typehints<2
