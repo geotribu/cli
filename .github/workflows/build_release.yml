@@ -10,6 +10,7 @@ on:
       - "builder/"
       - "geotribu_cli/**/*.py"
       - "requirements/base.txt"
+      - "requirements/packaging.txt"
 
     tags:
       - "*"
