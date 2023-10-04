@@ -18,6 +18,16 @@ Unreleased
 
 -->
 
+## 0.30.0 - 2023-10-04
+
+### Documentation 📖
+
+* Documentation : ajoute des exemples de recherche d'images avancés by @Guts in <https://github.com/geotribu/cli/pull/140>
+
+### Other Changes
+
+* Sécurité : MAJ pillow pour intégrer la correction de la CVE liée à libwebp by @Guts in <https://github.com/geotribu/cli/pull/142>
+
 ## 0.29.0 - 2023-09-03
 
 ### Features and enhancements 🎉
