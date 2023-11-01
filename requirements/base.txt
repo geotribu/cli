@@ -3,6 +3,6 @@ lunr[languages]>=0.6,<0.8
 markdownify>=0.11,<0.12
 orjson>=3.8,<3.10
 packaging>=20,<24
-rich_argparse>=0.6,<1.4
+rich_argparse>=0.6,<1.5
 python-frontmatter>=1,<2
 typing-extensions>=4,<5 ; python_version < '3.11'
