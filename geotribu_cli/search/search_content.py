@@ -19,7 +19,7 @@ from lunr.index import Index
 from rich.prompt import Prompt
 
 # package
-from geotribu_cli.cli_results_rich_formatters import format_output_result
+from geotribu_cli.cli_results_rich_formatters import format_output_result_search_content
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
@@ -418,7 +418,7 @@ def run(args: argparse.Namespace):
     # formatage de la sortie
     if len(final_results):
         console.print(
-            format_output_result(
+            format_output_result_search_content(
                 result=final_results,
                 search_term=args.search_term,
                 format_type=args.format_output,

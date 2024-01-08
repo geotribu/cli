@@ -1,10 +1,25 @@
+#! python3  # noqa: E265
+
+# ############################################################################
+# ########## IMPORTS #############
+# ################################
+
+# standard library
 import json
+import logging
 from typing import Literal, Optional
 
-from geotribu_cli.comments.comments_latest import defaults_settings, logger
-from geotribu_cli.comments.comments_open import defaults_settings, logger
+# package
 from geotribu_cli.comments.mdl_comment import Comment
+from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
+
+# ############################################################################
+# ########## GLOBALS #############
+# ################################
+
+logger = logging.getLogger(__name__)
+defaults_settings = GeotribuDefaults()
 
 # ############################################################################
 # ########## FUNCTIONS ###########

@@ -1,11 +1,29 @@
+#! python3  # noqa: E265
+
+# ############################################################################
+# ########## IMPORTS #############
+# ################################
+
+# standard library
+import logging
 from typing import Optional, Union
 
+# 3rd party
 from rich.table import Table
 
+# package
 from geotribu_cli.__about__ import __title__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
-from geotribu_cli.search.search_image import defaults_settings
+from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.formatters import url_add_utm
+
+# ############################################################################
+# ########## GLOBALS #############
+# ################################
+
+logger = logging.getLogger(__name__)
+defaults_settings = GeotribuDefaults()
+
 
 # ############################################################################
 # ########## FUNCTIONS ###########
