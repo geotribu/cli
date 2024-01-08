@@ -5,6 +5,8 @@
 | Nom de la variable  | Description | Option CLI correspondante | Valeur par défaut |
 | :------------------ | :---------- | :-----------------------: | :---------------: |
 | `GEOTRIBU_AUTO_OPEN_AFTER` | Activer/désactiver l'ouverture automatique du contenu publié à la fin d'une commande de publication (commentaire...). | `--no-auto-open` | `True` |
+| `GEOTRIBU_COMMENTS_EXPIRATION_HOURS` | Nombre d'heures à partir duquel considérer le fichier local comme périmé. | `--expiration-rotating-hours` de `comments`  | `4` (1 jour) |
+| `GEOTRIBU_COMMENTS_API_PAGE_SIZE` | Nombre de commentaires par requêtes. Plus le commentaire est récent, plus c'est performant d'utiliser une petite page. À l'inverse, si on cherche un vieux commentaire, utiliser une grande page | `--page-size` de `comments` | 20 |
 | `GEOTRIBU_CONTENUS_DATE_END` | Date de publication la plus récente sur laquelle filtrer les contenus (format: AAAA-MM-JJ). | `--date-end` de `search-content`  | date du jour |
 | `GEOTRIBU_CONTENUS_DATE_START` | Date de publication la plus ancienne sur laquelle filtrer les contenus (format: AAAA-MM-JJ). | `--date-start` de `search-content`  | `2020-01-01` |
 | `GEOTRIBU_CONTENUS_DEFAULT_TYPE` | Type de contenu sur lequel filtrer. | `--filter-type` de `search-images`  | `None` |
