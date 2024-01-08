@@ -1,8 +1,9 @@
 #! python3  # noqa: E265
 
-"""Micro helper to retrieve network proxy settings from system.
+"""
+    Small module to get network proxies configuration.
 
-Author: Julien Moura (github.com/guts)
+    Author: Julien Moura (github.com/guts)
 """
 
 # #############################################################################
@@ -11,9 +12,12 @@ Author: Julien Moura (github.com/guts)
 
 # Standard library
 import logging
+from functools import lru_cache
 from os import environ
-from typing import Union
 from urllib.request import getproxies
+
+# package
+from geotribu_cli.utils.url_helpers import check_str_is_url
 
 # #############################################################################
 # ########## Globals ###############
@@ -26,31 +30,64 @@ logger = logging.getLogger(__name__)
 # #############################################################################
 # ########## Functions #############
 # ##################################
-
-
-def get_proxy_settings() -> Union[dict, None]:
+@lru_cache
+def get_proxy_settings() -> dict:
     """Retrieves network proxy settings from operating system configuration or \
     environment variables.
 
     Returns:
-        Union[dict, None]: system proxy settings or None if no proxy is set
+        dict: proxy settings with protocl as key and URL as value
     """
-    if environ.get("HTTP_PROXY") or environ.get("HTTPS_PROXY"):
+    proxy_settings = {}
+    if environ.get("GEOTRIBU_PROXY_HTTP"):
         proxy_settings = {
-            "http": environ.get("HTTP_PROXY"),
-            "https": environ.get("HTTPS_PROXY"),
+            "http": environ.get("GEOTRIBU_PROXY_HTTP"),
+            "https": environ.get("GEOTRIBU_PROXY_HTTP"),
         }
-        logger.debug(
-            "Proxies settings found in environment vars (loaded from .env file): {}".format(
-                proxy_settings
-            )
+        logger.info(
+            "Proxies settings from custom QDT in environment vars (GEOTRIBU_PROXY_HTTP): "
+            f"{proxy_settings}"
         )
+    elif environ.get("HTTP_PROXY") or environ.get("HTTPS_PROXY"):
+        if environ.get("HTTP_PROXY") and environ.get("HTTPS_PROXY"):
+            proxy_settings = {
+                "http": environ.get("HTTP_PROXY"),
+                "https": environ.get("HTTPS_PROXY"),
+            }
+            logger.info(
+                "Proxies settings from generic environment vars (HTTP_PROXY "
+                f"and HTTPS_PROXY): {proxy_settings}"
+            )
+        elif environ.get("HTTP_PROXY") and not environ.get("HTTPS_PROXY"):
+            proxy_settings = {
+                "http": environ.get("HTTP_PROXY"),
+            }
+            logger.info(
+                "Proxies settings from generic environment vars (HTTP_PROXY only): "
+                f"{proxy_settings}"
+            )
+        elif not environ.get("HTTP_PROXY") and environ.get("HTTPS_PROXY"):
+            proxy_settings = {
+                "https": environ.get("HTTPS_PROXY"),
+            }
+            logger.info(
+                "Proxies settings from generic environment vars (HTTPS_PROXY only): "
+                f"{proxy_settings}"
+            )
     elif getproxies():
         proxy_settings = getproxies()
         logger.debug(f"Proxies settings found in the OS: {proxy_settings}")
     else:
         logger.debug("No proxy settings found in environment vars nor OS settings.")
-        proxy_settings = None
+
+    # check scheme and URL validity
+    if isinstance(proxy_settings, dict):
+        for scheme, proxy_url in proxy_settings.items():
+            if not check_str_is_url(input_str=proxy_url, raise_error=False):
+                logger.warning(
+                    f"Proxy value for {scheme} is not a valid URL: {proxy_url}. Can "
+                    "lead to troubles."
+                )
 
     return proxy_settings
 
