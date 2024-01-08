@@ -15,10 +15,7 @@ from rich import print
 
 # package
 from geotribu_cli.cli_results_rich_formatters import format_output_result_comments
-from geotribu_cli.comments.comments_toolbelt import (
-    find_comment_by_id,
-    get_latest_comments,
-)
+from geotribu_cli.comments.comments_toolbelt import find_comment_by_id
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
 
@@ -100,7 +97,7 @@ def parser_comments_read(
     subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
-        default=12,
+        default=getenv("GEOTRIBU_COMMENTS_EXPIRATION_HOURS", 4),
         dest="expiration_rotating_hours",
         help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
         type=int,
@@ -125,77 +122,12 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
-    comment_obj = {}
-    comment_found = False
-
     try:
-        # on récupère d'abord le premier commentaire soit pour le retourner, soit pour
-        # limiter le nombre de requêtes
-        latest_comment = get_latest_comments(
-            number=1,
-            sort_by="created_desc",
+        comment_obj = find_comment_by_id(
+            comment_id=args.comment_id,
+            page_size=args.page_size,
             expiration_rotating_hours=args.expiration_rotating_hours,
         )
-
-    except Exception as err:
-        logger.error(
-            f"Une erreur a empêché la récupération du dernier commentaire. Trace: {err}"
-        )
-        sys.exit(1)
-
-    # si c'est le dernier commentaire qui a été demandé ou si rien n'a été précisé,
-    # alors on le retourne sans plus attendre
-    if args.comment_id is None or args.comment_id == latest_comment[0].id:
-        print(
-            format_output_result_comments(
-                results=latest_comment, format_type=args.format_output, count=1
-            )
-        )
-        sys.exit(0)
-
-    try:
-        # on récupère d'abord le premier commentaire soit pour le retourner, soit pour
-        # limiter le nombre de requêtes
-        latest_comment = get_latest_comments(
-            number=1,
-            sort_by="created_desc",
-            expiration_rotating_hours=args.expiration_rotating_hours,
-        )[0]
-
-        if args.comment_id is None or 0:
-            comment_found = True
-            comment_obj = latest_comment
-
-        api_request_page_size = args.page_size
-        # doit être à 0 si le com' n'est pas trouvé dans le fichier local pour forcer le téléchargement incrémental
-        local_expiration_delay_hours = args.expiration_rotating_hours
-
-        while all(
-            [comment_found is False, api_request_page_size <= int(latest_comment.id)]
-        ):
-            published_comments = get_latest_comments(
-                number=api_request_page_size,
-                sort_by="created_desc",
-                expiration_rotating_hours=local_expiration_delay_hours,
-            )
-
-            if not len(published_comments):
-                print(":person_shrugging: Aucun commentaire trouvé")
-                sys.exit(0)
-
-            comment_obj = find_comment_by_id(comment_id=args.comment_id)
-
-            if isinstance(comment_obj, Comment):
-                comment_found = True
-                break
-            else:
-                logger.debug(
-                    f"Le commentaire {args.comment_id} n'a pas été trouvé parmi les "
-                    f"{api_request_page_size} derniers commentaires. Nouvelle requête "
-                    f"pour chercher parmi les {api_request_page_size*2} derniers commentaires..."
-                )
-                api_request_page_size = api_request_page_size * 2
-                local_expiration_delay_hours = 0
     except Exception as err:
         logger.error(
             f"Une erreur a empêché la récupération des commentaires. Trace: {err}"
