@@ -72,15 +72,15 @@ def download_remote_file_to_local(
             expiration_rotating_hours=expiration_rotating_hours,
         ):
             logger.info(
-                f"Local search index ({local_file_path}) is outdated: "
-                f"updated more than {expiration_rotating_hours} hour(s) ago. "
-                "Let's remove and download it again from remote."
+                f"Le fichier local ({local_file_path}) est périmé: "
+                f"il a été mis à jour il y a plus de {expiration_rotating_hours} heures."
+                "Il a besoin d'être de nouveau téléchargé."
             )
             local_file_path.unlink(missing_ok=True)
         else:
             logger.info(
-                f"Local search index ({local_file_path}) is up to date. "
-                "No download needed.",
+                f"Le fichier local ({local_file_path}) est à jour par rapport au délai "
+                f"d'expiration spécifié ({expiration_rotating_hours}). Pas besoin de le retélécharger.",
             )
             return local_file_path
 
