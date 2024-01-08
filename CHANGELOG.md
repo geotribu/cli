@@ -18,6 +18,20 @@ Unreleased
 
 -->
 
+## 0.31.0 - 2024-01-08
+
+### Features and enhancements 🎉
+
+* refacto: move code to improve logic mutualization by @Guts in <https://github.com/geotribu/cli/pull/158>
+* Feature: comments broadcast specific comment by @Guts in <https://github.com/geotribu/cli/pull/159>
+* Refacto: use requests for network operations to improve maintenability by @Guts in <https://github.com/geotribu/cli/pull/160>
+* Fonctionnalité : ajoute une commande pour afficher un commentaire spécifique via son identifiant by @Guts in <https://github.com/geotribu/cli/pull/155>
+
+### Tooling 🔧
+
+* tooling: add sonarcloud by @Guts in <https://github.com/geotribu/cli/pull/161>
+* packaging: support Python 3.12 by @Guts in <https://github.com/geotribu/cli/pull/162>
+
 ## 0.30.0 - 2023-10-04
 
 ### Documentation 📖
