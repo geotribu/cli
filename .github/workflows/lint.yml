@@ -13,7 +13,7 @@ on:
 
 env:
   PROJECT_FOLDER: "geotribu_cli"
-  PYTHON_VERSION: "3.10"
+  PYTHON_VERSION: "3.12"
 
 jobs:
   lint-ubuntu:
