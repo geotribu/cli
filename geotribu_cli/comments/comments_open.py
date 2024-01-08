@@ -6,18 +6,17 @@
 
 # standard library
 import argparse
-import json
 import logging
 import sys
 from os import getenv
-from typing import Optional
 
 # 3rd party
 from rich import print
 
 # package
-from geotribu_cli.comments.comments_latest import (
-    format_output_result,
+from geotribu_cli.cli_results_rich_formatters import format_output_result_comments
+from geotribu_cli.comments.comments_toolbelt import (
+    find_comment_by_id,
     get_latest_comments,
 )
 from geotribu_cli.comments.mdl_comment import Comment
@@ -29,41 +28,6 @@ from geotribu_cli.constants import GeotribuDefaults
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
-
-# ############################################################################
-# ########## FUNCTIONS ###########
-# ################################
-
-
-def find_comment_by_id(comment_id: int) -> Optional[Comment]:
-    """Trouve un commentaire parmi les derniers téléchargés d'après son id.
-
-    Args:
-        comment_id: id du commentaire à trouver.
-
-    Returns:
-        le commentaire trouvé ou None s'il n'est pas présent dans le fichier des
-            derniers commentaires.
-    """
-    comments_file = defaults_settings.geotribu_working_folder.joinpath(
-        "comments/latest.json"
-    )
-    with comments_file.open(mode="r", encoding="UTF-8") as f:
-        comments = json.loads(f.read())
-
-    li_comments = [Comment(**c) for c in comments]
-
-    for comment in li_comments:
-        if comment.id == comment_id:
-            logger.info(f"Commentaire {comment_id} trouvé.")
-            return comment
-
-    logger.info(
-        f"Le commentaire {comment_id} n'a pas été trouvé parmi les {len(li_comments)} "
-        "commentaires récupérés."
-    )
-    return None
-
 
 # ############################################################################
 # ########## CLI #################
@@ -183,7 +147,7 @@ def run(args: argparse.Namespace):
     # alors on le retourne sans plus attendre
     if args.comment_id is None or args.comment_id == latest_comment[0].id:
         print(
-            format_output_result(
+            format_output_result_comments(
                 results=latest_comment, format_type=args.format_output, count=1
             )
         )
@@ -247,7 +211,7 @@ def run(args: argparse.Namespace):
         sys.exit(0)
 
     print(
-        format_output_result(
+        format_output_result_comments(
             results=[comment_obj], format_type=args.format_output, count=1
         )
     )

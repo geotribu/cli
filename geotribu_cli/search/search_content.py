@@ -17,10 +17,9 @@ import orjson
 from lunr import lunr
 from lunr.index import Index
 from rich.prompt import Prompt
-from rich.table import Table
 
 # package
-from geotribu_cli.__about__ import __title__, __version__
+from geotribu_cli.cli_results_rich_formatters import format_output_result
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
@@ -32,7 +31,7 @@ from geotribu_cli.utils.dates_manipulation import (
 )
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.file_stats import is_file_older_than
-from geotribu_cli.utils.formatters import convert_octets, url_add_utm
+from geotribu_cli.utils.formatters import convert_octets
 from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
@@ -65,75 +64,6 @@ def filter_content_listing(json_filepath: Path) -> filter:
         # and not c.get("location").endswith(("#intro", "#introduction")),
         data.get("docs"),
     )
-
-
-def format_output_result(
-    result: list[dict],
-    search_term: str = None,
-    format_type: str = None,
-    count: int = 5,
-    search_filter_dates: tuple = None,
-    search_filter_type: str = None,
-) -> str:
-    """Format result according to output option.
-
-    Args:
-        result (list[dict]): result to format
-        search_term (str, optional): term used for search. Defaults to None.
-        format_type (str, optional): format output option. Defaults to None.
-        count (int, optional): default number of results to display. Defaults to 5.
-        search_filter_dates: dates used to filter search. Defaults to None.
-        search_filter_type: type used to filter search. Defaults to None.
-
-    Returns:
-        str: formatted result ready to print
-    """
-
-    if format_type == "table":
-        # formatte le titre - plus lisible qu'une grosse f-string des familles
-        titre = f"Recherche de contenus - {count}/{len(result)} résultats "
-        if search_term:
-            titre += f"avec le terme : {search_term}"
-        if any([search_filter_dates[0], search_filter_dates[1], search_filter_type]):
-            titre += "\nFiltres : "
-            if search_filter_type:
-                titre += f"de type {search_filter_type}, "
-            if search_filter_dates[0]:
-                titre += f"plus récents que {search_filter_dates[0]:%d %B %Y}, "
-            if search_filter_dates[1]:
-                titre += f"plus anciens que {search_filter_dates[1]:%d %B %Y}"
-
-        table = Table(
-            title=titre,
-            show_lines=True,
-            highlight=True,
-            caption=f"{__title__} {__version__}",
-        )
-
-        # columns
-        table.add_column(header="#", justify="center")
-        table.add_column(header="Titre", justify="left", style="default")
-        table.add_column(header="Type", justify="center", style="bright_black")
-        table.add_column(
-            header="Date de publication", justify="center", style="bright_black"
-        )
-        table.add_column(header="Score", style="magenta")
-        table.add_column(header="Mots-clés", justify="right", style="blue")
-
-        # iterate over results
-        for r in result[:count]:
-            table.add_row(
-                f"{result.index(r)}",
-                f"[link={url_add_utm(r.get('url'))}]{r.get('titre')}[/link]",
-                r.get("type"),
-                f"{r.get('date'):%d %B %Y}",
-                r.get("score"),
-                ",".join(r.get("tags")),
-            )
-
-        return table
-    else:
-        return result[:count]
 
 
 def generate_index_from_docs(

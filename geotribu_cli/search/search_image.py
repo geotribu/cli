@@ -15,16 +15,15 @@ from pathlib import Path
 import orjson
 from lunr.index import Index
 from rich.prompt import Prompt
-from rich.table import Table
 
 # package
-from geotribu_cli.__about__ import __title__, __version__
+from geotribu_cli.cli_results_rich_formatters import format_output_result
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.history import CliHistory
 from geotribu_cli.subcommands.open_result import open_content
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local
-from geotribu_cli.utils.formatters import convert_octets, url_add_utm
+from geotribu_cli.utils.formatters import convert_octets
 from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
@@ -33,67 +32,6 @@ from geotribu_cli.utils.str2bool import str2bool
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
-
-# ############################################################################
-# ########## FUNCTIONS ###########
-# ################################
-
-
-def format_output_result(
-    result: list[dict], search_term: str = None, format_type: str = None, count: int = 5
-) -> str:
-    """Format result according to output option.
-
-    Args:
-        result (list[dict]): result to format
-        search_term (str, optional): term used for search. Defaults to None.
-        format_type (str, optional): format output option. Defaults to None.
-        count (int, optional): default number of results to display. Defaults to 5.
-
-    Returns:
-        str: formatted result ready to print
-    """
-
-    if format_type == "table":
-        table = Table(
-            title=f"Recherche d'images - {len(result)} résultats "
-            f"avec le terme : {search_term}\n(ctrl+clic sur le nom pour ouvrir l'image)",
-            show_lines=True,
-            highlight=True,
-            caption=f"{__title__} {__version__}",
-        )
-
-        # columns
-        table.add_column(header="#", justify="center")
-        table.add_column(header="Nom", justify="left", style="default")
-        table.add_column(header="Dimensions", justify="center", style="bright_black")
-        table.add_column(header="Score", justify="center", style="magenta")
-        table.add_column(header="Chemin CDN", justify="left")
-        # table.add_column(header="Syntaxe intégration", justify="right", style="blue")
-
-        # iterate over results
-
-        for r in result[:count]:
-            # # syntaxe depending on image type
-            # if "logos-icones" in r.get("url"):
-            #     syntax = rf"!\[logo {Path(r.get('nom')).stem}]({r.get('url')}){{: .img-rdp-news-thumb }}"
-            # else:
-            #     syntax = rf"!\[{Path(r.get('nom')).stem}]({r.get('url')})"
-
-            # add row
-            table.add_row(
-                f"{result.index(r)}",
-                f"[link={url_add_utm(r.get('url'))}]{r.get('nom')}[/link]",
-                r.get("dimensions"),
-                r.get("score"),
-                f"[link={defaults_settings.cdn_base_url}/tinyfilemanager.php?p={r.get('cdn_path')}]{r.get('cdn_path')}[/link]",
-                # syntax,
-            )
-
-        return table
-    else:
-        return result
-
 
 # ############################################################################
 # ########## CLI #################
