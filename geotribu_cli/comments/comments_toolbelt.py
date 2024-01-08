@@ -79,6 +79,7 @@ def find_comment_by_id(
         le commentaire s'il a été trouvé ou None le cas échéant
     """
     # local vars
+    comment_obj = None
     comment_found = False
 
     try:
