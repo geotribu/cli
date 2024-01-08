@@ -28,6 +28,7 @@ from geotribu_cli.__about__ import (
 from geotribu_cli.subcommands import (
     parser_comments_broadcast,
     parser_comments_latest,
+    parser_comments_read,
     parser_images_optimizer,
     parser_latest_content,
     parser_new_article,
@@ -255,7 +256,18 @@ def main(args: list[str] = None):
         title="Commentaires", dest="cmd_comments"
     )
 
-    # Publier le dernier commentaire
+    # Consulter un commentaire
+    subcmd_comments_open = comments_subparsers.add_parser(
+        "open",
+        aliases=["lire", "open", "ouvrir"],
+        help="Afficher un commentaire en particulier.",
+        formatter_class=main_parser.formatter_class,
+        prog="comments-read",
+    )
+    add_common_arguments(subcmd_comments_open)
+    parser_comments_read(subcmd_comments_open)
+
+    # Diffuser un commentaire
     subcmd_comments_broadcast = comments_subparsers.add_parser(
         "broadcast",
         aliases=["diffuser", "publier"],
