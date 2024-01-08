@@ -89,6 +89,7 @@ def get_latest_comments(
         "author_asc", "author_desc", "created_asc", "created_desc"
     ] = "created_asc",
     expiration_rotating_hours: int = 1,
+    attempt: int = 1,
 ) -> list[Comment]:
     """Download and parse latest comments published.
 
@@ -115,8 +116,17 @@ def get_latest_comments(
         content_type="application/json",
     )
 
-    with comments_file.open(mode="r", encoding="UTF-8") as f:
-        comments = json.loads(f.read())
+    try:
+        with comments_file.open(mode="r", encoding="UTF-8") as f:
+            comments = json.loads(f.read())
+    except json.decoder.JSONDecodeError as err:
+        logger.error(f"Impossible de lire le fichier des commentaires. Trace {err}")
+        if attempt < 2:
+            logger.info("Deuxième essai en forçant le téléchargement du fichier.")
+            return get_latest_comments(
+                number=number, sort_by=sort_by, expiration_rotating_hours=0, attempt=2
+            )
+        raise err
 
     li_comments = [Comment(**c) for c in comments]
 
