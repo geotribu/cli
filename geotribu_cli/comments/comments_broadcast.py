@@ -14,7 +14,7 @@ from os import getenv
 from rich import print
 
 # package
-from geotribu_cli.comments.comments_latest import get_latest_comments
+from geotribu_cli.comments.comments_toolbelt import get_latest_comments
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.social.mastodon_client import broadcast_to_mastodon
 from geotribu_cli.utils.start_uri import open_uri
@@ -35,10 +35,6 @@ status_mastodon_tmpl = """🗨️ :geotribu: Nouveau commentaire de {author} :
 Poursuivre la discussion : {url_to_comment}.
 
 \n#Geotribot #commentaire comment-{id}"""
-
-# ############################################################################
-# ########## FUNCTIONS ###########
-# ################################
 
 
 # ############################################################################
