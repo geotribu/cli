@@ -28,6 +28,7 @@ from geotribu_cli.__about__ import (
 from geotribu_cli.subcommands import (
     parser_comments_broadcast,
     parser_comments_latest,
+    parser_ia_summarize,
     parser_images_optimizer,
     parser_latest_content,
     parser_new_article,
@@ -209,6 +210,18 @@ def main(args: list[str] = None):
     )
     add_common_arguments(subcmd_opener)
     parser_open_result(subcmd_opener)
+
+    # Content summarizer
+    subcmd_summarizer = subparsers.add_parser(
+        "resumer",
+        aliases=["résumer", "summarize", "sumup"],
+        help="Résume un contenu de geotribu avec un certain nombre de caractères. "
+        "Basé sur l'IA.",
+        formatter_class=main_parser.formatter_class,
+        prog="summarize_content",
+    )
+    add_common_arguments(subcmd_summarizer)
+    parser_ia_summarize(subcmd_summarizer)
 
     # Upgrader
     subcmd_upgrade = subparsers.add_parser(
