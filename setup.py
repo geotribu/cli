@@ -108,6 +108,7 @@ setup(
         "all": load_requirements(
             list(HERE.joinpath("requirements").glob("extra.*.txt"))
         ),
+        "ia": load_requirements(HERE / "requirements/extra.ia.txt"),
         "img-local": load_requirements(HERE / "requirements/extra.img-local.txt"),
         "img-remote": load_requirements(HERE / "requirements/extra.img-remote.txt"),
     },
