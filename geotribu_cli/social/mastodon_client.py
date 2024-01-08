@@ -10,16 +10,16 @@ import logging
 from os import getenv
 from textwrap import shorten
 from urllib import request
-from urllib.error import HTTPError
 
 # 3rd party
+from requests import Session
 from rich import print
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
-from geotribu_cli.utils.file_downloader import BetterHTTPErrorProcessor
+from geotribu_cli.utils.proxies import get_proxy_settings
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -106,40 +106,27 @@ def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
             "GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"
         )
 
-    json_data = json.dumps(request_data)
-    json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
+    # json_data = json.dumps(request_data)
+    # json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
 
     headers = {
         "User-Agent": f"{__title_clean__}/{__version__}",
-        "Content-Length": len(json_data_bytes),
-        "Content-Type": "application/json; charset=utf-8",
+        # "Content-Length": len(json_data_bytes),
+        # "Content-Type": "application/json; charset=utf-8",
         "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
     }
 
-    req = request.Request(
-        f"{defaults_settings.mastodon_base_url}api/v1/statuses",
-        method="POST",
-        headers=headers,
-    )
+    with Session() as post_session:
+        post_session.proxies.update(get_proxy_settings())
+        post_session.headers.update(headers)
 
-    # install custom processor to handle 401 responses
-    opener = request.build_opener(BetterHTTPErrorProcessor)
-    request.install_opener(opener)
-    with request.urlopen(url=req, data=json_data_bytes) as response:
-        try:
-            content = json.loads(response.read().decode("utf-8"))
-        except Exception as err:
-            logger.warning(f"L'objet réponse ne semble pas être un JSON valide : {err}")
-            content = response.read().decode("utf-8")
-
-    if isinstance(content, dict) and "error" in content:
-        raise HTTPError(
-            url=req.full_url,
-            code="401",
-            msg=content,
-            hdrs=headers,
-            fp=None,
+        req = post_session.post(
+            url=f"{defaults_settings.mastodon_base_url}api/v1/statuses",
+            json=request_data,
         )
+        req.raise_for_status()
+
+    content = req.json()
 
     # set comment as newly posted
     content["cli_newly_posted"] = True
