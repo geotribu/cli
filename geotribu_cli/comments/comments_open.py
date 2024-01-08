@@ -10,6 +10,7 @@ import json
 import logging
 import sys
 from os import getenv
+from typing import Optional
 
 # 3rd party
 from rich import print
@@ -34,7 +35,7 @@ defaults_settings = GeotribuDefaults()
 # ################################
 
 
-def find_comment_by_id(comment_id: int) -> Comment | None:
+def find_comment_by_id(comment_id: int) -> Optional[Comment]:
     """Trouve un commentaire parmi les derniers téléchargés d'après son id.
 
     Args:
