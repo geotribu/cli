@@ -18,6 +18,7 @@ from geotribu_cli.cli_results_rich_formatters import format_output_result_commen
 from geotribu_cli.comments.comments_toolbelt import find_comment_by_id
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.utils.start_uri import open_uri
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -48,8 +49,7 @@ def parser_comments_read(
         "--comment-id",
         default=None,
         dest="comment_id",
-        help="Identifiant du commentaire à afficher. Doit faire partie des 100 derniers. "
-        "Par défaut, on publie le dernier commentaire.",
+        help="Identifiant du commentaire à afficher. Par défaut, le dernier commentaire.",
         required=False,
         type=int,
     )
@@ -142,11 +142,15 @@ def run(args: argparse.Namespace):
         )
         sys.exit(0)
 
-    print(
-        format_output_result_comments(
-            results=[comment_obj], format_type=args.format_output, count=1
+    if args.open_with == "shell":
+        print(
+            format_output_result_comments(
+                results=[comment_obj], format_type=args.format_output, count=1
+            )
         )
-    )
+    else:
+        open_uri(in_filepath=comment_obj.url_to_comment)
+
     sys.exit(0)
 
 
