@@ -14,7 +14,8 @@ from os import getenv
 from rich import print
 
 # package
-from geotribu_cli.comments.comments_toolbelt import get_latest_comments
+from geotribu_cli.comments.comments_toolbelt import find_comment_by_id
+from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.social.mastodon_client import broadcast_to_mastodon
 from geotribu_cli.utils.start_uri import open_uri
@@ -54,6 +55,29 @@ def parser_comments_broadcast(
         argparse.ArgumentParser: parser ready to use
     """
     subparser.add_argument(
+        "-c",
+        "--comment-id",
+        default=None,
+        dest="comment_id",
+        help="Identifiant du commentaire à afficher. Par défaut, le dernier commentaire.",
+        required=False,
+        type=int,
+    )
+
+    subparser.add_argument(
+        "-p",
+        "--page-size",
+        default=getenv("GEOTRIBU_COMMENTS_API_PAGE_SIZE", 20),
+        dest="page_size",
+        help="Nombre de commentaires par requêtes. Plus le commentaire est récent, plus "
+        "c'est performant d'utiliser une petite page. À l'inverse, si on cherche un "
+        "vieux commentaire, utiliser une grande page. Valeur par défaut : 20.",
+        metavar="GEOTRIBU_COMMENTS_API_PAGE_SIZE",
+        required=False,
+        type=int,
+    )
+
+    subparser.add_argument(
         "-t",
         "--to",
         choices=[
@@ -62,6 +86,15 @@ def parser_comments_broadcast(
         dest="broadcast_to",
         help="Canaux (réseaux sociaux) où publier le(s) commentaire(s).",
         required=True,
+    )
+
+    subparser.add_argument(
+        "-x",
+        "--expiration-rotating-hours",
+        default=getenv("GEOTRIBU_COMMENTS_EXPIRATION_HOURS", 4),
+        dest="expiration_rotating_hours",
+        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
+        type=int,
     )
 
     subparser.add_argument(
@@ -105,35 +138,40 @@ def run(args: argparse.Namespace):
 
     # get latest comment
     try:
-        latest_comment = get_latest_comments(
-            number=5, sort_by="created_desc", expiration_rotating_hours=1
+        comment_obj = find_comment_by_id(
+            comment_id=args.comment_id,
+            page_size=args.page_size,
+            expiration_rotating_hours=args.expiration_rotating_hours,
         )
-        if not len(latest_comment):
-            print(":person_shrugging: Aucun commentaire trouvé")
-            sys.exit(0)
-        latest_comment = latest_comment[0]
     except Exception as err:
         logger.error(
-            "Une erreur a empêché la récupération des derniers commentaires. "
-            f"Trace: {err}"
+            f"Une erreur a empêché la récupération des commentaires. Trace: {err}"
         )
-        sys.exit(err)
+        sys.exit(1)
+
+    # si le commentaire n'a pas été trouvé
+    if not isinstance(comment_obj, Comment):
+        print(
+            f":person_shrugging: Le commentaire {args.comment_id} n'a pu être trouvé. "
+            "Est-il publié et validé ?"
+        )
+        sys.exit(0)
 
     # check credentials
     if args.broadcast_to == "mastodon":
         try:
             online_post = broadcast_to_mastodon(
-                in_comment=latest_comment, public=args.opt_no_public
+                in_comment=comment_obj, public=args.opt_no_public
             )
         except Exception as err:
             logger.error(
-                f"La publication du commentaire {latest_comment.id} a échoué. "
+                f"La publication du commentaire {comment_obj.id} a échoué. "
                 f"Trace : {err}"
             )
             sys.exit(1)
 
     print(
-        f":white_check_mark: :left_speech_bubble: Commentaire {latest_comment.id}"
+        f":white_check_mark: :left_speech_bubble: Commentaire {comment_obj.id}"
         f" {'déjà publié précédemment' if online_post.get('cli_newly_posted') is False else 'publié'}"
         f" sur {args.broadcast_to.title()} : {online_post.get('url')}"
     )

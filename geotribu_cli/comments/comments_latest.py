@@ -68,10 +68,10 @@ def parser_comments_latest(
     subparser.add_argument(
         "-x",
         "--expiration-rotating-hours",
-        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
-        default=1,
-        type=int,
+        default=getenv("GEOTRIBU_COMMENTS_EXPIRATION_HOURS", 4),
         dest="expiration_rotating_hours",
+        help="Nombre d'heures à partir duquel considérer le fichier local comme périmé.",
+        type=int,
     )
 
     subparser.set_defaults(func=run)
