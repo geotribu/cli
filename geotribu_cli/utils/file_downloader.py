@@ -7,22 +7,19 @@
 
 # standard library
 import logging
-from http.client import HTTPMessage, HTTPResponse
 from pathlib import Path
-from urllib.error import HTTPError, URLError
-from urllib.request import (
-    BaseHandler,
-    ProxyHandler,
-    Request,
-    build_opener,
-    getproxies,
-    install_opener,
-    urlopen,
-)
+from typing import Optional
+from urllib.error import HTTPError
+
+# 3rd party
+from requests import Session
+from requests.exceptions import ConnectionError, HTTPError
+from requests.utils import requote_uri
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.utils.file_stats import is_file_older_than
+from geotribu_cli.utils.proxies import get_proxy_settings
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -30,12 +27,6 @@ from geotribu_cli.utils.file_stats import is_file_older_than
 
 # logs
 logger = logging.getLogger(__name__)
-
-# Handle network proxy
-proxies_settings = getproxies()  # Get the system proxy settings
-proxy_handler = ProxyHandler(proxies_settings)  # Create a proxy handler
-opener = build_opener(proxy_handler)  # Create an opener that will use the proxy
-install_opener(opener)  # Install the opener
 
 # ############################################################################
 # ########## FUNCTIONS ###########
@@ -47,8 +38,9 @@ def download_remote_file_to_local(
     local_file_path: Path,
     expiration_rotating_hours: int = 24,
     user_agent: str = f"{__title_clean__}/{__version__}",
-    content_type: str = None,
+    content_type: Optional[str] = None,
     chunk_size: int = 8192,
+    timeout=(800, 800),
 ) -> Path:
     """Check if the local index file exists. If not, download the search index from \
         remote URL. If it does exist, check if it has been modified.
@@ -61,7 +53,10 @@ def download_remote_file_to_local(
         user_agent (str, optional): user agent to use to perform the request. Defaults \
             to f"{__title_clean__}/{__version__}".
         content_type (str): HTTP content-type.
-        chunk_size (int): size of each chunk to read and write in bytes.
+        chunk_size (int): size of each chunk to read and write in bytes. Defaults to \
+            8192.
+        timeout (tuple, optional): custom timeout (request, response). Defaults to \
+            (800, 800).
 
     Returns:
         Path: path to the local file (should be the same as local_file_path)
@@ -92,38 +87,34 @@ def download_remote_file_to_local(
     if content_type:
         headers["Accept"] = content_type
 
-    # download the remote file into local
-    custom_request = Request(url=remote_url_to_download, headers=headers)
-
     try:
-        with urlopen(custom_request) as response, local_file_path.open(
-            mode="wb"
-        ) as buffile:
-            while True:
-                chunk = response.read(chunk_size)
-                if not chunk:
-                    break
-                buffile.write(chunk)
-        logger.info(
-            f"Le téléchargement du fichier distant {remote_url_to_download} dans "
-            f"{local_file_path} a réussi."
-        )
+        with Session() as dl_session:
+            dl_session.proxies.update(get_proxy_settings())
+            dl_session.headers.update(headers)
+
+            with dl_session.get(
+                url=requote_uri(remote_url_to_download), stream=True, timeout=timeout
+            ) as req:
+                req.raise_for_status()
+
+                with local_file_path.open(mode="wb") as buffile:
+                    for chunk in req.iter_content(chunk_size=chunk_size):
+                        if chunk:
+                            buffile.write(chunk)
+            logger.info(
+                f"Le téléchargement du fichier distant {remote_url_to_download} dans "
+                f"{remote_url_to_download} a réussi. "
+            )
     except HTTPError as error:
         logger.error(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
             f"Cause: HTTPError. Trace: {error}"
         )
         raise error
-    except URLError as error:
+    except ConnectionError as error:
         logger.error(
             f"Downloading {remote_url_to_download} to {local_file_path} failed. "
-            f"Cause: URLError. Trace: {error}"
-        )
-        raise error
-    except TimeoutError as error:
-        logger.error(
-            f"Downloading {remote_url_to_download} to {local_file_path} failed. "
-            f"Cause: TimeoutError. Trace: {error}"
+            f"Cause: ConnectionError. Trace: {error}"
         )
         raise error
     except Exception as error:
@@ -132,46 +123,5 @@ def download_remote_file_to_local(
             f"Cause: Unknown error. Trace: {error}"
         )
         raise error
+
     return local_file_path
-
-
-# ############################################################################
-# ########## CLASSES #############
-# ################################
-
-
-class BetterHTTPErrorProcessor(BaseHandler):
-    """A custom processor for HTTP error to avoid raising exception when response code
-        is 40*. Especially for 401 (authentication issue).
-
-    Inspired by https://stackoverflow.com/a/7033063/2556577.
-
-    Args:
-        BaseHandler: base class
-    """
-
-    def http_error_401(
-        self,
-        request: Request,
-        response: HTTPResponse,
-        code: int,
-        msg: str,
-        headers: HTTPMessage,
-    ) -> HTTPResponse:
-        """Handle 401 responses.
-
-        Args:
-            request: request object
-            response: response object
-            code: HTTP response code
-            msg: message
-            headers: response headers
-
-        Returns:
-            response object
-        """
-        logger.error(
-            f"La requête {request.method} vers {request.full_url} a retourné une erreur "
-            f"{code} avec le message : {msg}."
-        )
-        return response

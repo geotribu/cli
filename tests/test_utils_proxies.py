@@ -7,7 +7,7 @@
         # for whole tests
         python -m unittest tests.test_utils_proxies
         # for specific test
-        python -m unittest tests.test_utils_proxies.TestUtilsProxy.test_proxy_settings
+        python -m unittest tests.test_utils_proxies.TestUtilsNetworkProxies.test_proxy_settings
 """
 
 # standard library
@@ -22,15 +22,72 @@ from geotribu_cli.utils.proxies import get_proxy_settings
 # ################################
 
 
-class TestUtilsProxy(unittest.TestCase):
-    """Test package utilities."""
+class TestUtilsNetworkProxies(unittest.TestCase):
+    """Test network proxy utilities."""
 
     def test_proxy_settings(self):
         """Test proxy settings retriever."""
-        # OK
-        self.assertIsNone(get_proxy_settings())
+        # by default, no proxy
+        self.assertDictEqual(get_proxy_settings(), {})
+
+        # using generic - only http
+        get_proxy_settings.cache_clear()
         environ["HTTP_PROXY"] = "http://proxy.example.com:3128"
         self.assertIsInstance(get_proxy_settings(), dict)
+        self.assertEqual(
+            get_proxy_settings().get("http"), "http://proxy.example.com:3128"
+        )
+        self.assertIsNone(get_proxy_settings().get("https"))
+
+        environ.pop("HTTP_PROXY")  # clean up
+
+        # using generic - only https
+        get_proxy_settings.cache_clear()
+        environ["HTTPS_PROXY"] = "https://proxy.example.com:3128"
+        self.assertIsInstance(get_proxy_settings(), dict)
+        self.assertEqual(
+            get_proxy_settings().get("https"), "https://proxy.example.com:3128"
+        )
+        self.assertIsNone(get_proxy_settings().get("http"))
+
+        environ.pop("HTTPS_PROXY")  # clean up
+
+        # using generic - both http and https
+        get_proxy_settings.cache_clear()
+        environ["HTTP_PROXY"] = "http://proxy.example.com:3128"
+        environ["HTTPS_PROXY"] = "https://proxy.example.com:3128"
+        self.assertIsInstance(get_proxy_settings(), dict)
+        self.assertEqual(
+            get_proxy_settings().get("https"), "https://proxy.example.com:3128"
+        )
+        self.assertEqual(
+            get_proxy_settings().get("http"), "http://proxy.example.com:3128"
+        )
+
+        environ.pop("HTTP_PROXY")  # clean up
+        environ.pop("HTTPS_PROXY")  # clean up
+
+        # using custom GEOTRIBU
+        get_proxy_settings.cache_clear()
+        environ["GEOTRIBU_PROXY_HTTP"] = "http://user:p8ùX45@proxy.example.com:3128"
+        self.assertIsInstance(get_proxy_settings(), dict)
+        self.assertEqual(
+            get_proxy_settings().get("http"),
+            "http://user:p8ùX45@proxy.example.com:3128",
+        )
+        self.assertEqual(
+            get_proxy_settings().get("https"),
+            "http://user:p8ùX45@proxy.example.com:3128",
+        )
+
+        environ.pop("GEOTRIBU_PROXY_HTTP")  # clean up
+
+        # not valid URL - just to check the case
+        environ[
+            "GEOTRIBU_PROXY_HTTP"
+        ] = "socks5://user:motdepasse@proxy.example.com:1182"
+        environ.pop("GEOTRIBU_PROXY_HTTP")  # clean up
+        get_proxy_settings.cache_clear()
 
 
 # ############################################################################
