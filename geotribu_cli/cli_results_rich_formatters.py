@@ -109,6 +109,7 @@ def format_output_result_search_content(
             search_term=search_term,
             search_results_total=len(result),
             search_results_displayed=count,
+            hint="Astuce : ctrl+clic sur le titre pour ouvrir le contenu",
         )
 
         table = Table(
@@ -149,6 +150,7 @@ def format_output_result_search_image(
     search_term: Optional[str] = None,
     format_type: Optional[str] = None,
     count: int = 5,
+    search_filter_type: Optional[str] = None,
 ) -> Union[list[dict], Table]:
     """Format result according to output option.
 
@@ -162,9 +164,19 @@ def format_output_result_search_image(
         str: formatted result ready to print
     """
     if format_type == "table":
+        titre = add_search_criteria_as_str(
+            in_txt="Recherche dans les images",
+            search_term=search_term,
+            search_filter_type=search_filter_type,
+            search_results_total=len(result),
+            search_results_displayed=count,
+            hint="Astuce : ctrl+clic sur le nom pour ouvrir l'image",
+        )
+
         table = Table(
-            title=f"Recherche d'images - {len(result)} résultats "
-            f"avec le terme : {search_term}\n(ctrl+clic sur le nom pour ouvrir l'image)",
+            # title=f"Recherche d'images - {len(result)} résultats "
+            # f"avec le terme : {search_term}\n(ctrl+clic sur le nom pour ouvrir l'image)",
+            title=titre,
             show_lines=True,
             highlight=True,
             caption=f"{__title__} {__version__}",
@@ -204,11 +216,12 @@ def format_output_result_search_image(
 @lru_cache
 def add_search_criteria_as_str(
     in_txt: str,
-    search_filter_dates: tuple,
+    search_filter_dates: Optional[tuple] = None,
     search_results_total: Optional[int] = None,
     search_results_displayed: Optional[int] = None,
     search_term: Optional[str] = None,
     search_filter_type: Optional[str] = None,
+    hint: Optional[str] = None,
 ) -> str:
     """Prettify a title with search criterias.
 
@@ -216,7 +229,7 @@ def add_search_criteria_as_str(
         in_txt: initial title text
         search_filter_dates: tuple of dates used to filter search
         search_results_total: total of results of search. Defaults to None.
-        search_results_displayed: totla of results to display. Defaults to None.
+        search_results_displayed: total of results to display. Defaults to None.
         search_term: search terms. Defaults to None.
         search_filter_type: search filter type. Defaults to None.
 
@@ -229,15 +242,24 @@ def add_search_criteria_as_str(
     if search_term:
         in_txt += f" avec le terme : {search_term}"
 
-    if any([search_filter_dates[0], search_filter_dates[1], search_filter_type]):
+    if any(
+        [
+            isinstance(search_filter_dates, tuple) and search_filter_dates[0],
+            isinstance(search_filter_dates, tuple) and search_filter_dates[1],
+            search_filter_type,
+        ],
+    ):
         in_txt += "\nFiltres : "
         if search_filter_type:
             in_txt += f"de type {search_filter_type}, "
-        if search_filter_dates[0]:
+        if isinstance(search_filter_dates, tuple) and search_filter_dates[0]:
             in_txt += f"plus récents que {search_filter_dates[0]:%d %B %Y}, "
-        if search_filter_dates[1]:
+        if isinstance(search_filter_dates, tuple) and search_filter_dates[1]:
             in_txt += f"plus anciens que {search_filter_dates[1]:%d %B %Y}"
     else:
-        in_txt += "Aucun filtre de recherche appliqué."
+        in_txt += "\nAucun filtre de recherche appliqué."
+
+    if hint:
+        in_txt += f"\n{hint}"
 
     return in_txt

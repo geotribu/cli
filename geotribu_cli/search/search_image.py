@@ -47,7 +47,6 @@ def parser_search_image(subparser: argparse.ArgumentParser) -> argparse.Argument
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
     subparser.add_argument(
         "search_term",
         help="Terme de recherche.",
@@ -237,6 +236,7 @@ def run(args: argparse.Namespace):
                 format_type=args.format_output,
                 count=args.results_number,
                 search_term=args.search_term,
+                search_filter_type=args.filter_type,
             )
         )
     else:
