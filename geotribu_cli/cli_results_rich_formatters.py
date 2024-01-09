@@ -174,8 +174,6 @@ def format_output_result_search_image(
         )
 
         table = Table(
-            # title=f"Recherche d'images - {len(result)} résultats "
-            # f"avec le terme : {search_term}\n(ctrl+clic sur le nom pour ouvrir l'image)",
             title=titre,
             show_lines=True,
             highlight=True,
@@ -232,6 +230,7 @@ def add_search_criteria_as_str(
         search_results_displayed: total of results to display. Defaults to None.
         search_term: search terms. Defaults to None.
         search_filter_type: search filter type. Defaults to None.
+        hint: optional short hint text to display before the table. Defaults to None.
 
     Returns:
         formatted title
