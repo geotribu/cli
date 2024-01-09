@@ -6,6 +6,7 @@
 
 # standard library
 import logging
+from functools import lru_cache
 from typing import Optional, Union
 
 # 3rd party
@@ -101,17 +102,14 @@ def format_output_result_search_content(
     """
     if format_type == "table":
         # formatte le titre - plus lisible qu'une grosse f-string des familles
-        titre = f"Recherche de contenus - {count}/{len(result)} résultats "
-        if search_term:
-            titre += f"avec le terme : {search_term}"
-        if any([search_filter_dates[0], search_filter_dates[1], search_filter_type]):
-            titre += "\nFiltres : "
-            if search_filter_type:
-                titre += f"de type {search_filter_type}, "
-            if search_filter_dates[0]:
-                titre += f"plus récents que {search_filter_dates[0]:%d %B %Y}, "
-            if search_filter_dates[1]:
-                titre += f"plus anciens que {search_filter_dates[1]:%d %B %Y}"
+        titre = add_search_criteria_as_str(
+            in_txt="Recherche de contenus",
+            search_filter_dates=search_filter_dates,
+            search_filter_type=search_filter_type,
+            search_term=search_term,
+            search_results_total=len(result),
+            search_results_displayed=count,
+        )
 
         table = Table(
             title=titre,
@@ -181,7 +179,6 @@ def format_output_result_search_image(
         # table.add_column(header="Syntaxe intégration", justify="right", style="blue")
 
         # iterate over results
-
         for r in result[:count]:
             # # syntaxe depending on image type
             # if "logos-icones" in r.get("url"):
@@ -202,3 +199,45 @@ def format_output_result_search_image(
         return table
     else:
         return result
+
+
+@lru_cache
+def add_search_criteria_as_str(
+    in_txt: str,
+    search_filter_dates: tuple,
+    search_results_total: Optional[int] = None,
+    search_results_displayed: Optional[int] = None,
+    search_term: Optional[str] = None,
+    search_filter_type: Optional[str] = None,
+) -> str:
+    """Prettify a title with search criterias.
+
+    Args:
+        in_txt: initial title text
+        search_filter_dates: tuple of dates used to filter search
+        search_results_total: total of results of search. Defaults to None.
+        search_results_displayed: totla of results to display. Defaults to None.
+        search_term: search terms. Defaults to None.
+        search_filter_type: search filter type. Defaults to None.
+
+    Returns:
+        formatted title
+    """
+    if all([search_results_displayed, search_results_total]):
+        in_txt += f" {search_results_displayed}/{search_results_total} résultats"
+
+    if search_term:
+        in_txt += f" avec le terme : {search_term}"
+
+    if any([search_filter_dates[0], search_filter_dates[1], search_filter_type]):
+        in_txt += "\nFiltres : "
+        if search_filter_type:
+            in_txt += f"de type {search_filter_type}, "
+        if search_filter_dates[0]:
+            in_txt += f"plus récents que {search_filter_dates[0]:%d %B %Y}, "
+        if search_filter_dates[1]:
+            in_txt += f"plus anciens que {search_filter_dates[1]:%d %B %Y}"
+    else:
+        in_txt += "Aucun filtre de recherche appliqué."
+
+    return in_txt
