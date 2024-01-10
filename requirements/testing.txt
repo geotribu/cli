@@ -2,5 +2,6 @@
 # --------------------
 
 Pillow>=10.0.1,<11
-pytest-cov>=4,<5
-validators>=0.19,<0.23
+pytest-cov>=4
+pytest-retry>=1.6
+validators>=0.20,<0.23
