@@ -151,8 +151,6 @@ def run(args: argparse.Namespace):
     else:
         open_uri(in_filepath=comment_obj.url_to_comment)
 
-    sys.exit(0)
-
 
 # -- Stand alone execution
 if __name__ == "__main__":

@@ -68,6 +68,27 @@ def test_cli_run_comments_latest(capsys):
     assert Path(Path().home() / ".geotribu/comments/latest.json").exists()
 
 
+def test_cli_run_comments_open(capsys):
+    """Test nested subcommand comments latest."""
+    cli.main(["comments", "open"])
+
+    out, err = capsys.readouterr()
+
+    assert err == ""
+    assert Path(Path().home() / ".geotribu/comments/latest.json").exists()
+
+
+@pytest.mark.flaky(retries=3, delay=1, only_on=[SystemExit])
+def test_cli_run_comments_open_specific(capsys):
+    """Test nested subcommand comments latest."""
+    cli.main(["comments", "open", "--page-size", "25", "--comment-id", "15"])
+
+    out, err = capsys.readouterr()
+
+    assert err == ""
+    assert Path(Path().home() / ".geotribu/comments/latest.json").exists()
+
+
 def test_cli_run_contenus_articles_ubuntu(capsys):
     """Test CLI images."""
     cli.main(
@@ -97,6 +118,18 @@ def test_cli_run_images_logo_news(capsys):
     out, err = capsys.readouterr()
 
     assert out.startswith("[")
+    assert err == ""
+
+    assert Path(Path().home() / ".geotribu/search/cdn_search_index.json").exists()
+
+
+def test_cli_run_si_post_table(capsys):
+    """Test CLI images."""
+    cli.main(["si", "--no-prompt", "post*"])
+
+    out, err = capsys.readouterr()
+
+    assert out.strip().startswith("Recherche dans les images")
     assert err == ""
 
     assert Path(Path().home() / ".geotribu/search/cdn_search_index.json").exists()
