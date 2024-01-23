@@ -18,6 +18,17 @@ Unreleased
 
 -->
 
+## 0.31.1 - 2024-01-23
+
+### Features and enhancements 🎉
+
+* Amélioration des résultats de la recherche de contenus by @Guts in <https://github.com/geotribu/cli/pull/163>
+* improve: search images table result by @Guts in <https://github.com/geotribu/cli/pull/164>
+
+### Other Changes
+
+* security: bump pillow to 10.2 to fix CVE-2022-22817 by @Guts in <https://github.com/geotribu/cli/pull/165>
+
 ## 0.31.0 - 2024-01-08
 
 ### Features and enhancements 🎉
