@@ -48,7 +48,6 @@ masto_client = Mastodon(
 #     print(masto_client.list_accounts(id=liste.get("id"))[0].get("url"))
 
 
-# export des comptes ajoutés à des listes d'intérêt
 try:
     with csv_path_lists.open(
         mode="w", encoding="utf-8", newline=""
@@ -65,6 +64,8 @@ try:
         # en-tête (colonnes de la première ligne)
         csv_writer_following_accounts.writerow(csv_accounts_columns_names)
         csv_writer_listed_accounts_without_lists.writerow(csv_accounts_columns_names)
+
+        # -- Export des comptes ajoutés à des listes
 
         # on parcourt les listes du compte authentifié
         for liste in masto_client.lists():
@@ -92,6 +93,7 @@ try:
             f"Comptes avec les listes : {csv_path_lists.resolve()}"
         )
 
+        # -- Export de tous les comptes suivis
         for following in masto_client.account_following(id=masto_client.me()):
 
             member_account_full = following.get("acct")
@@ -112,6 +114,3 @@ except IOError as err:
         "Un problème a empêché l'export en CSV des listes et comptes associés. "
         f"Trace : {err}"
     )
-
-# export des comptes suivis
-# Récupérer les comptes suivis
