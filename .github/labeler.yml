@@ -1,20 +1,39 @@
 ci-cd:
-  - .github/**/*
+  - changed-files:
+      - any-glob-to-any-file: .github/**
 
 dependencies:
-  - requirements.txt
-  - requirements/*.txt
+  - changed-files:
+      - any-glob-to-any-file:
+          - requirements/*.txt
+          - requirements.txt
 
 documentation:
-  - docs/**/*
+  - changed-files:
+      - any-glob-to-any-file:
+          - docs/**
+          - requirements/documentation.txt
+enhancement:
+  - head-branch: ["^feature", "feature", "^improve", "improve"]
 
 packaging:
-  - builder/**/*
-  - setup.py
+  - head-branch: ["^packaging", "packaging"]
+  - changed-files:
+      - any-glob-to-any-file:
+        - builder/**/*
+        - setup.py
 
 quality:
-  - tests/**/*
+  - changed-files:
+    - any-glob-to-any-file:
+      - tests/**/*
 
 tooling:
-  - setup.cfg
-  - .vscode/**/*
+  - head-branch: ["^tooling", "tooling"]
+  - changed-files:
+      - any-glob-to-any-file:
+          - codecov.yml
+          - .pre-commit-config.yaml
+          - setup.cfg
+          - sonar-project.properties
+          - .vscode/**/*
