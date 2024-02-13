@@ -12,6 +12,7 @@
     // Python
     "python.analysis.autoFormatStrings": true,
     "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.autoImportCompletions": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.terminal.activateEnvironment": true,
     "[python]": {
