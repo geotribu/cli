@@ -37,7 +37,8 @@ masto_client = Mastodon(
     user_agent=f"{__title_clean__}-dev/{__version__}",
 )
 
-# print(masto_client.me())
+print(masto_client.me().keys())
+print(masto_client.me().get("url"))
 
 # for liste in masto_client.lists():
 #     print(liste.get("title"))
@@ -47,6 +48,13 @@ masto_client = Mastodon(
 #     print(masto_client.list_accounts(id=liste.get("id"))[0].get("id"))
 #     print(masto_client.list_accounts(id=liste.get("id"))[0].get("url"))
 
+dico_listes = {
+    liste.get("title"): masto_client.list_accounts(id=liste.get("id"))
+    for liste in masto_client.lists()
+}
+print(
+    [account_from_list for liste in dico_listes.values() for account_from_list in liste]
+)
 
 try:
     with csv_path_lists.open(
