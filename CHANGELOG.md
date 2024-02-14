@@ -18,6 +18,12 @@ Unreleased
 
 -->
 
+## 0.32.0 - 2024-02-14
+
+### Features and enhancements 🎉
+
+* Fonctionnalité : export des comptes et listes du compte Mastodon by @Guts in <https://github.com/geotribu/cli/pull/172>
+
 ## 0.31.1 - 2024-01-23
 
 ### Features and enhancements 🎉
