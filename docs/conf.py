@@ -162,6 +162,7 @@ mermaid_params = [
     "--backgroundColor",
     "transparent",
 ]
+mermaid_d3_zoom = True
 
 # MyST Parser
 myst_enable_extensions = [
