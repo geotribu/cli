@@ -146,8 +146,3 @@ def run(args: argparse.Namespace):
     print(f"Ouverture du résultat précédent n°{args.result_index} : {result_uri}")
 
     open_content(content_uri=result_uri, application=args.open_with)
-
-
-# -- Stand alone execution
-if __name__ == "__main__":
-    pass

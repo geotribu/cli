@@ -86,8 +86,3 @@ def run(args: argparse.Namespace):
             "mastodon_comptes_des_listes_geotribu.csv"
         ),
     )
-
-
-# -- Stand alone execution
-if __name__ == "__main__":
-    pass

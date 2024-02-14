@@ -392,9 +392,9 @@ def run(args: argparse.Namespace):
 
             # crée un résultat de sortie
             out_result = {
-                "type": "Article"
-                if result.get("ref").startswith("articles/")
-                else "GeoRDP",
+                "type": (
+                    "Article" if result.get("ref").startswith("articles/") else "GeoRDP"
+                ),
                 "date": rezult_date,
                 "score": f"{result.get('score'):.3}",
                 "url": f"{defaults_settings.site_base_url}{result.get('ref')}",
@@ -460,8 +460,3 @@ def run(args: argparse.Namespace):
             content_uri=final_results[int(result_to_open)].get("url"),
             application=getenv("GEOTRIBU_OPEN_WITH", "shell"),
         )
-
-
-# -- Stand alone execution
-if __name__ == "__main__":
-    pass

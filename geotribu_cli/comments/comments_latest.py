@@ -118,8 +118,3 @@ def run(args: argparse.Namespace):
     else:
         print(":person_shrugging: Aucun commentaire trouvé")
         sys.exit(0)
-
-
-# -- Stand alone execution
-if __name__ == "__main__":
-    pass

@@ -271,8 +271,3 @@ def run(args: argparse.Namespace):
             content_uri=final_results[int(result_to_open)].get("url"),
             application=getenv("GEOTRIBU_OPEN_WITH", "shell"),
         )
-
-
-# -- Stand alone execution
-if __name__ == "__main__":
-    pass

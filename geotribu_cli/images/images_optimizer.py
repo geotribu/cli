@@ -205,8 +205,3 @@ def run(args: argparse.Namespace):
                 "images/optim"
             )
         )
-
-
-# -- Stand alone execution
-if __name__ == "__main__":
-    pass
