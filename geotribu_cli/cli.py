@@ -31,6 +31,7 @@ from geotribu_cli.subcommands import (
     parser_comments_read,
     parser_images_optimizer,
     parser_latest_content,
+    parser_mastodon_export,
     parser_new_article,
     parser_open_result,
     parser_search_content,
@@ -320,6 +321,26 @@ def main(args: list[str] = None):
     )
     add_common_arguments(subcmd_search_image)
     parser_search_image(subcmd_search_image)
+
+    # -- NESTED SUBPARSER : COMMENTS ---------------------------------------------------
+    subcmd_social = subparsers.add_parser(
+        "social",
+        aliases=["rezosocio", "social"],
+        help="Commandes liées aux réseaux sociaux.",
+        formatter_class=main_parser.formatter_class,
+        prog="social",
+    )
+    social_subparsers = subcmd_social.add_subparsers(title="Social", dest="cmd_social")
+
+    # Mastodon - Export
+    subcmd_social_matsodon_export = social_subparsers.add_parser(
+        "mastodon-export",
+        help="Exporter les données du compte Mastodon (listes, comptes suivis...).",
+        formatter_class=main_parser.formatter_class,
+        prog="mastodon-export",
+    )
+    add_common_arguments(subcmd_social_matsodon_export)
+    parser_mastodon_export(subcmd_social_matsodon_export)
 
     # -- PARSE ARGS --------------------------------------------------------------------
     set_default_subparser(

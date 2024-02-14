@@ -9,6 +9,7 @@ from geotribu_cli.images.images_optimizer import parser_images_optimizer  # noqa
 from geotribu_cli.rss.rss_reader import parser_latest_content  # noqa: F401
 from geotribu_cli.search.search_content import parser_search_content  # noqa: F401
 from geotribu_cli.search.search_image import parser_search_image  # noqa: F401
+from geotribu_cli.social.cmd_mastodon_export import parser_mastodon_export  # noqa: F401
 
 from .open_result import parser_open_result  # noqa: F401
 from .upgrade import parser_upgrade  # noqa: F401

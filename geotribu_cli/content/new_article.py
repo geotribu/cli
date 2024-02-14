@@ -143,8 +143,3 @@ def run(args: argparse.Namespace):
     # open a result
     if args.opt_auto_open_disabled:
         open_uri(in_filepath=out_filepath)
-
-
-# -- Stand alone execution
-if __name__ == "__main__":
-    pass

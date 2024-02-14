@@ -264,3 +264,21 @@ A partir d'un dossier local :
 ```sh
 geotribu images optimize ~/Images/Geotribu/images/
 ```
+
+----
+
+## Réseaux sociaux
+
+### Exporter les données du compte Mastodon
+
+Utile pour le partage des comptes suivis et listes (voir [cet article](https://geotribu.fr/articles/2024/2024-02-16_de-twitter-a-mastodon-guide-geo-import-liste-comptes/))
+
+```sh
+geotribu social mastodon-export
+```
+
+Préciser le dossier de sortie :
+
+```sh
+geotribu social mastodon-export -w ./export-mastodon
+```
