@@ -1,6 +1,15 @@
+bug:
+  - head-branch:
+      - ^fix
+      - fix
+      - ^hotfix
+      - hotfix
+
+
 ci-cd:
   - changed-files:
-      - any-glob-to-any-file: .github/**
+      - any-glob-to-any-file:
+        - .github/**
 
 dependencies:
   - changed-files:
@@ -13,15 +22,22 @@ documentation:
       - any-glob-to-any-file:
           - docs/**
           - requirements/documentation.txt
+
 enhancement:
-  - head-branch: ["^feature", "feature", "^improve", "improve"]
+  - head-branch:
+    - ^feature
+    - feature
+    - ^improve
+    - improve
 
 packaging:
-  - head-branch: ["^packaging", "packaging"]
   - changed-files:
       - any-glob-to-any-file:
         - builder/**/*
         - setup.py
+  - head-branch:
+    - ^packaging
+    - packaging
 
 quality:
   - changed-files:
@@ -29,7 +45,6 @@ quality:
       - tests/**/*
 
 tooling:
-  - head-branch: ["^tooling", "tooling"]
   - changed-files:
       - any-glob-to-any-file:
           - codecov.yml
@@ -37,3 +52,6 @@ tooling:
           - setup.cfg
           - sonar-project.properties
           - .vscode/**/*
+  - head-branch:
+    - ^tooling
+    - tooling
