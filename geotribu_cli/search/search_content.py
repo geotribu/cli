@@ -207,6 +207,16 @@ def parser_search_content(
     )
 
     subparser.add_argument(
+        "-a",
+        "--no-fusion-par-url",
+        default=str2bool(getenv("GEOTRIBU_MERGE_CONTENT_BY_UNIQUE_URL", True)),
+        action="store_false",
+        dest="opt_merge_unique_url",
+        help="Désactive la fusion des contenus par URL. Les résultats contiendront "
+        "donc potentiellement donc différentes sections d'un même article.",
+    )
+
+    subparser.add_argument(
         "--no-prompt",
         default=str2bool(getenv("GEOTRIBU_PROMPT_AFTER_SEARCH", True)),
         action="store_false",
@@ -345,6 +355,7 @@ def run(args: argparse.Namespace):
 
     # résultats : enrichissement et filtre
     count_ignored_results = 0
+    unique_ref: list = []
     with console.status(
         f"Enrichissement des {len(search_results)} résultats...", spinner="earth"
     ):
@@ -375,8 +386,8 @@ def run(args: argparse.Namespace):
                 date_ref=args.filter_date_start, date_to_compare=rezult_date
             ):
                 logger.info(
-                    f"Résultat {result.get('ref')} plus ancien ({rezult_date})"
-                    f"que la date minimum {args.filter_date_start}"
+                    f"Résultat {result.get('ref')} ignoré car plus ancien "
+                    f"({rezult_date}) que la date minimum {args.filter_date_start}"
                 )
                 count_ignored_results += 1
                 continue
@@ -384,11 +395,27 @@ def run(args: argparse.Namespace):
                 date_ref=args.filter_date_end, date_to_compare=rezult_date
             ):
                 logger.info(
-                    f"Résultat {result.get('ref')} plus récent ({rezult_date})"
-                    f"que la date maximum {args.filter_date_end}"
+                    f"Résultat {result.get('ref')} ignoré car plus récent "
+                    f"({rezult_date}) que la date maximum {args.filter_date_end}."
                 )
                 count_ignored_results += 1
                 continue
+
+            if (
+                args.opt_merge_unique_url
+                and result.get("ref").startswith("articles/")
+                and "#" in result.get("ref")
+                and result.get("ref").split("#")[0] in unique_ref
+            ):
+                logger.info(
+                    f"Résultat {result.get('ref')} ignoré car il s'agit d'une "
+                    f"sous-partie ({result.get('ref').split('#')[1]}) d'un article déjà "
+                    "présent dans les résultats."
+                )
+                count_ignored_results += 1
+                continue
+
+            unique_ref.append(result.get("ref").split("#")[0])
 
             # crée un résultat de sortie
             out_result = {
