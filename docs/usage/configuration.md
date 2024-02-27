@@ -12,6 +12,7 @@
 | `GEOTRIBU_CONTENUS_DEFAULT_TYPE` | Type de contenu sur lequel filtrer. | `--filter-type` de `search-images`  | `None` |
 | `GEOTRIBU_CONTENUS_INDEX_EXPIRATION_HOURS` | Nombre d'heures à partir duquel considérer le fichier local comme périmé. | `--expiration-rotating-hours` de `search-content`  | `24*7` (1 semaine) |
 | `GEOTRIBU_DEFAULT_SUBCOMMAND` | Sous-commande à exécuter par défaut quand on lance le CLI sans argument | | `read-latest` |
+| `GEOTRIBU_MERGE_CONTENT_BY_UNIQUE_URL` | Cette option permet de désactiver la fusion des résultats qui partagent la même URL. Si désactivée, plusieurs résultats peuvent concerner le même article.  | `-a` ou `--no-fusion-par-url` de `search-content` | `True` |
 | `GEOTRIBU_PROXY_HTTP` | Proxy HTTP/S à utiliser spécifiquement. Par défaut, les paramètres systèmes ou les valeurs de `HTTP_PROXY` et `HTTPS_PROXY` sont utilisés. |   | `None` |
 | `GEOTRIBU_IMAGES_DEFAULT_TYPE` | Type d'image sur lequel filtrer. | `--filter-type` de `search-images`  | `None` |
 | `GEOTRIBU_IMAGES_INDEX_EXPIRATION_HOURS` | Nombre d'heures à partir duquel considérer le fichier local comme périmé. | `--expiration-rotating-hours` de `search-images`  | `24` (1 jour) |
