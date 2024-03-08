@@ -1,0 +1,29 @@
+name: Run and publish
+
+on:
+  schedule:
+    - cron: "0 5 * * SUN"  # weekly
+  workflow_dispatch:     # to trigger manually
+
+jobs:
+
+  run:
+
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[ci skip]') && !contains(github.event.head_commit.message, '[skip ci]')"
+
+    steps:
+
+      - name: set up Python
+        uses: actions/setup-python@v5.0.0
+        with:
+          python-version: 3.10
+
+      - name: install dependencies
+        run: python -m pip install geotribu ghp-import
+
+      - name: export geotribu's mastodon lists and accounts
+        run: geotribu social mastodon-export -w ./export-mastodon
+
+      - name: deploy to GitHub Pages
+        run: ghp-import --force --no-history --no-jekyll --push export-mastodon
