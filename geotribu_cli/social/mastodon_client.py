@@ -16,6 +16,8 @@ from typing import Optional
 from urllib import request
 from urllib.parse import urlparse
 
+# 3rd party
+from mastodon import Mastodon, MastodonAPIError, MastodonError
 from requests import Session
 from rich import print
 
@@ -24,9 +26,6 @@ from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.proxies import get_proxy_settings
-
-# 3rd party
-from mastodon import Mastodon, MastodonAPIError, MastodonError
 
 # ############################################################################
 # ########## GLOBALS #############
