@@ -16,8 +16,6 @@ from typing import Optional
 from urllib import request
 from urllib.parse import urlparse
 
-# 3rd party
-from mastodon import Mastodon, MastodonAPIError, MastodonError
 from requests import Session
 from rich import print
 
@@ -26,6 +24,9 @@ from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.proxies import get_proxy_settings
+
+# 3rd party
+from mastodon import Mastodon, MastodonAPIError, MastodonError
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -236,7 +237,9 @@ class ExtendedMastodonClient(Mastodon):
         if dest_path_lists is not None or dest_path_lists_only_accounts is not None:
             try:
                 dico_listes = {
-                    liste.get("title"): self.list_accounts(id=liste.get("id"))
+                    liste.get("title"): self.fetch_remaining(
+                        self.list_accounts(id=liste.get("id"))
+                    )
                     for liste in self.lists()
                 }
             except Exception as err:
@@ -249,7 +252,9 @@ class ExtendedMastodonClient(Mastodon):
         # récupération des comptes suivis
         if dest_path_following_accounts is not None:
             try:
-                masto_following_accounts = self.account_following(id=self.me())
+                masto_following_accounts = self.fetch_remaining(
+                    self.account_following(id=self.me())
+                )
             except Exception as err:
                 logger.critical(
                     "La récupération des comptes suivis a échoué. L'export est "
