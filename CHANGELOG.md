@@ -18,6 +18,20 @@ Unreleased
 
 -->
 
+## 0.32.1 - 2024-03-09
+
+### Bugs fixes 🐛
+
+* fix: Mastodon export was only exporting first page by @Guts in <https://github.com/geotribu/cli/pull/181>
+
+### Features and enhancements 🎉
+
+* Recherche de contenus : fusionne les résultats avec la même URL (= ignore les sous-sections des articles) by @Guts in <https://github.com/geotribu/cli/pull/119>
+
+### Documentation 📖
+
+* Docs: active le zoom sur le diagram Mermaid et corrige les social cards by @Guts in <https://github.com/geotribu/cli/pull/173>
+
 ## 0.32.0 - 2024-02-14
 
 ### Features and enhancements 🎉
