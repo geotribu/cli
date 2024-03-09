@@ -236,7 +236,9 @@ class ExtendedMastodonClient(Mastodon):
         if dest_path_lists is not None or dest_path_lists_only_accounts is not None:
             try:
                 dico_listes = {
-                    liste.get("title"): self.list_accounts(id=liste.get("id"))
+                    liste.get("title"): self.fetch_remaining(
+                        self.list_accounts(id=liste.get("id"))
+                    )
                     for liste in self.lists()
                 }
             except Exception as err:
@@ -249,7 +251,9 @@ class ExtendedMastodonClient(Mastodon):
         # récupération des comptes suivis
         if dest_path_following_accounts is not None:
             try:
-                masto_following_accounts = self.account_following(id=self.me())
+                masto_following_accounts = self.fetch_remaining(
+                    self.account_following(id=self.me())
+                )
             except Exception as err:
                 logger.critical(
                     "La récupération des comptes suivis a échoué. L'export est "
