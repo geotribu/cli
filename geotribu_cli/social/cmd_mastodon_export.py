@@ -14,9 +14,6 @@ from pathlib import Path
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.social.mastodon_client import ExtendedMastodonClient
 
-# 3rd party
-
-
 # ############################################################################
 # ########## GLOBALS #############
 # ################################

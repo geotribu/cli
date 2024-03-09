@@ -25,7 +25,6 @@ from rich import print
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
-from geotribu_cli.utils.proxies import get_proxy_settings
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -178,6 +177,101 @@ class ExtendedMastodonClient(Mastodon):
         """
         parsed_url = urlparse(url)
         return parsed_url.netloc
+
+    def broadcast_comment(self, in_comment: Comment, public: bool = True) -> dict:
+        """Post the latest comment to Mastodon.
+
+        Args:
+            in_comment: comment to broadcast
+            public: if not, the comment is sent as direct message, so it's not public.
+
+        Returns:
+            URL to posted status
+        """
+        # check if comment has not been already published
+        already_broadcasted = self.comment_already_broadcasted(comment_id=in_comment.id)
+        if isinstance(already_broadcasted, dict):
+            already_broadcasted["cli_newly_posted"] = False
+            return already_broadcasted
+
+        return already_broadcasted
+
+    def comment_already_broadcasted(
+        self, comment_id: str, media: str = "mastodon"
+    ) -> dict:
+        """Check if comment has already been broadcasted on the media.
+
+        Args:
+            comment_id: id of the comment to check
+            media: name of the targetted media
+
+        Returns:
+            post on media if it has been already published
+        """
+        # prepare search request
+        request_data = {
+            "all": ["commentaire"],
+            "limit": 40,
+            "local": True,
+            "since_id": "110549835686856734",
+        }
+
+        json_data = json.dumps(request_data)
+        json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
+
+        headers = {
+            "User-Agent": f"{__title_clean__}/{__version__}",
+            "Content-Length": len(json_data_bytes),
+            "Content-Type": "application/json; charset=utf-8",
+        }
+        req = request.Request(
+            f"{defaults_settings.mastodon_base_url}api/v1/timelines/tag/geotribot",
+            method="GET",
+            headers=headers,
+        )
+
+        r = request.urlopen(url=req, data=json_data_bytes)
+        content = json.loads(r.read().decode("utf-8"))
+
+        for status in content:
+            if f"comment-{comment_id}</p>" in status.get("content"):
+                logger.info(
+                    f"Le commentaire {comment_id} a déjà été publié sur {media} : "
+                    f"{status.get('url')}"
+                )
+                return status
+            if status.get("replies_count", 0) < 1:
+                logger.debug(
+                    f"Le statut {status.get('id')} n'a aucune réponse. Au suivant !"
+                )
+                continue
+            else:
+                logger.info(
+                    f"Le statut {status.get('id')} a {status.get('replies_count')} "
+                    "réponse(s). Cherchons parmi les réponses si le commentaire "
+                    f"{comment_id} n'y est pas..."
+                )
+                req = request.Request(
+                    f"{defaults_settings.mastodon_base_url}api/v1/statuses/"
+                    f"{status.get('id')}/context",
+                    method="GET",
+                    headers=headers,
+                )
+                r = request.urlopen(url=req, data=json_data_bytes)
+                content = json.loads(r.read().decode("utf-8"))
+                for reply_status in content.get("descendants", []):
+                    if f"comment-{comment_id}</p>" in reply_status.get("content"):
+                        print(
+                            f"Le commentaire {comment_id} a déjà été publié sur {media} : "
+                            f"{reply_status.get('url')}, en réponse à {status.get('id')}"
+                        )
+                        return reply_status
+
+        logger.info(
+            f"Le commentaire {comment_id} n'a pas été trouvé. "
+            "Il est donc considéré comme nouveau."
+        )
+        return None
 
     def export_data(
         self,
@@ -383,96 +477,96 @@ class ExtendedMastodonClient(Mastodon):
 # ################################
 
 
-def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
-    """Post the latest comment to Mastodon.
+# def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
+#     """Post the latest comment to Mastodon.
 
-    Args:
-        in_comment: comment to broadcast
-        public: if not, the comment is sent as direct message, so it's not public.
+#     Args:
+#         in_comment: comment to broadcast
+#         public: if not, the comment is sent as direct message, so it's not public.
 
-    Returns:
-        URL to posted status
-    """
-    if getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN") is None:
-        logger.error(
-            "Le jeton d'accès à l'API Mastodon n'a pas été trouvé en variable "
-            "d'environnement GEOTRIBU_MASTODON_API_ACCESS_TOKEN. "
-            "Le récupérer depuis : https://mapstodon.space/settings/applications/7909"
-        )
-        return None
+#     Returns:
+#         URL to posted status
+#     """
+#     if getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN") is None:
+#         logger.error(
+#             "Le jeton d'accès à l'API Mastodon n'a pas été trouvé en variable "
+#             "d'environnement GEOTRIBU_MASTODON_API_ACCESS_TOKEN. "
+#             "Le récupérer depuis : https://mapstodon.space/settings/applications/7909"
+#         )
+#         return None
 
-    # check if comment has not been already published
-    already_broadcasted = comment_already_broadcasted(
-        comment_id=in_comment.id, media="mastodon"
-    )
-    if isinstance(already_broadcasted, dict):
-        already_broadcasted["cli_newly_posted"] = False
-        return already_broadcasted
+#     # check if comment has not been already published
+#     already_broadcasted = comment_already_broadcasted(
+#         comment_id=in_comment.id, media="mastodon"
+#     )
+#     if isinstance(already_broadcasted, dict):
+#         already_broadcasted["cli_newly_posted"] = False
+#         return already_broadcasted
 
-    # prepare status
-    request_data = {
-        "status": comment_to_media(in_comment=in_comment, media="mastodon"),
-        "language": "fr",
-    }
+#     # prepare status
+#     request_data = {
+#         "status": comment_to_media(in_comment=in_comment, media="mastodon"),
+#         "language": "fr",
+#     }
 
-    # check if parent comment has been posted
-    if in_comment.parent is not None:
-        comment_parent_broadcasted = comment_already_broadcasted(
-            comment_id=in_comment.parent, media="mastodon"
-        )
-        if (
-            isinstance(comment_parent_broadcasted, dict)
-            and "id" in comment_parent_broadcasted
-        ):
-            print(
-                f"Le commentaire parent {in_comment.parent}a été posté précédemment sur "
-                f"Mastodon : {comment_parent_broadcasted.get('url')}. Le commentaire "
-                "actuel sera posté en réponse."
-            )
-            request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
-        else:
-            print(
-                f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
-                f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc posté comme nouveau fil "
-                "de discussion."
-            )
+#     # check if parent comment has been posted
+#     if in_comment.parent is not None:
+#         comment_parent_broadcasted = comment_already_broadcasted(
+#             comment_id=in_comment.parent, media="mastodon"
+#         )
+#         if (
+#             isinstance(comment_parent_broadcasted, dict)
+#             and "id" in comment_parent_broadcasted
+#         ):
+#             print(
+#                 f"Le commentaire parent {in_comment.parent}a été posté précédemment sur "
+#                 f"Mastodon : {comment_parent_broadcasted.get('url')}. Le commentaire "
+#                 "actuel sera posté en réponse."
+#             )
+#             request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
+#         else:
+#             print(
+#                 f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
+#                 f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc posté comme nouveau fil "
+#                 "de discussion."
+#             )
 
-    # unlisted or direct
-    if not public:
-        logger.debug("Comment will be posted as DIRECT message.")
-        request_data["visibility"] = "direct"
-    else:
-        logger.debug("Comment will be posted as UNLISTED message.")
-        request_data["visibility"] = getenv(
-            "GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"
-        )
+#     # unlisted or direct
+#     if not public:
+#         logger.debug("Comment will be posted as DIRECT message.")
+#         request_data["visibility"] = "direct"
+#     else:
+#         logger.debug("Comment will be posted as UNLISTED message.")
+#         request_data["visibility"] = getenv(
+#             "GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"
+#         )
 
-    # json_data = json.dumps(request_data)
-    # json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
+#     # json_data = json.dumps(request_data)
+#     # json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
 
-    headers = {
-        "User-Agent": f"{__title_clean__}/{__version__}",
-        # "Content-Length": len(json_data_bytes),
-        # "Content-Type": "application/json; charset=utf-8",
-        "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
-    }
+#     headers = {
+#         "User-Agent": f"{__title_clean__}/{__version__}",
+#         # "Content-Length": len(json_data_bytes),
+#         # "Content-Type": "application/json; charset=utf-8",
+#         "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
+#     }
 
-    with Session() as post_session:
-        post_session.proxies.update(get_proxy_settings())
-        post_session.headers.update(headers)
+#     with Session() as post_session:
+#         post_session.proxies.update(get_proxy_settings())
+#         post_session.headers.update(headers)
 
-        req = post_session.post(
-            url=f"{defaults_settings.mastodon_base_url}api/v1/statuses",
-            json=request_data,
-        )
-        req.raise_for_status()
+#         req = post_session.post(
+#             url=f"{defaults_settings.mastodon_base_url}api/v1/statuses",
+#             json=request_data,
+#         )
+#         req.raise_for_status()
 
-    content = req.json()
+#     content = req.json()
 
-    # set comment as newly posted
-    content["cli_newly_posted"] = True
+#     # set comment as newly posted
+#     content["cli_newly_posted"] = True
 
-    return content
+#     return content
 
 
 def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dict:
@@ -583,3 +677,40 @@ def comment_to_media(in_comment: Comment, media: str) -> str:
             text=shorten(in_comment.markdownified_text, width=max_text_length),
             id=in_comment.id,
         )
+
+
+# Stand alone execution
+if __name__ == "__main__":
+    mastodon_client = ExtendedMastodonClient()
+    mastotribu = mastodon_client.me()
+    # search_results = mastodon_client.search_v2(
+    #     q="geotribot",
+    #     account_id=mastotribu.get("id"),
+    #     min_id="110549835686856734",
+    #     result_type="statuses",
+    # )
+    # print(len(search_results))
+
+    # hashtag = mastodon_client.timeline_hashtag(
+    #     hashtag="geotribot", local=True, limit=100
+    # )
+    # print(len(hashtag))
+
+    my_statuses = mastodon_client.account_statuses(
+        id=mastotribu.get("id"),
+    )
+    print(len(my_statuses))
+    every_statuses = mastodon_client.fetch_remaining(my_statuses)
+    print(len(every_statuses))
+    for status in every_statuses:
+        status_tags = status.get("tags")
+        if isinstance(status_tags, list) and len(status_tags):
+            tags_names = [tag.get("name") for tag in status_tags]
+            if "geotribot" in tags_names and "commentaire" in tags_names:
+                if status.get("in_reply_to_id") is None:
+                    print("Ce statut est un commentaire parent : ", status.get("url"))
+                else:
+                    print(
+                        "Ce statut est une réponse à un commentaire : ",
+                        status.get("url"),
+                    )
