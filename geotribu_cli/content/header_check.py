@@ -12,6 +12,7 @@ from PIL import Image
 
 from geotribu_cli.__about__ import __executable_name__, __version__
 from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.content.json_feed import JsonFeedClient
 from geotribu_cli.utils.dates_manipulation import is_more_recent
 
 logger = logging.getLogger(__name__)
@@ -99,10 +100,23 @@ def check_image_ratio(image_url: str, min_ratio: float, max_ratio: float) -> boo
             os.remove(image_file_name)
 
 
+def get_existing_tags() -> set[str]:
+    jfc = JsonFeedClient()
+    return jfc.get_tags(should_sort=True)
+
+
+def check_tags(tags: list[str]) -> tuple[bool, set[str], set[str]]:
+    existing_tags = get_existing_tags()
+    all_exists = set(tags).issubset(existing_tags)
+    missing = set(tags).difference(existing_tags)
+    present = set(tags).intersection(existing_tags)
+    return all_exists, missing, present
+
+
 def run(args: argparse.Namespace) -> None:
     """Run the sub command logic.
 
-    Download the RSS feed file and display results.
+    Checks YAML header of a content
 
     Args:
         args (argparse.Namespace): arguments passed to the subcommand
@@ -139,3 +153,13 @@ def run(args: argparse.Namespace) -> None:
                     raise ValueError(msg)
             else:
                 logger.info("Ratio image ok")
+
+        # check that tags already exist
+        all_exists, missing, _ = check_tags(yaml_meta["tags"])
+        if not all_exists:
+            msg = f"Les tags suivants n'existent pas dans les contenus Geotribu précédents : {','.join(missing)}"
+            logger.error(msg)
+            if args.raise_exceptions:
+                raise ValueError(msg)
+        else:
+            logger.info("Tags ok")
