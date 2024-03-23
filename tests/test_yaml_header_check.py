@@ -3,7 +3,11 @@ from unittest.mock import patch
 
 import yaml
 
-from geotribu_cli.content.header_check import check_publish_date, check_tags
+from geotribu_cli.content.header_check import (
+    check_mandatory_keys,
+    check_publish_date,
+    check_tags,
+)
 
 
 class TestYamlHeaderCheck(unittest.TestCase):
@@ -42,3 +46,15 @@ class TestYamlHeaderCheck(unittest.TestCase):
         self.assertIn("OSM", missing_tags)
         self.assertIn("Fromage", present_tags)
         self.assertIn("IGN", present_tags)
+
+    def test_past_mandatory_keys(self):
+        all_present, missing = check_mandatory_keys(self.past_yaml_meta.keys())
+        self.assertTrue(all_present)
+        self.assertEqual(len(missing), 0)
+
+    def test_future_mandatory_keys(self):
+        all_present, missing = check_mandatory_keys(self.future_yaml_meta.keys())
+        self.assertFalse(all_present)
+        self.assertEqual(len(missing), 2)
+        self.assertIn("license", missing)
+        self.assertIn("description", missing)

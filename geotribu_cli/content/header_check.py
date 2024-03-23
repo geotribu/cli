@@ -18,6 +18,18 @@ from geotribu_cli.utils.dates_manipulation import is_more_recent
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
 
+MANDATORY_KEYS = [
+    "title",
+    "subtitle",
+    "authors",
+    "categories",
+    "date",
+    "description",
+    "icon",
+    "license",
+    "tags",
+]
+
 # ############################################################################
 # ########## CLI #################
 # ################################
@@ -113,6 +125,16 @@ def check_tags(tags: list[str]) -> tuple[bool, set[str], set[str]]:
     return all_exists, missing, present
 
 
+def check_mandatory_keys(
+    keys: list[str], mandatory: list[str] = MANDATORY_KEYS
+) -> tuple[bool, set[str]]:
+    missing = set()
+    for mk in mandatory:
+        if mk not in keys:
+            missing.add(mk)
+    return len(missing) == 0, missing
+
+
 def run(args: argparse.Namespace) -> None:
     """Run the sub command logic.
 
@@ -163,3 +185,13 @@ def run(args: argparse.Namespace) -> None:
                 raise ValueError(msg)
         else:
             logger.info("Tags ok")
+
+        # check that mandatory keys are present
+        all_present, missing = check_mandatory_keys(yaml_meta.keys(), MANDATORY_KEYS)
+        if not all_present:
+            msg = f"Les clés suivantes ne sont pas présentes dans l'entête markdown : {','.join(missing)}"
+            logger.error(msg)
+            if args.raise_exceptions:
+                raise ValueError(msg)
+        else:
+            logger.info("Clés de l'entête ok")
