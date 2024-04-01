@@ -4,9 +4,10 @@ from unittest.mock import patch
 import yaml
 
 from geotribu_cli.content.header_check import (
+    check_existing_tags,
     check_mandatory_keys,
     check_publish_date,
-    check_tags,
+    check_tags_order,
 )
 
 
@@ -29,23 +30,33 @@ class TestYamlHeaderCheck(unittest.TestCase):
         self.assertTrue(check_publish_date(self.future_yaml_meta["date"]))
 
     @patch("geotribu_cli.content.header_check.get_existing_tags")
-    def test_past_tags(self, get_existing_tags_mock):
+    def test_past_tags_existence(self, get_existing_tags_mock):
         get_existing_tags_mock.return_value = ["QGIS", "OSM"]
-        tags_ok, missing_tags, present_tags = check_tags(self.past_yaml_meta["tags"])
+        tags_ok, missing_tags, present_tags = check_existing_tags(
+            self.past_yaml_meta["tags"]
+        )
         self.assertFalse(tags_ok)
         self.assertIn("Fromage", missing_tags)
         self.assertIn("QGIS", present_tags)
         self.assertIn("OSM", present_tags)
 
     @patch("geotribu_cli.content.header_check.get_existing_tags")
-    def test_future_tags(self, get_existing_tags_mock):
+    def test_future_tags_existence(self, get_existing_tags_mock):
         get_existing_tags_mock.return_value = ["Fromage", "IGN"]
-        tags_ok, missing_tags, present_tags = check_tags(self.future_yaml_meta["tags"])
+        tags_ok, missing_tags, present_tags = check_existing_tags(
+            self.future_yaml_meta["tags"]
+        )
         self.assertFalse(tags_ok)
         self.assertIn("QGIS", missing_tags)
         self.assertIn("OSM", missing_tags)
         self.assertIn("Fromage", present_tags)
         self.assertIn("IGN", present_tags)
+
+    def test_past_tags_order(self):
+        self.assertTrue(check_tags_order(self.past_yaml_meta["tags"]))
+
+    def test_future_tags_order(self):
+        self.assertFalse(check_tags_order(self.future_yaml_meta["tags"]))
 
     def test_past_mandatory_keys(self):
         all_present, missing = check_mandatory_keys(self.past_yaml_meta.keys())

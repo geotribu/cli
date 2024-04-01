@@ -117,12 +117,19 @@ def get_existing_tags() -> set[str]:
     return jfc.get_tags(should_sort=True)
 
 
-def check_tags(tags: list[str]) -> tuple[bool, set[str], set[str]]:
+def check_existing_tags(tags: list[str]) -> tuple[bool, set[str], set[str]]:
     existing_tags = get_existing_tags()
     all_exists = set(tags).issubset(existing_tags)
     missing = set(tags).difference(existing_tags)
     present = set(tags).intersection(existing_tags)
     return all_exists, missing, present
+
+
+def check_tags_order(tags: list[str]) -> bool:
+    for i in range(len(tags) - 1):
+        if tags[i] > tags[i + 1]:
+            return False
+    return True
 
 
 def check_mandatory_keys(
@@ -177,14 +184,23 @@ def run(args: argparse.Namespace) -> None:
                 logger.info("Ratio image ok")
 
         # check that tags already exist
-        all_exists, missing, _ = check_tags(yaml_meta["tags"])
+        all_exists, missing, _ = check_existing_tags(yaml_meta["tags"])
         if not all_exists:
             msg = f"Les tags suivants n'existent pas dans les contenus Geotribu précédents : {','.join(missing)}"
             logger.error(msg)
             if args.raise_exceptions:
                 raise ValueError(msg)
         else:
-            logger.info("Tags ok")
+            logger.info("Existence des tags ok")
+
+        # check if tags are alphabetically sorted
+        if not check_tags_order(yaml_meta["tags"]):
+            msg = "Les tags ne sont pas triés par ordre alphabétique"
+            logger.error(msg)
+            if args.raise_exceptions:
+                raise ValueError(msg)
+        else:
+            logger.info("Ordre alphabétique des tags ok")
 
         # check that mandatory keys are present
         all_present, missing = check_mandatory_keys(yaml_meta.keys(), MANDATORY_KEYS)

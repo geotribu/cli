@@ -13,8 +13,8 @@ license: beerware
 robots: index, follow
 tags:
     - Fromage
-    - QGIS
     - OSM
+    - QGIS
 ---
 
 # Article supposément rédigé dans le futur
