@@ -21,18 +21,18 @@ env:
 jobs:
   unit-test:
     strategy:
+      fail-fast: false
       matrix:
-        fail-fast: false
-        max-parallel: 2
         os:
           - macos-latest
           - ubuntu-22.04
           - windows-latest
         python-version:
-          - "3.9"
-          - "3.10"
-          - "3.11"
-          - "3.12"
+            - "3.9"
+            - "3.10"
+            - "3.11"
+            - "3.12"
+      max-parallel: 2
 
     runs-on: ${{ matrix.os }}
     steps:
