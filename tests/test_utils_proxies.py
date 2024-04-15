@@ -83,9 +83,9 @@ class TestUtilsNetworkProxies(unittest.TestCase):
         environ.pop("GEOTRIBU_PROXY_HTTP")  # clean up
 
         # not valid URL - just to check the case
-        environ[
-            "GEOTRIBU_PROXY_HTTP"
-        ] = "socks5://user:motdepasse@proxy.example.com:1182"
+        environ["GEOTRIBU_PROXY_HTTP"] = (
+            "socks5://user:motdepasse@proxy.example.com:1182"
+        )
         environ.pop("GEOTRIBU_PROXY_HTTP")  # clean up
         get_proxy_settings.cache_clear()
 
