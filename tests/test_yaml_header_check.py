@@ -6,7 +6,6 @@ import yaml
 from geotribu_cli.content.header_check import (
     check_existing_tags,
     check_mandatory_keys,
-    check_publish_date,
     check_tags_order,
 )
 
@@ -22,12 +21,6 @@ class TestYamlHeaderCheck(unittest.TestCase):
             future_content = future_file.read()
             _, front_matter, _ = future_content.split("---", 2)
             self.future_yaml_meta = yaml.safe_load(front_matter)
-
-    def test_past_publish_date(self):
-        self.assertFalse(check_publish_date(self.past_yaml_meta["date"]))
-
-    def test_future_publish_date(self):
-        self.assertTrue(check_publish_date(self.future_yaml_meta["date"]))
 
     @patch("geotribu_cli.content.header_check.get_existing_tags")
     def test_past_tags_existence(self, get_existing_tags_mock):

@@ -3,8 +3,6 @@ import logging
 import os
 import shutil
 import uuid
-from datetime import datetime
-from typing import Any
 
 import requests
 import yaml
@@ -13,7 +11,6 @@ from PIL import Image
 from geotribu_cli.__about__ import __executable_name__, __version__
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.content.json_feed import JsonFeedClient
-from geotribu_cli.utils.dates_manipulation import is_more_recent
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
@@ -81,15 +78,6 @@ def parser_header_check(
 # ############################################################################
 # ########## MAIN ################
 # ################################
-
-
-def check_publish_date(date: Any) -> bool:
-    if isinstance(date, str):
-        publish_date = datetime.strptime(date.split(" ")[0], "%Y-%m-%d").date()
-    else:
-        publish_date = date
-    # TODO: check if date is another type and raise error
-    return is_more_recent(datetime.now().date(), publish_date)
 
 
 def check_image_ratio(image_url: str, min_ratio: float, max_ratio: float) -> bool:
@@ -161,15 +149,6 @@ def run(args: argparse.Namespace) -> None:
         _, front_matter, _ = content.split("---", 2)
         yaml_meta = yaml.safe_load(front_matter)
         logger.debug(f"YAML metadata loaded : {yaml_meta}")
-
-        # check that datetime is in the future
-        if not check_publish_date(yaml_meta["date"]):
-            msg = "La date de publication n'est pas dans le turfu !"
-            logger.error(msg)
-            if args.raise_exceptions:
-                raise ValueError(msg)
-        else:
-            logger.info("Date de publication ok")
 
         # check that image ratio is okayyy
         if "image" in yaml_meta:
