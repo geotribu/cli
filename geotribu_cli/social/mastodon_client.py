@@ -311,15 +311,6 @@ class ExtendedMastodonClient(Mastodon):
             except ValueError as err:
                 logger.error(f"Converting comment-id into integer failed. Trace: {err}")
 
-            if status.get("in_reply_to_id") is None:
-                logger.debug(
-                    f"Ce statut est un commentaire parent : {status.get('url')}"
-                )
-            else:
-                logger.debug(
-                    f"Ce statut est une réponse à un commentaire : {status.get('url')}",
-                )
-
         logger.info(
             f"Le commentaire {comment_id} n'a pas été trouvé sur Mastodon. "
             "Il est donc considéré comme nouveau."
@@ -561,48 +552,4 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
     mastodon_client = ExtendedMastodonClient()
-    mastotribu = mastodon_client.me()
-    # search_results = mastodon_client.search_v2(
-    #     q="geotribot",
-    #     account_id=mastotribu.get("id"),
-    #     min_id="110549835686856734",
-    #     result_type="statuses",
-    # )
-    # print(len(search_results))
-
-    # hashtag = mastodon_client.timeline_hashtag(
-    #     hashtag="geotribot", local=True, limit=100
-    # )
-    # print(len(hashtag))
-
-    # my_statuses = mastodon_client.account_statuses(
-    #     id=mastotribu.get("id"), tagged="geotribot", limit=40, exclude_reblogs=True
-    # )
-    # print(len(my_statuses))
-    # every_statuses = mastodon_client.fetch_remaining(my_statuses)
-    # print(len(every_statuses))
-    # for status in every_statuses:
-    #     status_tags = status.get("tags")
-    #     if isinstance(status_tags, list) and len(status_tags):
-    #         tags_names = [tag.get("name") for tag in status_tags]
-    #         if "geotribot" in tags_names and "commentaire" in tags_names:
-    #             matches = re.findall(regex_pattern_comment_id, status.get("content"))
-    #             if not len(matches):
-    #                 logger.info(
-    #                     "Ce statut ne contient pas d'identifiant de commentaire."
-    #                 )
-    #                 continue
-
-    #             print(
-    #                 f"Ce statut correspond au commentaire : {matches[0].removeprefix('comment-')}"
-    #             )
-
-    #             if status.get("in_reply_to_id") is None:
-    #                 print("Ce statut est un commentaire parent : ", status.get("url"))
-    #             else:
-    #                 print(
-    #                     "Ce statut est une réponse à un commentaire : ",
-    #                     status.get("url"),
-    #                 )
-
-    mastodon_client.comment_already_broadcasted("321")
+    mastodon_client.comment_already_broadcasted(321)
