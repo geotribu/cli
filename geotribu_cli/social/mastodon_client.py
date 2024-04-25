@@ -74,6 +74,7 @@ class ExtendedMastodonClient(Mastodon):
         "Notify on new posts",
         "Languages",
     ]
+    my_statuses: Optional[list] = None
 
     def __init__(
         self,
@@ -216,12 +217,22 @@ class ExtendedMastodonClient(Mastodon):
         Returns:
             post on media if it has been already published
         """
-        # download statuses with #geotribot
-        my_statuses = self.account_statuses(
-            id=self.me().get("id"), tagged="geotribot", limit=40, exclude_reblogs=True
-        )
-        every_statuses = self.fetch_remaining(my_statuses)
-        logger.debug(f"{len(every_statuses)} statuts récupérés.")
+        # download statuses with #geotribot if not already stored in memory
+        if self.my_statuses is None:
+            my_statuses = self.account_statuses(
+                id=self.me().get("id"),
+                tagged="geotribot",
+                limit=40,
+                exclude_reblogs=True,
+            )
+            every_statuses = self.fetch_remaining(my_statuses)
+            logger.debug(f"{len(every_statuses)} statuts récupérés.")
+            self.my_statuses = every_statuses
+        else:
+            every_statuses = self.my_statuses
+            logger.debug(
+                f"Réutilise les {len(every_statuses)} téléchargés précédemment."
+            )
 
         # parse every downloaded status
         for status in every_statuses:
