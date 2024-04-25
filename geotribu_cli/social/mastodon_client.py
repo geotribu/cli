@@ -187,12 +187,14 @@ class ExtendedMastodonClient(Mastodon):
         parsed_url = urlparse(url)
         return parsed_url.netloc
 
-    def broadcast_comment(self, in_comment: Comment, public: bool = True) -> dict:
+    def broadcast_comment(
+        self,
+        in_comment: Comment,
+    ) -> dict:
         """Post the latest comment to Mastodon.
 
         Args:
             in_comment: comment to broadcast
-            public: if not, the comment is sent as direct message, so it's not public.
 
         Returns:
             URL to posted status
@@ -218,14 +220,25 @@ class ExtendedMastodonClient(Mastodon):
                     f"{comment_parent_broadcasted.get('url')}. Le commentaire "
                     f"{in_comment.id} actuel sera donc posté en réponse."
                 )
+                in_reply_to_id = comment_parent_broadcasted.get("id")
             else:
                 logger.info(
                     f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
                     f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc "
                     "posté comme nouveau fil de discussion."
                 )
+                in_reply_to_id = None
 
-        return already_broadcasted
+        new_status = self.status_post(
+            status=comment_to_media(in_comment=in_comment, media="mastodon"),
+            in_reply_to_id=in_reply_to_id,
+            language="fr",
+            visibility=getenv("GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"),
+        )
+        if isinstance(new_status, dict):
+            new_status["cli_newly_posted"] = True
+
+        return new_status
 
     def comment_already_broadcasted(self, comment_id: int) -> Optional[dict]:
         """Check if comment has already been broadcasted on the media.
@@ -516,98 +529,6 @@ class ExtendedMastodonClient(Mastodon):
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################
-
-
-# def broadcast_to_mastodon(in_comment: Comment, public: bool = True) -> dict:
-#     """Post the latest comment to Mastodon.
-
-#     Args:
-#         in_comment: comment to broadcast
-#         public: if not, the comment is sent as direct message, so it's not public.
-
-#     Returns:
-#         URL to posted status
-#     """
-#     if getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN") is None:
-#         logger.error(
-#             "Le jeton d'accès à l'API Mastodon n'a pas été trouvé en variable "
-#             "d'environnement GEOTRIBU_MASTODON_API_ACCESS_TOKEN. "
-#             "Le récupérer depuis : https://mapstodon.space/settings/applications/7909"
-#         )
-#         return None
-
-#     # check if comment has not been already published
-#     already_broadcasted = comment_already_broadcasted(
-#         comment_id=in_comment.id, media="mastodon"
-#     )
-#     if isinstance(already_broadcasted, dict):
-#         already_broadcasted["cli_newly_posted"] = False
-#         return already_broadcasted
-
-#     # prepare status
-#     request_data = {
-#         "status": comment_to_media(in_comment=in_comment, media="mastodon"),
-#         "language": "fr",
-#     }
-
-#     # check if parent comment has been posted
-#     if in_comment.parent is not None:
-#         comment_parent_broadcasted = comment_already_broadcasted(
-#             comment_id=in_comment.parent, media="mastodon"
-#         )
-#         if (
-#             isinstance(comment_parent_broadcasted, dict)
-#             and "id" in comment_parent_broadcasted
-#         ):
-#             print(
-#                 f"Le commentaire parent {in_comment.parent}a été posté précédemment sur "
-#                 f"Mastodon : {comment_parent_broadcasted.get('url')}. Le commentaire "
-#                 "actuel sera posté en réponse."
-#             )
-#             request_data["in_reply_to_id"] = comment_parent_broadcasted.get("id")
-#         else:
-#             print(
-#                 f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
-#                 f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc posté comme nouveau fil "
-#                 "de discussion."
-#             )
-
-#     # unlisted or direct
-#     if not public:
-#         logger.debug("Comment will be posted as DIRECT message.")
-#         request_data["visibility"] = "direct"
-#     else:
-#         logger.debug("Comment will be posted as UNLISTED message.")
-#         request_data["visibility"] = getenv(
-#             "GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"
-#         )
-
-#     # json_data = json.dumps(request_data)
-#     # json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
-
-#     headers = {
-#         "User-Agent": f"{__title_clean__}/{__version__}",
-#         # "Content-Length": len(json_data_bytes),
-#         # "Content-Type": "application/json; charset=utf-8",
-#         "Authorization": f"Bearer {getenv('GEOTRIBU_MASTODON_API_ACCESS_TOKEN')}",
-#     }
-
-#     with Session() as post_session:
-#         post_session.proxies.update(get_proxy_settings())
-#         post_session.headers.update(headers)
-
-#         req = post_session.post(
-#             url=f"{defaults_settings.mastodon_base_url}api/v1/statuses",
-#             json=request_data,
-#         )
-#         req.raise_for_status()
-
-#     content = req.json()
-
-#     # set comment as newly posted
-#     content["cli_newly_posted"] = True
-
-#     return content
 
 
 def comment_to_media(in_comment: Comment, media: str) -> str:

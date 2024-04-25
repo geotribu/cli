@@ -109,16 +109,6 @@ def parser_comments_broadcast(
         help="Désactive l'ouverture automatique du post à la fin de la commande.",
     )
 
-    subparser.add_argument(
-        "--no-public",
-        "--private",
-        default=True,
-        action="store_false",
-        dest="opt_no_public",
-        help="Publie le commentaire en mode privé (ne fonctionne pas avec tous les "
-        "canaux de diffusion).",
-    )
-
     subparser.set_defaults(func=run)
 
     return subparser
@@ -164,11 +154,9 @@ def run(args: argparse.Namespace):
     if args.broadcast_to == "mastodon":
         try:
             mastodon_client = ExtendedMastodonClient()
-            online_post = mastodon_client.broadcast_comment(
-                in_comment=comment_obj, public=args.opt_no_public
-            )
+            online_post = mastodon_client.broadcast_comment(in_comment=comment_obj)
             if not online_post:
-                print(f"le commentaire n'a pas encore été publié : {comment_obj}")
+                print(f"le commentaire n'a pas encore été publié : {comment_obj.id}")
         except Exception as err:
             logger.error(
                 f"La publication du commentaire {comment_obj.id} a échoué. "
