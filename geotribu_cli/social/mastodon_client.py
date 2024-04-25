@@ -153,12 +153,12 @@ class ExtendedMastodonClient(Mastodon):
 
         .. code-block:: python
 
-        >>> print(ExtendedMastodonClient.full_account_with_instance(account={"acct": "datagouvfr@social.numerique.gouv.fr"}))
-        datagouvfr@social.numerique.gouv.fr
-        >>> print(ExtendedMastodonClient.full_account_with_instance(account={"acct": "leaflet"}))
-        leaflet@mapstodon.space
-        >>> print(ExtendedMastodonClient.full_account_with_instance(account={"acct": "opengisch"}, default_instance="fosstodon.org))
-        opengisch@fosstodon.org
+            >>> print(ExtendedMastodonClient.full_account_with_instance(account={"acct": "datagouvfr@social.numerique.gouv.fr"}))
+            datagouvfr@social.numerique.gouv.fr
+            >>> print(ExtendedMastodonClient.full_account_with_instance(account={"acct": "leaflet"}))
+            leaflet@mapstodon.space
+            >>> print(ExtendedMastodonClient.full_account_with_instance(account={"acct": "opengisch"}, default_instance="fosstodon.org))
+            opengisch@fosstodon.org
 
         """
         member_account_full: str = account.get("acct")
