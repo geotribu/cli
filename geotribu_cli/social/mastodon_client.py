@@ -203,16 +203,35 @@ class ExtendedMastodonClient(Mastodon):
             already_broadcasted["cli_newly_posted"] = False
             return already_broadcasted
 
+        # check if parent comment has been posted
+        if in_comment.parent is not None:
+            comment_parent_broadcasted = self.comment_already_broadcasted(
+                comment_id=in_comment.parent
+            )
+            if (
+                isinstance(comment_parent_broadcasted, dict)
+                and "id" in comment_parent_broadcasted
+            ):
+                logger.info(
+                    f"Le commentaire parent {in_comment.parent} a déjà été posté "
+                    "précédemment sur Mastodon : "
+                    f"{comment_parent_broadcasted.get('url')}. Le commentaire "
+                    f"{in_comment.id} actuel sera donc posté en réponse."
+                )
+            else:
+                logger.info(
+                    f"Le commentaire parent {in_comment.parent} n'a été posté précédemment "
+                    f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc "
+                    "posté comme nouveau fil de discussion."
+                )
+
         return already_broadcasted
 
-    def comment_already_broadcasted(
-        self, comment_id: int, media: str = "mastodon"
-    ) -> Optional[dict]:
+    def comment_already_broadcasted(self, comment_id: int) -> Optional[dict]:
         """Check if comment has already been broadcasted on the media.
 
         Args:
             comment_id: id of the comment to check
-            media: name of the targetted media
 
         Returns:
             post on media if it has been already published
@@ -272,7 +291,7 @@ class ExtendedMastodonClient(Mastodon):
                 status_comment_id = int(matches[0].removeprefix("comment-"))
                 if status_comment_id == comment_id:
                     logger.info(
-                        f"Le commentaire {comment_id} a déjà été publié sur {media} : "
+                        f"Le commentaire {comment_id} a déjà été publié sur Mastodon : "
                         f"{status.get('url')}"
                     )
                     return status
@@ -289,7 +308,7 @@ class ExtendedMastodonClient(Mastodon):
                 )
 
         logger.info(
-            f"Le commentaire {comment_id} n'a pas été trouvé sur {media}. "
+            f"Le commentaire {comment_id} n'a pas été trouvé sur Mastodon. "
             "Il est donc considéré comme nouveau."
         )
 
