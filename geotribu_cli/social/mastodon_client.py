@@ -93,6 +93,7 @@ class ExtendedMastodonClient(Mastodon):
         user_agent: str = f"{__title_clean__}/{__version__}",
         lang: Optional[str] = "fra",
     ):
+        """Instanciation class. Args are inherited."""
         # handle some attributes
         if access_token is None:
             access_token = getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN")
@@ -105,6 +106,14 @@ class ExtendedMastodonClient(Mastodon):
                 raise MastodonError(
                     f"Le jeton d'accès à l'API Mastodon (instance : {api_base_url}) est requis."
                 )
+            elif isinstance(access_token, str) and len(access_token) < 25:
+                logger.critical(
+                    "Le jeton d'accès à l'API Mastodon récupéré semble incorrect "
+                    "(moins de 25 caractères)."
+                )
+                raise MastodonError(
+                    f"Le jeton d'accès à l'API Mastodon (instance : {api_base_url}) est requis."
+                )
 
         if debug_requests is None:
             debug_requests = getenv("GEOTRIBU_LOGS_LEVEL", "") == "DEBUG"
@@ -113,7 +122,7 @@ class ExtendedMastodonClient(Mastodon):
         super().__init__(
             client_id=client_id,
             client_secret=client_secret,
-            access_token=access_token,
+            access_token=access_token.strip(),
             api_base_url=api_base_url,
             debug_requests=debug_requests,
             ratelimit_method=ratelimit_method,
