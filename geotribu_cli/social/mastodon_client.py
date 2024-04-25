@@ -205,7 +205,7 @@ class ExtendedMastodonClient(Mastodon):
         return already_broadcasted
 
     def comment_already_broadcasted(
-        self, comment_id: str, media: str = "mastodon"
+        self, comment_id: int, media: str = "mastodon"
     ) -> Optional[dict]:
         """Check if comment has already been broadcasted on the media.
 
@@ -217,10 +217,10 @@ class ExtendedMastodonClient(Mastodon):
             post on media if it has been already published
         """
         # download statuses with #geotribot
-        my_statuses = mastodon_client.account_statuses(
-            id=mastotribu.get("id"), tagged="geotribot", limit=40, exclude_reblogs=True
+        my_statuses = self.account_statuses(
+            id=self.me().get("id"), tagged="geotribot", limit=40, exclude_reblogs=True
         )
-        every_statuses = mastodon_client.fetch_remaining(my_statuses)
+        every_statuses = self.fetch_remaining(my_statuses)
         logger.debug(f"{len(every_statuses)} statuts récupérés.")
 
         # parse every downloaded status
@@ -257,12 +257,16 @@ class ExtendedMastodonClient(Mastodon):
                 f"{matches[0].removeprefix('comment-')}"
             )
 
-            if matches[0].removeprefix("comment-") == comment_id:
-                logger.info(
-                    f"Le commentaire {comment_id} a déjà été publié sur {media} : "
-                    f"{status.get('url')}"
-                )
-                return status
+            try:
+                status_comment_id = int(matches[0].removeprefix("comment-"))
+                if status_comment_id == comment_id:
+                    logger.info(
+                        f"Le commentaire {comment_id} a déjà été publié sur {media} : "
+                        f"{status.get('url')}"
+                    )
+                    return status
+            except ValueError as err:
+                logger.error(f"Converting comment-id into integer failed. Trace: {err}")
 
             if status.get("in_reply_to_id") is None:
                 logger.debug(

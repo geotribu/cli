@@ -20,6 +20,7 @@ from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.social.mastodon_client import (  # broadcast_to_mastodon,
     ExtendedMastodonClient,
 )
+from geotribu_cli.utils.start_uri import open_uri
 from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
@@ -166,7 +167,8 @@ def run(args: argparse.Namespace):
             online_post = mastodon_client.broadcast_comment(
                 in_comment=comment_obj, public=args.opt_no_public
             )
-            print(online_post)
+            if not online_post:
+                print(f"le commentaire n'a pas encore été publié : {comment_obj}")
         except Exception as err:
             logger.error(
                 f"La publication du commentaire {comment_obj.id} a échoué. "
@@ -174,12 +176,12 @@ def run(args: argparse.Namespace):
             )
             sys.exit(1)
 
-    # print(
-    #     f":white_check_mark: :left_speech_bubble: Commentaire {comment_obj.id}"
-    #     f" {'déjà publié précédemment' if online_post.get('cli_newly_posted') is False else 'publié'}"
-    #     f" sur {args.broadcast_to.title()} : {online_post.get('url')}"
-    # )
+    print(
+        f":white_check_mark: :left_speech_bubble: Commentaire {comment_obj.id}"
+        f" {'déjà publié précédemment' if online_post.get('cli_newly_posted') is False else 'publié'}"
+        f" sur {args.broadcast_to.title()} : {online_post.get('url')}"
+    )
 
-    # # open a result
-    # if args.opt_auto_open_disabled:
-    #     open_uri(in_filepath=online_post.get("url"))
+    # open a result
+    if args.opt_auto_open_disabled:
+        open_uri(in_filepath=online_post.get("url"))
