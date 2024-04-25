@@ -24,7 +24,6 @@ from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
 
-
 # ############################################################################
 # ########## GLOBALS #############
 # ################################
