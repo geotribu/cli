@@ -7,24 +7,23 @@
 
 # standard library
 import csv
-import json
 import logging
+import re
 from os import getenv
 from pathlib import Path
 from textwrap import shorten
 from typing import Optional
-from urllib import request
 from urllib.parse import urlparse
 
 # 3rd party
 from mastodon import Mastodon, MastodonAPIError, MastodonError
 from requests import Session
-from rich import print
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
+
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -33,6 +32,7 @@ from geotribu_cli.constants import GeotribuDefaults
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
 
+regex_pattern_comment_id = r"comment-\d{2,4}"
 
 status_mastodon_tmpl = """🗨️ :geotribu: Nouveau commentaire de {author} :
 
@@ -207,7 +207,7 @@ class ExtendedMastodonClient(Mastodon):
 
     def comment_already_broadcasted(
         self, comment_id: str, media: str = "mastodon"
-    ) -> dict:
+    ) -> Optional[dict]:
         """Check if comment has already been broadcasted on the media.
 
         Args:
@@ -217,69 +217,68 @@ class ExtendedMastodonClient(Mastodon):
         Returns:
             post on media if it has been already published
         """
-        # prepare search request
-        request_data = {
-            "all": ["commentaire"],
-            "limit": 40,
-            "local": True,
-            "since_id": "110549835686856734",
-        }
-
-        json_data = json.dumps(request_data)
-        json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
-
-        headers = {
-            "User-Agent": f"{__title_clean__}/{__version__}",
-            "Content-Length": len(json_data_bytes),
-            "Content-Type": "application/json; charset=utf-8",
-        }
-        req = request.Request(
-            f"{defaults_settings.mastodon_base_url}api/v1/timelines/tag/geotribot",
-            method="GET",
-            headers=headers,
+        # download statuses with #geotribot
+        my_statuses = mastodon_client.account_statuses(
+            id=mastotribu.get("id"), tagged="geotribot", limit=40, exclude_reblogs=True
         )
+        every_statuses = mastodon_client.fetch_remaining(my_statuses)
+        logger.debug(f"{len(every_statuses)} statuts récupérés.")
 
-        r = request.urlopen(url=req, data=json_data_bytes)
-        content = json.loads(r.read().decode("utf-8"))
+        # parse every downloaded status
+        for status in every_statuses:
+            status_tags = status.get("tags")
 
-        for status in content:
-            if f"comment-{comment_id}</p>" in status.get("content"):
+            # check if status has tag (it should since the requests is already filtered...)
+            if not isinstance(status_tags, list) and len(status_tags):
+                logger.debug(
+                    f"Exclusion de {status.get('url')} car il n'a aucun hashtag."
+                )
+                continue
+
+            tags_names = [tag.get("name") for tag in status_tags]
+
+            # check if status has the two required tags
+            if "geotribot" not in tags_names and "commentaire" not in tags_names:
+                logger.debug(
+                    f"Exclusion de {status.get('url')} car il ne contient pas les deux "
+                    "hashtags requis : #geotribot ET #commentaire."
+                )
+                continue
+
+            # check if status has a comment-id
+            matches = re.findall(regex_pattern_comment_id, status.get("content"))
+            if not len(matches):
+                logger.debug(
+                    f"Exclusion de {status.get('url')} car il ne contient pas "
+                    "d'identifiant de commentaire."
+                )
+                continue
+            logger.debug(
+                f"Le statut {status.get('url')} correspond au commentaire : "
+                f"{matches[0].removeprefix('comment-')}"
+            )
+
+            if matches[0].removeprefix("comment-") == comment_id:
                 logger.info(
                     f"Le commentaire {comment_id} a déjà été publié sur {media} : "
                     f"{status.get('url')}"
                 )
                 return status
-            if status.get("replies_count", 0) < 1:
+
+            if status.get("in_reply_to_id") is None:
                 logger.debug(
-                    f"Le statut {status.get('id')} n'a aucune réponse. Au suivant !"
+                    f"Ce statut est un commentaire parent : {status.get('url')}"
                 )
-                continue
             else:
-                logger.info(
-                    f"Le statut {status.get('id')} a {status.get('replies_count')} "
-                    "réponse(s). Cherchons parmi les réponses si le commentaire "
-                    f"{comment_id} n'y est pas..."
+                logger.debug(
+                    f"Ce statut est une réponse à un commentaire : {status.get('url')}",
                 )
-                req = request.Request(
-                    f"{defaults_settings.mastodon_base_url}api/v1/statuses/"
-                    f"{status.get('id')}/context",
-                    method="GET",
-                    headers=headers,
-                )
-                r = request.urlopen(url=req, data=json_data_bytes)
-                content = json.loads(r.read().decode("utf-8"))
-                for reply_status in content.get("descendants", []):
-                    if f"comment-{comment_id}</p>" in reply_status.get("content"):
-                        print(
-                            f"Le commentaire {comment_id} a déjà été publié sur {media} : "
-                            f"{reply_status.get('url')}, en réponse à {status.get('id')}"
-                        )
-                        return reply_status
 
         logger.info(
-            f"Le commentaire {comment_id} n'a pas été trouvé. "
+            f"Le commentaire {comment_id} n'a pas été trouvé sur {media}. "
             "Il est donc considéré comme nouveau."
         )
+
         return None
 
     def export_data(
@@ -578,91 +577,6 @@ class ExtendedMastodonClient(Mastodon):
 #     return content
 
 
-def comment_already_broadcasted(comment_id: int, media: str = "mastodon") -> dict:
-    """Check if comment has already been broadcasted on the media.
-
-    Args:
-        comment_id: id of the comment to check
-        media: name of the targetted media
-
-    Returns:
-        post on media if it has been already published
-    """
-    if media == "mastodon":
-        if getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN") is None:
-            logger.error(
-                "Le jeton d'accès à l'API Mastodon n'a pas été trouvé en variable "
-                "d'environnement GEOTRIBU_MASTODON_API_ACCESS_TOKEN. "
-                "Le récupérer depuis : https://mapstodon.space/settings/applications/7909"
-            )
-            return None
-
-        # prepare search request
-        request_data = {
-            "all": ["commentaire"],
-            "limit": 40,
-            "local": True,
-            "since_id": "110549835686856734",
-        }
-
-        json_data = json.dumps(request_data)
-        json_data_bytes = json_data.encode("utf-8")  # needs to be bytes
-
-        headers = {
-            "User-Agent": f"{__title_clean__}/{__version__}",
-            "Content-Length": len(json_data_bytes),
-            "Content-Type": "application/json; charset=utf-8",
-        }
-        req = request.Request(
-            f"{defaults_settings.mastodon_base_url}api/v1/timelines/tag/geotribot",
-            method="GET",
-            headers=headers,
-        )
-
-        r = request.urlopen(url=req, data=json_data_bytes)
-        content = json.loads(r.read().decode("utf-8"))
-
-        for status in content:
-            if f"comment-{comment_id}</p>" in status.get("content"):
-                logger.info(
-                    f"Le commentaire {comment_id} a déjà été publié sur {media} : "
-                    f"{status.get('url')}"
-                )
-                return status
-            if status.get("replies_count", 0) < 1:
-                logger.debug(
-                    f"Le statut {status.get('id')} n'a aucune réponse. Au suivant !"
-                )
-                continue
-            else:
-                logger.info(
-                    f"Le statut {status.get('id')} a {status.get('replies_count')} "
-                    "réponse(s). Cherchons parmi les réponses si le commentaire "
-                    f"{comment_id} n'y est pas..."
-                )
-                req = request.Request(
-                    f"{defaults_settings.mastodon_base_url}api/v1/statuses/"
-                    f"{status.get('id')}/context",
-                    method="GET",
-                    headers=headers,
-                )
-                r = request.urlopen(url=req, data=json_data_bytes)
-                content = json.loads(r.read().decode("utf-8"))
-                for reply_status in content.get("descendants", []):
-                    if f"comment-{comment_id}</p>" in reply_status.get("content"):
-                        print(
-                            f"Le commentaire {comment_id} a déjà été publié sur {media} : "
-                            f"{reply_status.get('url')}, en réponse à {status.get('id')}"
-                        )
-                        return reply_status
-
-    logger.info(
-        f"Le commentaire {comment_id} n'a pas été trouvé. "
-        "Il est donc considéré comme nouveau."
-    )
-    return None
-
-
 def comment_to_media(in_comment: Comment, media: str) -> str:
     """Format comment to fit media size and publication rules.
 
@@ -690,6 +604,8 @@ def comment_to_media(in_comment: Comment, media: str) -> str:
 
 # Stand alone execution
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+
     mastodon_client = ExtendedMastodonClient()
     mastotribu = mastodon_client.me()
     # search_results = mastodon_client.search_v2(
@@ -705,21 +621,34 @@ if __name__ == "__main__":
     # )
     # print(len(hashtag))
 
-    my_statuses = mastodon_client.account_statuses(
-        id=mastotribu.get("id"),
-    )
-    print(len(my_statuses))
-    every_statuses = mastodon_client.fetch_remaining(my_statuses)
-    print(len(every_statuses))
-    for status in every_statuses:
-        status_tags = status.get("tags")
-        if isinstance(status_tags, list) and len(status_tags):
-            tags_names = [tag.get("name") for tag in status_tags]
-            if "geotribot" in tags_names and "commentaire" in tags_names:
-                if status.get("in_reply_to_id") is None:
-                    print("Ce statut est un commentaire parent : ", status.get("url"))
-                else:
-                    print(
-                        "Ce statut est une réponse à un commentaire : ",
-                        status.get("url"),
-                    )
+    # my_statuses = mastodon_client.account_statuses(
+    #     id=mastotribu.get("id"), tagged="geotribot", limit=40, exclude_reblogs=True
+    # )
+    # print(len(my_statuses))
+    # every_statuses = mastodon_client.fetch_remaining(my_statuses)
+    # print(len(every_statuses))
+    # for status in every_statuses:
+    #     status_tags = status.get("tags")
+    #     if isinstance(status_tags, list) and len(status_tags):
+    #         tags_names = [tag.get("name") for tag in status_tags]
+    #         if "geotribot" in tags_names and "commentaire" in tags_names:
+    #             matches = re.findall(regex_pattern_comment_id, status.get("content"))
+    #             if not len(matches):
+    #                 logger.info(
+    #                     "Ce statut ne contient pas d'identifiant de commentaire."
+    #                 )
+    #                 continue
+
+    #             print(
+    #                 f"Ce statut correspond au commentaire : {matches[0].removeprefix('comment-')}"
+    #             )
+
+    #             if status.get("in_reply_to_id") is None:
+    #                 print("Ce statut est un commentaire parent : ", status.get("url"))
+    #             else:
+    #                 print(
+    #                     "Ce statut est une réponse à un commentaire : ",
+    #                     status.get("url"),
+    #                 )
+
+    mastodon_client.comment_already_broadcasted("321")
