@@ -24,6 +24,7 @@ from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
 
+
 # ############################################################################
 # ########## GLOBALS #############
 # ################################
@@ -230,7 +231,7 @@ class ExtendedMastodonClient(Mastodon):
                 in_reply_to_id = None
 
         new_status = self.status_post(
-            status=comment_to_media(in_comment=in_comment, media="mastodon"),
+            status=self.comment_to_media(in_comment=in_comment),
             in_reply_to_id=in_reply_to_id,
             language="fr",
             visibility=getenv("GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"),
@@ -317,6 +318,30 @@ class ExtendedMastodonClient(Mastodon):
         )
 
         return None
+
+    def comment_to_media(self, in_comment: Comment) -> str:
+        """Format comment to fit media size and publication rules.
+
+        Args:
+            in_comment: comment to format
+
+
+        Returns:
+            formatted comment
+        """
+
+        logger.debug(f"Formatting comment {in_comment.id}")
+        # 500 caractères - longueur du template = 370
+        max_text_length = (
+            370 - len(in_comment.author) - len(str(in_comment.id)) - 4
+        )  # 4 = placeholder final
+
+        return status_mastodon_tmpl.format(
+            author=in_comment.author,
+            url_to_comment=in_comment.url_to_comment,
+            text=shorten(in_comment.markdownified_text, width=max_text_length),
+            id=in_comment.id,
+        )
 
     def export_data(
         self,
@@ -515,36 +540,6 @@ class ExtendedMastodonClient(Mastodon):
                     csv_writer_lists.writerow((liste, member_account_full))
         logger.info(f"L'export des listes a réussi: {dest_csv_path.resolve()}")
         return dest_csv_path
-
-
-# ############################################################################
-# ########## FUNCTIONS ###########
-# ################################
-
-
-def comment_to_media(in_comment: Comment, media: str) -> str:
-    """Format comment to fit media size and publication rules.
-
-    Args:
-        in_comment: comment to format
-        media: name of the targetted media
-
-    Returns:
-        formatted comment
-    """
-    if media == "mastodon":
-        logger.info(f"Formatting comment {in_comment.id} for {media}")
-        # 500 caractères - longueur du template = 370
-        max_text_length = (
-            370 - len(in_comment.author) - len(str(in_comment.id)) - 4
-        )  # 4 = placeholder final
-
-        return status_mastodon_tmpl.format(
-            author=in_comment.author,
-            url_to_comment=in_comment.url_to_comment,
-            text=shorten(in_comment.markdownified_text, width=max_text_length),
-            id=in_comment.id,
-        )
 
 
 # Stand alone execution
