@@ -14,6 +14,7 @@ class TestJsonClient(unittest.TestCase):
 
     def test_items_exist(self):
         self.assertGreater(len(self.items), 0)
+        self.assertEqual(len(self.items), 50)
 
     def test_some_existing_items(self):
         titles = [i["title"] for i in self.items]
