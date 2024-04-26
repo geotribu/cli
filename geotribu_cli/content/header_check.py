@@ -11,6 +11,7 @@ from PIL import Image
 from geotribu_cli.__about__ import __executable_name__, __version__
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.content.json_feed import JsonFeedClient
+from geotribu_cli.utils.check_path import check_path_exists
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
@@ -141,8 +142,7 @@ def run(args: argparse.Namespace) -> None:
     logger.debug(f"Running {args.command} with {args}")
     content_path = args.content_path
 
-    if not os.path.exists(content_path):
-        raise ValueError(f"Mayday ! Le fichier {content_path} n'existe pas !")
+    check_path_exists(content_path, raise_error=True)
 
     with open(content_path) as file:
         content = file.read()
