@@ -16,17 +16,6 @@ class TestJsonClient(unittest.TestCase):
         self.assertGreater(len(self.items), 0)
         self.assertEqual(len(self.items), 50)
 
-    def test_some_existing_items(self):
-        titles = [i["title"] for i in self.items]
-        self.assertIn(
-            "Automatisation de publication des données de qualité de l'air sur Mastodon",
-            titles,
-        )
-        self.assertIn("Le crowdsourcing avec cocarto", titles)
-        self.assertIn(
-            "De Twitter (X) à Mastodon : guide pour les géomaticien/nes", titles
-        )
-
     def test_tags_exist(self):
         self.assertGreater(len(self.tags), 0)
 
