@@ -199,6 +199,8 @@ class ExtendedMastodonClient(Mastodon):
         Returns:
             URL to posted status
         """
+        in_reply_to_id = None
+
         # check if comment has not been already published
         already_broadcasted = self.comment_already_broadcasted(comment_id=in_comment.id)
         if isinstance(already_broadcasted, dict):
@@ -227,7 +229,6 @@ class ExtendedMastodonClient(Mastodon):
                     f"sur Mastodon. Le commentaire actuel ({in_comment.id}) sera donc "
                     "posté comme nouveau fil de discussion."
                 )
-                in_reply_to_id = None
 
         new_status = self.status_post(
             status=self.comment_to_media(in_comment=in_comment),
