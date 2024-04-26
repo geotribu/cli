@@ -26,7 +26,6 @@ class JsonFeedClient:
         self.url = url
         self.tags_url = tags_url
 
-    @property
     def items(self) -> list[dict[str, Any]]:
         """
         Fetch Geotribu JSON feed items
@@ -38,7 +37,6 @@ class JsonFeedClient:
         r.raise_for_status()
         return r.json()["items"]
 
-    @property
     def tags(self, should_sort: bool = False) -> list[str]:
         """
         Fetch Geotribu used tags
