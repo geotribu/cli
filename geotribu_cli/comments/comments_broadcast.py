@@ -17,7 +17,9 @@ from rich import print
 from geotribu_cli.comments.comments_toolbelt import find_comment_by_id
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
-from geotribu_cli.social.mastodon_client import broadcast_to_mastodon
+from geotribu_cli.social.mastodon_client import (  # broadcast_to_mastodon,
+    ExtendedMastodonClient,
+)
 from geotribu_cli.utils.start_uri import open_uri
 from geotribu_cli.utils.str2bool import str2bool
 
@@ -83,6 +85,7 @@ def parser_comments_broadcast(
         choices=[
             "mastodon",
         ],
+        default="mastodon",
         dest="broadcast_to",
         help="Canaux (réseaux sociaux) où publier le(s) commentaire(s).",
         required=True,
@@ -104,16 +107,6 @@ def parser_comments_broadcast(
         action="store_false",
         dest="opt_auto_open_disabled",
         help="Désactive l'ouverture automatique du post à la fin de la commande.",
-    )
-
-    subparser.add_argument(
-        "--no-public",
-        "--private",
-        default=True,
-        action="store_false",
-        dest="opt_no_public",
-        help="Publie le commentaire en mode privé (ne fonctionne pas avec tous les "
-        "canaux de diffusion).",
     )
 
     subparser.set_defaults(func=run)
@@ -160,9 +153,10 @@ def run(args: argparse.Namespace):
     # check credentials
     if args.broadcast_to == "mastodon":
         try:
-            online_post = broadcast_to_mastodon(
-                in_comment=comment_obj, public=args.opt_no_public
-            )
+            mastodon_client = ExtendedMastodonClient()
+            online_post = mastodon_client.broadcast_comment(in_comment=comment_obj)
+            if not online_post:
+                print(f"le commentaire n'a pas encore été publié : {comment_obj.id}")
         except Exception as err:
             logger.error(
                 f"La publication du commentaire {comment_obj.id} a échoué. "
