@@ -10,15 +10,13 @@
 
 # standard
 import unittest
+from os import getenv
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
 # project
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.social.mastodon_client import ExtendedMastodonClient
-
-# 3rd party
-
 
 # ############################################################################
 # ########## Classes #############
@@ -58,6 +56,10 @@ class TestCustomMastodonClient(unittest.TestCase):
             "mapstodon.space",
         )
 
+    @unittest.skipIf(
+        condition=getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN") is None,
+        reason="Le jeton d'API Mastodon est requis pour exécuter ce test.",
+    )
     def test_export_data_all(self):
         """Test export following accounts to CSV."""
         masto_client = ExtendedMastodonClient(
