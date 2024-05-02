@@ -18,6 +18,22 @@ Unreleased
 
 -->
 
+## 0.33.0 - 2024-05-02
+
+### Features and enhancements 🎉
+
+* refacto: use mastodonpy to broadcast comments by @Guts in <https://github.com/geotribu/cli/pull/182>
+* Améliore la gestion des logs by @Guts in <https://github.com/geotribu/cli/pull/76>
+
+### Tooling 🔧
+
+* Ignore .idea folder by @gounux in <https://github.com/geotribu/cli/pull/180>
+* ci: limit parallel tests to 2 by @Guts in <https://github.com/geotribu/cli/pull/194>
+
+## New Contributors
+
+* @gounux made their first contribution in <https://github.com/geotribu/cli/pull/180>
+
 ## 0.32.1 - 2024-03-09
 
 ### Bugs fixes 🐛
