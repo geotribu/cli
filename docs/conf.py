@@ -23,6 +23,7 @@ copyright = __about__.__copyright__
 description = __about__.__summary__
 project = __about__.__title__
 version = release = __about__.__version__
+github_doc_root = f"{__about__.__uri__}/tree/main/docs/"
 
 # -- General configuration ---------------------------------------------------
 
@@ -170,7 +171,7 @@ myst_enable_extensions = [
     "deflist",
     "html_admonition",
     "html_image",
-    # "linkify",
+    "linkify",
     "replacements",
     "smartquotes",
     "strikethrough",
