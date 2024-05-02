@@ -72,7 +72,7 @@ setup(
     long_description=README,
     long_description_content_type="text/markdown",
     keywords=__about__.__keywords__,
-    url=__about__.__uri__,
+    url=__about__.__uri_homepage__,
     project_urls={
         "Docs": __about__.__uri_homepage__,
         "Bug Reports": __about__.__uri_tracker__,
