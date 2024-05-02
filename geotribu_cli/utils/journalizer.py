@@ -10,17 +10,19 @@
 import logging
 from getpass import getuser
 from logging.handlers import RotatingFileHandler
-from os import getenv
+from os import environ, getenv
 from os.path import expanduser, expandvars
 from pathlib import Path
-from platform import architecture
-from platform import platform as opersys
+from platform import architecture, platform
 from socket import gethostname
+from typing import Optional
 
 # package
 from geotribu_cli.__about__ import __title__, __version__
+from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.check_path import check_path
 from geotribu_cli.utils.proxies import get_proxy_settings
+from geotribu_cli.utils.str2bool import str2bool
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -28,13 +30,14 @@ from geotribu_cli.utils.proxies import get_proxy_settings
 
 # logs
 logger = logging.getLogger(__name__)
+default_settings = GeotribuDefaults()
 
 # ############################################################################
 # ########## FUNCTIONS ###########
 # ################################
 
 
-def configure_logger(verbosity: int = 1, logfile: Path = None):
+def configure_logger(verbosity: int = 1, logfile: Optional[Path] = None):
     """Configure logging according to verbosity from CLI.
 
     Args:
@@ -66,7 +69,7 @@ def configure_logger(verbosity: int = 1, logfile: Path = None):
     if not logfile:
         logging.basicConfig(
             level=verbosity,
-            format="%(asctime)s||%(levelname)s||%(module)s||%(lineno)d||%(message)s",
+            format="%(asctime)s||%(levelname)s||%(module)s||%(funcName)s||%(lineno)d||%(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
             handlers=[log_console_handler],
         )
@@ -84,7 +87,9 @@ def configure_logger(verbosity: int = 1, logfile: Path = None):
                 f"Logs folder set with GEOTRIBU_LOGS_DIR environment variable: {logs_folder}"
             )
         else:
-            logs_folder: Path = Path().home() / ".geotribu/logs/"
+            logs_folder: Path = default_settings.geotribu_working_folder.joinpath(
+                "logs"
+            )
             logger.debug(
                 "Logs folder specified in GEOTRIBU_LOGS_DIR environment variable "
                 f"{getenv('GEOTRIBU_LOGS_DIR')} can't be used (see logs above). Fallback on "
@@ -109,7 +114,7 @@ def configure_logger(verbosity: int = 1, logfile: Path = None):
 
         logging.basicConfig(
             level=verbosity,
-            format="%(asctime)s||%(levelname)s||%(module)s||%(lineno)d||%(message)s",
+            format="%(asctime)s||%(levelname)s||%(module)s||%(funcName)s||%(lineno)d||%(message)s",
             datefmt="%Y-%m-%d %H:%M:%S",
             handlers=[log_console_handler, log_file_handler],
         )
@@ -123,7 +128,7 @@ def headers():
     """Basic information to log before other message."""
     # initialize the log
     logger.info(f"{'='*10} {__title__} - {__version__} {'='*10}")
-    logger.debug(f"Operating System: {opersys()}")
+    logger.debug(f"Operating System: {platform()}")
     logger.debug(f"Architecture: {architecture()[0]}")
     logger.debug(f"Computer: {gethostname()}")
     logger.debug(f"Launched by user: {getuser()}")
@@ -135,3 +140,33 @@ def headers():
         logger.debug(f"Network proxies detected: {get_proxy_settings()}")
     else:
         logger.debug("No network proxies detected")
+
+    if str2bool(getenv("QDT_SSL_USE_SYSTEM_STORES", False)):
+        logger.debug("Option to use native system certificates stores is enabled.")
+        if "REQUESTS_CA_BUNDLE" in environ:
+            environ.pop("REQUESTS_CA_BUNDLE")
+            logger.debug(
+                "Custom path to CA Bundle (REQUESTS_CA_BUNDLE) has been removed from "
+                "environment variables."
+            )
+        if "CURL_CA_BUNDLE" in environ:
+            environ.pop("CURL_CA_BUNDLE")
+            logger.debug(
+                "Custom path to CA Bundle (CURL_CA_BUNDLE) has been removed from "
+                "environment variables."
+            )
+
+
+def get_logger_filepath() -> Path | None:
+    """Retrieve log filepath within logger handlers.
+
+    Returns:
+        Path | None: path to the logfile or None if no handler has baseFilename attr.
+    """
+    if logger.root.hasHandlers():
+        for handler in logger.root.handlers:
+            if hasattr(handler, "baseFilename"):
+                return Path(handler.baseFilename)
+
+    logger.warning("No file found in ay log handlers.")
+    return None
