@@ -157,7 +157,7 @@ def headers():
             )
 
 
-def get_logger_filepath() -> Path | None:
+def get_logger_filepath() -> Optional[Path]:
     """Retrieve log filepath within logger handlers.
 
     Returns:
