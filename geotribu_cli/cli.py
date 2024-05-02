@@ -38,6 +38,7 @@ from geotribu_cli.subcommands import (
     parser_search_image,
     parser_upgrade,
 )
+from geotribu_cli.utils.journalizer import configure_logger
 
 # #############################################################################
 # ########## Globals ###############
@@ -144,9 +145,16 @@ def main(args: list[str] = None):
         action="count",
         default=1,
         dest="verbosity",
-        # metavar="GEOTRIBU_LOGS_LEVEL",
         help="Niveau de verbosité : None = WARNING, -v = INFO, -vv = DEBUG. Réglable "
         "avec la variable d'environnement GEOTRIBU_LOGS_LEVEL.",
+    )
+
+    main_parser.add_argument(
+        "--no-logfile",
+        default=True,
+        action="store_false",
+        dest="opt_logfile_disabled",
+        help="Désactiver les fichiers de journalisation (logs).",
     )
 
     main_parser.add_argument(
@@ -351,23 +359,13 @@ def main(args: list[str] = None):
     # just get passed args
     args = main_parser.parse_args(args)
 
-    # set log level depending on verbosity argument
-    if 0 < args.verbosity < 4:
-        args.verbosity = 40 - (10 * args.verbosity)
-    elif args.verbosity >= 4:
-        # debug is the limit
-        args.verbosity = 40 - (10 * 3)
+    # log configuration
+    if args.opt_logfile_disabled:
+        configure_logger(
+            verbosity=args.verbosity, logfile=f"{__title_clean__}_{__version__}.log"
+        )
     else:
-        args.verbosity = 0
-
-    logging.basicConfig(
-        level=args.verbosity,
-        format="%(asctime)s||%(levelname)s||%(module)s||%(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
-    )
-
-    console = logging.StreamHandler()
-    console.setLevel(args.verbosity)
+        configure_logger(verbosity=args.verbosity)
 
     # add the handler to the root logger
     logger = logging.getLogger(__title_clean__)

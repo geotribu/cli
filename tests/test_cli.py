@@ -78,10 +78,21 @@ def test_cli_run_comments_open(capsys):
     assert Path(Path().home() / ".geotribu/comments/latest.json").exists()
 
 
-@pytest.mark.flaky(retries=3, delay=1, only_on=[SystemExit])
+@pytest.mark.flaky(retries=3, delay=5, only_on=[SystemExit])
 def test_cli_run_comments_open_specific(capsys):
     """Test nested subcommand comments latest."""
-    cli.main(["comments", "open", "--page-size", "25", "--comment-id", "15"])
+    cli.main(
+        [
+            "comments",
+            "open",
+            "--page-size",
+            "25",
+            "--comment-id",
+            "15",
+            "--expiration-rotating-hours",
+            "0",
+        ]
+    )
 
     out, err = capsys.readouterr()
 
