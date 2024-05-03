@@ -1,9 +1,5 @@
 {
     // Editor
-    "editor.rulers": [
-        88
-    ],
-    "editor.wordWrapColumn": 88,
     "editor.bracketPairColorization.enabled": true,
     "editor.guides.bracketPairs": "active",
     "files.associations": {
@@ -11,18 +7,31 @@
     },
     // JSON
     "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features",
         "editor.formatOnSave": true,
         "editor.quickSuggestions": {
             "strings": true
         },
         "editor.suggest.insertMode": "replace"
     },
+    // Markdown
+    "markdown.updateLinksOnFileMove.enabled": "prompt",
+    "markdown.updateLinksOnFileMove.enableForDirectories": true,
+    "markdown.validate.enabled": true,
+    "markdown.validate.fileLinks.markdownFragmentLinks": "warning",
+    "markdown.validate.fragmentLinks.enabled": "warning",
+    "[markdown]": {
+        "editor.defaultFormatter": "DavidAnson.vscode-markdownlint",
+        "editor.formatOnSave": true,
+        "files.trimTrailingWhitespace": false,
+    },
     // Python
     "python.analysis.autoFormatStrings": true,
     "python.analysis.typeCheckingMode": "basic",
-    "python.analysis.autoImportCompletions": true,
     "python.terminal.activateEnvInCurrentTerminal": true,
     "python.terminal.activateEnvironment": true,
+    "python.testing.unittestEnabled": true,
+    "python.testing.pytestEnabled": true,
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter",
         "editor.formatOnSave": true,
@@ -34,9 +43,6 @@
         ],
         "editor.wordWrapColumn": 88,
     },
-    // Tests
-    "python.testing.unittestEnabled": true,
-    "python.testing.pytestEnabled": true,
     // YAML
     "[yaml]": {
         "editor.autoIndent": "keep",
@@ -58,4 +64,12 @@
         "--config=setup.cfg",
         "--verbose"
     ],
+    "markdownlint.config": {
+        "MD007": {
+            "indent": 4
+        },
+        "MD024": {
+            "allow_different_nesting": true
+        },
+    }
 }
