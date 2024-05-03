@@ -10,7 +10,7 @@ from PIL import Image
 
 from geotribu_cli.__about__ import __executable_name__, __version__
 from geotribu_cli.constants import GeotribuDefaults
-from geotribu_cli.content.json_feed import JsonFeedClient
+from geotribu_cli.json.json_client import JsonFeedClient
 from geotribu_cli.utils.check_path import check_path_exists
 
 logger = logging.getLogger(__name__)
@@ -101,9 +101,9 @@ def check_image_ratio(image_url: str, min_ratio: float, max_ratio: float) -> boo
             os.remove(image_file_name)
 
 
-def get_existing_tags() -> set[str]:
+def get_existing_tags() -> list[str]:
     jfc = JsonFeedClient()
-    return jfc.get_tags(should_sort=True)
+    return jfc.tags(should_sort=True)
 
 
 def check_existing_tags(tags: list[str]) -> tuple[bool, set[str], set[str]]:
