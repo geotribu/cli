@@ -7,6 +7,7 @@ import uuid
 import frontmatter
 import requests
 from PIL import Image
+from unidecode import unidecode
 
 from geotribu_cli.__about__ import __executable_name__, __version__
 from geotribu_cli.constants import GeotribuDefaults
@@ -49,6 +50,7 @@ def parser_header_check(
         help="Chemin du fichier markdown dont l'entête est à vérifier",
         type=str,
         metavar="content",
+        nargs="+",
     )
     subparser.add_argument(
         "-minr",
@@ -116,7 +118,7 @@ def check_existing_tags(tags: list[str]) -> tuple[bool, set[str], set[str]]:
 
 def check_tags_order(tags: list[str]) -> bool:
     for i in range(len(tags) - 1):
-        if tags[i] > tags[i + 1]:
+        if unidecode(tags[i].upper()) > unidecode(tags[i + 1].upper()):
             return False
     return True
 
@@ -140,52 +142,58 @@ def run(args: argparse.Namespace) -> None:
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
-    content_path = args.content_path
+    content_paths = args.content_path
 
-    check_path_exists(content_path, raise_error=True)
+    for content_path in content_paths:
+        logger.info(f"Checking header of {content_path}")
+        check_path_exists(content_path, raise_error=True)
 
-    with open(content_path) as file:
-        content = frontmatter.load(file)
-        yaml_meta = content.metadata
-        logger.debug(f"YAML metadata loaded : {yaml_meta}")
+        with open(content_path) as file:
+            content = frontmatter.load(file)
+            yaml_meta = content.metadata
+            logger.debug(f"YAML metadata loaded : {yaml_meta}")
 
-        # check that image ratio is okayyy
-        if "image" in yaml_meta:
-            if not check_image_ratio(
-                yaml_meta["image"], args.min_image_ratio, args.max_image_ratio
-            ):
-                msg = f"Le ratio de l'image n'est pas dans l'interface autorisé ({args.minratio} - {args.maxratio})"
+            # check that image ratio is okayyy
+            if "image" in yaml_meta:
+                if not yaml_meta["image"]:
+                    logger.error("Pas d'URL pour l'image")
+                elif not check_image_ratio(
+                    yaml_meta["image"], args.min_image_ratio, args.max_image_ratio
+                ):
+                    msg = f"Le ratio de l'image n'est pas dans l'interface autorisé ({args.min_image_ratio} - {args.max_image_ratio})"
+                    logger.error(msg)
+                    if args.raise_exceptions:
+                        raise ValueError(msg)
+                else:
+                    logger.info("Ratio image ok")
+
+            # check that tags already exist
+            all_exists, missing, _ = check_existing_tags(yaml_meta["tags"])
+            if not all_exists:
+                msg = f"Les tags suivants n'existent pas dans les contenus Geotribu précédents : {','.join(missing)}"
                 logger.error(msg)
                 if args.raise_exceptions:
                     raise ValueError(msg)
             else:
-                logger.info("Ratio image ok")
+                logger.info("Existence des tags ok")
 
-        # check that tags already exist
-        all_exists, missing, _ = check_existing_tags(yaml_meta["tags"])
-        if not all_exists:
-            msg = f"Les tags suivants n'existent pas dans les contenus Geotribu précédents : {','.join(missing)}"
-            logger.error(msg)
-            if args.raise_exceptions:
-                raise ValueError(msg)
-        else:
-            logger.info("Existence des tags ok")
+            # check if tags are alphabetically sorted
+            if not check_tags_order(yaml_meta["tags"]):
+                msg = f"Les tags ne sont pas triés par ordre alphabétique : {yaml_meta['tags']}"
+                logger.error(msg)
+                if args.raise_exceptions:
+                    raise ValueError(msg)
+            else:
+                logger.info("Ordre alphabétique des tags ok")
 
-        # check if tags are alphabetically sorted
-        if not check_tags_order(yaml_meta["tags"]):
-            msg = "Les tags ne sont pas triés par ordre alphabétique"
-            logger.error(msg)
-            if args.raise_exceptions:
-                raise ValueError(msg)
-        else:
-            logger.info("Ordre alphabétique des tags ok")
-
-        # check that mandatory keys are present
-        all_present, missing = check_mandatory_keys(yaml_meta.keys(), MANDATORY_KEYS)
-        if not all_present:
-            msg = f"Les clés suivantes ne sont pas présentes dans l'entête markdown : {','.join(missing)}"
-            logger.error(msg)
-            if args.raise_exceptions:
-                raise ValueError(msg)
-        else:
-            logger.info("Clés de l'entête ok")
+            # check that mandatory keys are present
+            all_present, missing = check_mandatory_keys(
+                yaml_meta.keys(), MANDATORY_KEYS
+            )
+            if not all_present:
+                msg = f"Les clés suivantes ne sont pas présentes dans l'entête markdown : {','.join(missing)}"
+                logger.error(msg)
+                if args.raise_exceptions:
+                    raise ValueError(msg)
+            else:
+                logger.info("Clés de l'entête ok")
