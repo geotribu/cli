@@ -4,8 +4,8 @@ import os
 import shutil
 import uuid
 
+import frontmatter
 import requests
-import yaml
 from PIL import Image
 
 from geotribu_cli.__about__ import __executable_name__, __version__
@@ -145,9 +145,8 @@ def run(args: argparse.Namespace) -> None:
     check_path_exists(content_path, raise_error=True)
 
     with open(content_path) as file:
-        content = file.read()
-        _, front_matter, _ = content.split("---", 2)
-        yaml_meta = yaml.safe_load(front_matter)
+        content = frontmatter.load(file)
+        yaml_meta = content.metadata
         logger.debug(f"YAML metadata loaded : {yaml_meta}")
 
         # check that image ratio is okayyy
