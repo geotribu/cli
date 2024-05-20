@@ -19,12 +19,10 @@ defaults_settings = GeotribuDefaults()
 
 MANDATORY_KEYS = [
     "title",
-    "subtitle",
     "authors",
     "categories",
     "date",
     "description",
-    "icon",
     "license",
     "tags",
 ]
