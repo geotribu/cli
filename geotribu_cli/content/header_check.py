@@ -53,18 +53,36 @@ def parser_header_check(
         nargs="+",
     )
     subparser.add_argument(
-        "-minr",
-        "--min-ratio",
-        dest="min_image_ratio",
-        default=1.2,
-        help="Ratio width/height minimum de l'image à vérifier",
+        "-minw",
+        "--min-width",
+        dest="min_image_width",
+        default=400,
+        type=int,
+        help="Largeur minimum de l'image à vérifier",
     )
     subparser.add_argument(
-        "-maxr",
-        "--max-ratio",
-        dest="max_image_ratio",
-        default=1.5,
-        help="Ratio width/height maximum de l'image à vérifier",
+        "-maxw",
+        "--max-width",
+        dest="max_image_width",
+        default=800,
+        type=int,
+        help="Largeur maximum de l'image à vérifier",
+    )
+    subparser.add_argument(
+        "-minh",
+        "--min-height",
+        dest="min_image_height",
+        default=400,
+        type=int,
+        help="Hauteur minimum de l'image à vérifier",
+    )
+    subparser.add_argument(
+        "-maxh",
+        "--max-height",
+        dest="max_image_height",
+        default=800,
+        type=int,
+        help="Hauteur maximum de l'image à vérifier",
     )
     subparser.add_argument(
         "-r",
@@ -83,7 +101,9 @@ def parser_header_check(
 # ################################
 
 
-def check_image_ratio(image_url: str, min_ratio: float, max_ratio: float) -> bool:
+def check_image_size(
+    image_url: str, minw: int, maxw: int, minh: int, maxh: int
+) -> bool:
     r = requests.get(
         image_url,
         headers={"User-Agent": f"{__executable_name__}v{__version__}"},
@@ -96,9 +116,15 @@ def check_image_ratio(image_url: str, min_ratio: float, max_ratio: float) -> boo
         try:
             shutil.copyfileobj(r.raw, image_file)
             with Image.open(image_file_name) as image:
-                width, height = image.width, image.height
-                ratio = width / height
-                return min_ratio <= ratio <= max_ratio
+                return minw <= image.width <= maxw and minh <= image.height <= maxh
+            # return check_image_dimensions(
+            #     Path(image_file_name),
+            #     min_width=minw,
+            #     max_width=maxw,
+            #     min_height=minh,
+            #     max_height=maxh,
+            #     allowed_images_extensions=(".jpg", ".jpeg", ".png", ".webp")
+            # )
         finally:
             os.remove(image_file_name)
 
@@ -157,10 +183,18 @@ def run(args: argparse.Namespace) -> None:
             if "image" in yaml_meta:
                 if not yaml_meta["image"]:
                     logger.error("Pas d'URL pour l'image")
-                elif not check_image_ratio(
-                    yaml_meta["image"], args.min_image_ratio, args.max_image_ratio
+                elif not check_image_size(
+                    yaml_meta["image"],
+                    args.min_image_width,
+                    args.max_image_width,
+                    args.min_image_height,
+                    args.max_image_height,
                 ):
-                    msg = f"Le ratio de l'image n'est pas dans l'interface autorisé ({args.min_image_ratio} - {args.max_image_ratio})"
+                    msg = (
+                        f"Les dimensions de l'image ne sont pas dans l'intervalle autorisé "
+                        f"(w:{args.min_image_width}-{args.max_image_width},"
+                        f"h:{args.min_image_height}-{args.max_image_height})"
+                    )
                     logger.error(msg)
                     if args.raise_exceptions:
                         raise ValueError(msg)
