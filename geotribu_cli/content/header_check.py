@@ -1,18 +1,14 @@
 import argparse
 import logging
 import os
-import shutil
-import uuid
 from pathlib import Path
 
 import frontmatter
-import requests
-from PIL import Image
 from unidecode import unidecode
 
-from geotribu_cli.__about__ import __executable_name__, __version__
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.json.json_client import JsonFeedClient
+from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path_exists
 
 logger = logging.getLogger(__name__)
@@ -118,29 +114,8 @@ def check_author_md(author: str, folder: Path) -> bool:
 def check_image_size(
     image_url: str, minw: int, maxw: int, minh: int, maxh: int
 ) -> bool:
-    r = requests.get(
-        image_url,
-        headers={"User-Agent": f"{__executable_name__}v{__version__}"},
-        stream=True,
-    )
-    r.raise_for_status()
-    image_file_name = str(uuid.uuid4())
-    with open(image_file_name, "wb") as image_file:
-        r.raw.decode_content = True
-        try:
-            shutil.copyfileobj(r.raw, image_file)
-            with Image.open(image_file_name) as image:
-                return minw <= image.width <= maxw and minh <= image.height <= maxh
-            # return check_image_dimensions(
-            #     Path(image_file_name),
-            #     min_width=minw,
-            #     max_width=maxw,
-            #     min_height=minh,
-            #     max_height=maxh,
-            #     allowed_images_extensions=(".jpg", ".jpeg", ".png", ".webp")
-            # )
-        finally:
-            os.remove(image_file_name)
+    width, height = get_image_dimensions_by_url(image_url)
+    return minw <= width <= maxw and minh <= height <= maxh
 
 
 def get_existing_tags() -> list[str]:
@@ -213,7 +188,7 @@ def run(args: argparse.Namespace) -> None:
                     if args.raise_exceptions:
                         raise ValueError(msg)
                 else:
-                    logger.info("Ratio image ok")
+                    logger.info("Dimensions de l'image ok")
 
             # check that author md file is present
             if args.authors_folder:

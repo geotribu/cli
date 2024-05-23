@@ -63,8 +63,8 @@ def get_image_size(image_filepath: Path) -> tuple[int, int]:
     return None
 
 
-def get_image_size_by_url(url: str) -> tuple[int, int]:
-    """Get image dimensions as a tuple (width,height) of an image at an URL. Return None in case of error.
+def get_image_dimensions_by_url(url: str) -> tuple[int, int]:
+    """Get image dimensions as a tuple (width,height) of an image at an URL. Return None in case of error or no data.
 
     :param str url: url of the image
 

@@ -1,13 +1,17 @@
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 import yaml
 
 from geotribu_cli.content.header_check import (
+    check_author_md,
     check_existing_tags,
     check_mandatory_keys,
     check_tags_order,
 )
+
+TEAM_FOLDER = Path("tests/fixtures/team")
 
 
 class TestYamlHeaderCheck(unittest.TestCase):
@@ -62,3 +66,12 @@ class TestYamlHeaderCheck(unittest.TestCase):
         self.assertEqual(len(missing), 2)
         self.assertIn("license", missing)
         self.assertIn("description", missing)
+
+    def test_author_md_ok(self):
+        self.assertTrue(check_author_md("Jane Doe", TEAM_FOLDER))
+        self.assertTrue(check_author_md("JaNe DoE", TEAM_FOLDER))
+        self.assertTrue(check_author_md("Jàne Doe", TEAM_FOLDER))
+        self.assertTrue(check_author_md("Jàne Döe", TEAM_FOLDER))
+        self.assertTrue(check_author_md("Jàne Döé", TEAM_FOLDER))
+        self.assertTrue(check_author_md("Jàne D'öé", TEAM_FOLDER))
+        self.assertFalse(check_author_md("JaneDoe", TEAM_FOLDER))

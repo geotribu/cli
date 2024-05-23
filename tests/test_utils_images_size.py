@@ -23,8 +23,8 @@ from PIL import Image
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.utils.check_image_size import (
     check_image_dimensions,
+    get_image_dimensions_by_url,
     get_image_size,
-    get_image_size_by_url,
 )
 
 # ############################################################################
@@ -129,7 +129,7 @@ class TestUtilsImagesSizeChecker(unittest.TestCase):
             ("https://cdn.geotribu.fr/img/coup_de_gueule.jpg", 74, 64),
             ("https://cdn.geotribu.fr/img/pytroll.png", 100, 100),
         ]:
-            w, h = get_image_size_by_url(url)
+            w, h = get_image_dimensions_by_url(url)
             self.assertEqual(w, width)
             self.assertEqual(h, height)
 
