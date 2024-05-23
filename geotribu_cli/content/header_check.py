@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 import uuid
+from pathlib import Path
 
 import frontmatter
 import requests
@@ -51,6 +52,13 @@ def parser_header_check(
         nargs="+",
     )
     subparser.add_argument(
+        "-af",
+        "--authors-folder",
+        dest="authors_folder",
+        type=Path,
+        help="Chemin qui contient les presentations markdown des auteurs/autrices",
+    )
+    subparser.add_argument(
         "-minw",
         "--min-width",
         dest="min_image_width",
@@ -97,6 +105,11 @@ def parser_header_check(
 # ############################################################################
 # ########## MAIN ################
 # ################################
+
+
+def check_author_md(author: str, folder: Path) -> bool:
+    p = os.path.join(folder, f"{author.lower().replace(' ', '-')}.md")
+    return os.path.exists(p)
 
 
 def check_image_size(
@@ -198,6 +211,19 @@ def run(args: argparse.Namespace) -> None:
                         raise ValueError(msg)
                 else:
                     logger.info("Ratio image ok")
+
+            # check that author md file is present
+            if args.authors_folder:
+                author_exists = check_author_md(
+                    yaml_meta["author"], args.authors_folder
+                )
+                if not author_exists:
+                    msg = "Le fichier de l'auteur/autrice n'a pas pu être trouvé dans le répertoire"
+                    logger.error(msg)
+                    if args.raise_exceptions:
+                        raise ValueError(msg)
+                else:
+                    logger.info("Markdown de l'auteur/autrice ok")
 
             # check that tags already exist
             all_exists, missing, _ = check_existing_tags(yaml_meta["tags"])
