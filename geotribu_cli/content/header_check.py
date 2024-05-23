@@ -108,7 +108,10 @@ def parser_header_check(
 
 
 def check_author_md(author: str, folder: Path) -> bool:
-    p = os.path.join(folder, f"{author.lower().replace(' ', '-')}.md")
+    if author == "Geotribu":
+        return True
+    formatted = author.translate(str.maketrans({"'": "", " ": "-"}))
+    p = os.path.join(folder, f"{unidecode(formatted.lower())}.md")
     return os.path.exists(p)
 
 
@@ -190,7 +193,7 @@ def run(args: argparse.Namespace) -> None:
             yaml_meta = content.metadata
             logger.debug(f"YAML metadata loaded : {yaml_meta}")
 
-            # check that image ratio is okayyy
+            # check that image size is okay
             if "image" in yaml_meta:
                 if not yaml_meta["image"]:
                     logger.error("Pas d'URL pour l'image")
@@ -214,16 +217,15 @@ def run(args: argparse.Namespace) -> None:
 
             # check that author md file is present
             if args.authors_folder:
-                author_exists = check_author_md(
-                    yaml_meta["author"], args.authors_folder
-                )
-                if not author_exists:
-                    msg = "Le fichier de l'auteur/autrice n'a pas pu être trouvé dans le répertoire"
-                    logger.error(msg)
-                    if args.raise_exceptions:
-                        raise ValueError(msg)
-                else:
-                    logger.info("Markdown de l'auteur/autrice ok")
+                for author in yaml_meta["authors"]:
+                    author_exists = check_author_md(author, args.authors_folder)
+                    if not author_exists:
+                        msg = f"Le fichier de l'auteur/autrice '{author}' n'a pas pu être trouvé dans le répertoire"
+                        logger.error(msg)
+                        if args.raise_exceptions:
+                            raise ValueError(msg)
+                    else:
+                        logger.info(f"Markdown de l'auteur/autrice '{author}' ok")
 
             # check that tags already exist
             all_exists, missing, _ = check_existing_tags(yaml_meta["tags"])
