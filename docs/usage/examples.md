@@ -241,6 +241,13 @@ Sortie :
 
 :::{note}
 Par défaut, le redimensionnement et l'optimisation des images font appel à l'API Tinify (<https://tinypng.com>) et requièrent une clé d'authentification à stocker en variable d'environnement `TINIFY_API_KEY`.
+
+Pour une exécution en local, il est nécessaire d'installer les dépendances supplémentaires :
+
+```sh
+pip install -U geotribu[img-local]
+```
+
 :::
 
 Cette commande permet de conformer les images aux bonnes pratiques et de les optimiser.
