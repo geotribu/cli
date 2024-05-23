@@ -10,9 +10,9 @@ C'est la méthode la plus simple et recommandée pour utiliser le CLI Geotribu.
 
 - Python >= 3.10
 - Accès réseau sur :
-  - le dépôt officiel de paquets Python : <https://pypi.org/>
-  - les différents sous-domaines de Geotribu <https://*geotribu.fr>
-  - le site des données NTLK <https://www.nltk.org/nltk_data/>
+    - le dépôt officiel de paquets Python : <https://pypi.org/>
+    - les différents sous-domaines de Geotribu <https://*geotribu.fr>
+    - le site des données NTLK <https://www.nltk.org/nltk_data/>
 
 ### Installer
 
@@ -28,7 +28,27 @@ Avec les dépendances pour un usage contributeur :
 pip install --upgrade geotribu[all]
 ```
 
-L'outil est désormais disponible en ligne de commande. Voir les [exemples](/usage/examples).
+L'outil est désormais disponible en ligne de commande. Voir les [exemples](examples.md).
+
+#### Guide : installer temporairement sur Ubuntu
+
+Voici un exemple de commandes pour installer le CLI dans un environnement virtuel temporaire sur Ubuntu :
+
+```sh
+cd /tmp
+mkdir geotribu-cli
+cd geotribu-cli
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -U pip setuptools wheel
+python -m pip install geotribu[all]
+```
+
+Tester l'installation :
+
+```sh
+geotribu --version
+```
 
 ----
 
@@ -58,4 +78,4 @@ La version packagée pour MacOS n'est pas testée et ici pour encourager les fee
 1. Ouvrir une fenêtre de son terminal préféré dans le dossier
 1. Exécuter le CLI à partir du nom du fichier (astuce : taper seulement `Geotri` puis appuyer sur tabulation pour utiliser l'autocomplétion)
 
---> voir [la page présentant les exemples d'utilisation](/usage/examples)
+--> voir [la page présentant les exemples d'utilisation](examples.md)
