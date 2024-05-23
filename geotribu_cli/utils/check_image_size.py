@@ -16,9 +16,11 @@ import xml.etree.ElementTree as ET
 from decimal import Decimal
 from pathlib import Path
 from typing import Union
+from urllib import request
 
 # 3rd party
 import imagesize
+from PIL import ImageFile
 
 # #############################################################################
 # ########## Globals ###############
@@ -59,6 +61,25 @@ def get_image_size(image_filepath: Path) -> tuple[int, int]:
         )
 
     return None
+
+
+def get_image_size_by_url(url: str) -> tuple[int, int]:
+    """Get image dimensions as a tuple (width,height) of an image at an URL. Return None in case of error.
+
+    :param str url: url of the image
+
+    :return Tuple[int, int]: dimensions tuple (width,height)
+    """
+    with request.urlopen(url) as file:
+        parser = ImageFile.Parser()
+        while True:
+            data = file.read(1024)
+            if not data:
+                break
+            parser.feed(data)
+            if parser.image:
+                return parser.image.size
+        return None
 
 
 def get_svg_size(image_filepath: Path) -> tuple[int, int]:
