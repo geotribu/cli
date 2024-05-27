@@ -9,6 +9,7 @@ from unidecode import unidecode
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.json.json_client import JsonFeedClient
 from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
+from geotribu_cli.utils.check_path import check_path
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
