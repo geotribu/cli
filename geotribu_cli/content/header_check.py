@@ -156,13 +156,20 @@ def run(args: argparse.Namespace) -> None:
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
-    content_paths = args.content_path
+    content_paths: list[Path] = args.content_path
 
     for content_path in content_paths:
         logger.info(f"Checking header of {content_path}")
-        check_path_exists(content_path, raise_error=True)
+        check_path(
+            input_path=content_path,
+            must_be_a_file=True,
+            must_be_a_folder=False,
+            must_be_readable=True,
+            raise_error=True,
+        )
 
-        with open(content_path) as file:
+
+        with content_path.open(mode="r", encoding="UTF-8") as file:
             content = frontmatter.load(file)
             yaml_meta = content.metadata
             logger.debug(f"YAML metadata loaded : {yaml_meta}")
