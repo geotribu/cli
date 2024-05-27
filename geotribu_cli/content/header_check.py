@@ -43,7 +43,7 @@ def parser_header_check(
     subparser.add_argument(
         "content_path",
         help="Chemin du fichier markdown dont l'entête est à vérifier",
-        type=str,
+        type=Path,
         metavar="content",
         nargs="+",
     )
