@@ -168,7 +168,6 @@ def run(args: argparse.Namespace) -> None:
             raise_error=True,
         )
 
-
         with content_path.open(mode="r", encoding="UTF-8") as file:
             content = frontmatter.load(file)
             yaml_meta = content.metadata
