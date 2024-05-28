@@ -10,6 +10,7 @@ from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.json.json_client import JsonFeedClient
 from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path
+from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
@@ -106,8 +107,7 @@ def parser_header_check(
 def check_author_md(author: str, folder: Path) -> bool:
     if author == "Geotribu":
         return True
-    formatted = author.translate(str.maketrans({"'": "", " ": "-"}))
-    p = os.path.join(folder, f"{unidecode(formatted.lower())}.md")
+    p = os.path.join(folder, f"{sluggy(author)}.md")
     return os.path.exists(p)
 
 
