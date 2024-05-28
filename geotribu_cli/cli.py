@@ -29,6 +29,7 @@ from geotribu_cli.subcommands import (
     parser_comments_broadcast,
     parser_comments_latest,
     parser_comments_read,
+    parser_header_check,
     parser_images_optimizer,
     parser_latest_content,
     parser_mastodon_export,
@@ -230,6 +231,16 @@ def main(args: list[str] = None):
     )
     add_common_arguments(subcmd_upgrade)
     parser_upgrade(subcmd_upgrade)
+
+    subcmd_header_check = subparsers.add_parser(
+        "header-check",
+        aliases=["header", "check", "header-check", "metadata"],
+        help="Vérifier entête markdown",
+        formatter_class=main_parser.formatter_class,
+        prog="header-check",
+    )
+    add_common_arguments(subcmd_header_check)
+    parser_header_check(subcmd_header_check)
 
     # -- NESTED SUBPARSER : CREATE ---------------------------------------------------
     subcmd_content_manager = subparsers.add_parser(

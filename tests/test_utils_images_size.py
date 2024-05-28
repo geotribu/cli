@@ -21,7 +21,11 @@ from PIL import Image
 
 # project
 from geotribu_cli.__about__ import __title_clean__, __version__
-from geotribu_cli.utils.check_image_size import check_image_dimensions, get_image_size
+from geotribu_cli.utils.check_image_size import (
+    check_image_dimensions,
+    get_image_dimensions_by_url,
+    get_image_size,
+)
 
 # ############################################################################
 # ########## Classes #############
@@ -119,6 +123,15 @@ class TestUtilsImagesSizeChecker(unittest.TestCase):
                 allowed_images_extensions=(".png", ".webp"),
             )
         )
+
+    def test_image_url_dimensions(self):
+        for url, width, height in [
+            ("https://cdn.geotribu.fr/img/coup_de_gueule.jpg", 74, 64),
+            ("https://cdn.geotribu.fr/img/pytroll.png", 100, 100),
+        ]:
+            w, h = get_image_dimensions_by_url(url)
+            self.assertEqual(w, width)
+            self.assertEqual(h, height)
 
 
 # ############################################################################
