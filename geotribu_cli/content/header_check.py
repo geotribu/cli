@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 
 import frontmatter
-from unidecode import unidecode
 
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.json.json_client import JsonFeedClient
@@ -133,7 +132,7 @@ def check_existing_tags(tags: list[str]) -> tuple[bool, set[str], set[str]]:
 
 def check_tags_order(tags: list[str]) -> bool:
     for i in range(len(tags) - 1):
-        if unidecode(tags[i].upper()) > unidecode(tags[i + 1].upper()):
+        if sluggy(tags[i].upper()) > sluggy(tags[i + 1].upper()):
             return False
     return True
 
