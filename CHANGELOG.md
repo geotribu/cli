@@ -18,6 +18,21 @@ Unreleased
 
 -->
 
+## 0.34.0 - 2024-06-07
+
+### Features and enhancements 🎉
+
+* Add JSON client for feeds and tags by @gounux in <https://github.com/geotribu/cli/pull/198>
+* Add yaml header check by @gounux in <https://github.com/geotribu/cli/pull/184>
+
+### Tooling 🔧
+
+* ci: switch to PyPi trusted publisher by @Guts in <https://github.com/geotribu/cli/pull/201>
+
+### Documentation 📖
+
+* Corrections et ajouts mineurs by @Guts in <https://github.com/geotribu/cli/pull/202/files>
+
 ## 0.33.0 - 2024-05-02
 
 ### Features and enhancements 🎉
