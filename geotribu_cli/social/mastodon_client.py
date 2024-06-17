@@ -109,7 +109,7 @@ class ExtendedMastodonClient(Mastodon):
             elif isinstance(access_token, str) and len(access_token) < 25:
                 logger.critical(
                     "Le jeton d'accès à l'API Mastodon récupéré semble incorrect "
-                    "(moins de 25 caractères)."
+                    f"(moins de 25 caractères): {access_token}"
                 )
                 raise MastodonError(
                     f"Le jeton d'accès à l'API Mastodon (instance : {api_base_url}) est requis."

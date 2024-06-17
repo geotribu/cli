@@ -62,6 +62,7 @@ class TestCustomMastodonClient(unittest.TestCase):
     )
     def test_export_data_all(self):
         """Test export following accounts to CSV."""
+        print(getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN"))
         masto_client = ExtendedMastodonClient(
             user_agent=f"{__title_clean__}-TESTS/{__version__}", debug_requests=False
         )
