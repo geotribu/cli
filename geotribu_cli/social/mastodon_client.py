@@ -15,14 +15,15 @@ from textwrap import shorten
 from typing import Optional
 from urllib.parse import urlparse
 
-# 3rd party
-from mastodon import Mastodon, MastodonAPIError, MastodonError
 from requests import Session
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
 from geotribu_cli.comments.mdl_comment import Comment
 from geotribu_cli.constants import GeotribuDefaults
+
+# 3rd party
+from mastodon import Mastodon, MastodonAPIError, MastodonError
 
 # ############################################################################
 # ########## GLOBALS #############
@@ -109,7 +110,7 @@ class ExtendedMastodonClient(Mastodon):
             elif isinstance(access_token, str) and len(access_token) < 25:
                 logger.critical(
                     "Le jeton d'accès à l'API Mastodon récupéré semble incorrect "
-                    "(moins de 25 caractères)."
+                    f"(moins de 25 caractères): {access_token}"
                 )
                 raise MastodonError(
                     f"Le jeton d'accès à l'API Mastodon (instance : {api_base_url}) est requis."
