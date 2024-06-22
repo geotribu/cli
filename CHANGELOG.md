@@ -20,18 +20,17 @@ Unreleased
 
 ## 0.34.0 - 2024-06-07
 
+### Bugs fixes 🐛
+
+* Docs: corrections et ajouts mineurs by @Guts in <https://github.com/geotribu/cli/pull/202>
+* ci: fix pypi release by @gounux in <https://github.com/geotribu/cli/pull/209>
+* docs: add how to fix failed tag by @Guts in <https://github.com/geotribu/cli/pull/212>
+
 ### Features and enhancements 🎉
 
-* Add JSON client for feeds and tags by @gounux in <https://github.com/geotribu/cli/pull/198>
+* ci(release): switch to PyPi trusted publisher by @Guts in <https://github.com/geotribu/cli/pull/201>
+* Add JSON client for feed and tags by @gounux in <https://github.com/geotribu/cli/pull/198>
 * Add yaml header check by @gounux in <https://github.com/geotribu/cli/pull/184>
-
-### Tooling 🔧
-
-* ci: switch to PyPi trusted publisher by @Guts in <https://github.com/geotribu/cli/pull/201>
-
-### Documentation 📖
-
-* Corrections et ajouts mineurs by @Guts in <https://github.com/geotribu/cli/pull/202/files>
 
 ## 0.33.0 - 2024-05-02
 
