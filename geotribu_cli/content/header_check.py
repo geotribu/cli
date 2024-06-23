@@ -20,7 +20,6 @@ MANDATORY_KEYS = [
     "categories",
     "date",
     "description",
-    "license",
     "tags",
 ]
 
