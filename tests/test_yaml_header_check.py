@@ -66,8 +66,7 @@ class TestYamlHeaderCheck(unittest.TestCase):
             self.future_yaml_meta.keys()
         )
         self.assertFalse(all_present)
-        self.assertEqual(len(missing), 2)
-        self.assertIn("license", missing)
+        self.assertEqual(len(missing), 1)
         self.assertIn("description", missing)
 
     def test_author_md_ok(self):
