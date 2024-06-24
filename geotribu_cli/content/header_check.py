@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+from enum import Enum
 from pathlib import Path
 
 import frontmatter
@@ -23,7 +24,12 @@ MANDATORY_KEYS = [
     "tags",
 ]
 
-AVAILABLE_LICENSES = ["default", "cc4_by-nc-sa", "cc4_by-sa", "beerware"]
+
+class License(Enum):
+    DEFAULT = "default"
+    CC4_BY_BC_SA = "cc4_by-nc-sa"
+    CC4_BY_SA = "cc4_by-sa"
+    BEERWARE = "beerware"
 
 
 # ############################################################################
@@ -150,7 +156,7 @@ def check_mandatory_keys(
 
 
 def check_license(license: str) -> bool:
-    return license in AVAILABLE_LICENSES
+    return license in [l.value for l in License]
 
 
 def run(args: argparse.Namespace) -> None:
@@ -248,7 +254,7 @@ def run(args: argparse.Namespace) -> None:
             if "license" in yaml_meta:
                 license_ok = check_license(yaml_meta["license"])
                 if not license_ok:
-                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join(AVAILABLE_LICENSES)})"
+                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join([l.value for l in License])})"
                     logger.error(msg)
                     if args.raise_exceptions:
                         raise ValueError(msg)
