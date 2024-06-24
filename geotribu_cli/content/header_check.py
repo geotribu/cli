@@ -1,18 +1,22 @@
 import argparse
 import logging
 import os
+from functools import lru_cache
 from pathlib import Path
 
 import frontmatter
+import requests
+from requests import Response
 
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.json.json_client import JsonFeedClient
-from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path
 from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
+
+URL_CDN = "https://cdn.geotribu.fr"
 
 MANDATORY_KEYS = [
     "title",
@@ -110,10 +114,23 @@ def check_author_md(author: str, folder: Path) -> bool:
     return os.path.exists(p)
 
 
+@lru_cache(maxsize=512)
+def download_image_sizes() -> dict:
+    # download images sizes and indexes
+    image_req: Response = requests.get(f"{URL_CDN}/img/search-index.json")
+    image_req.raise_for_status()
+    return image_req.json()["images"]
+
+
 def check_image_size(
-    image_url: str, minw: int, maxw: int, minh: int, maxh: int
+    image_url: str, images: dict, minw: int, maxw: int, minh: int, maxh: int
 ) -> bool:
-    width, height = get_image_dimensions_by_url(image_url)
+    key = image_url.replace(f"{URL_CDN}/img/", "")
+    print(key)
+    if key not in images:
+        print("not in keys")
+        return False
+    width, height = images[key]
     return minw <= width <= maxw and minh <= height <= maxh
 
 
@@ -179,6 +196,7 @@ def run(args: argparse.Namespace) -> None:
                     logger.error("Pas d'URL pour l'image")
                 elif not check_image_size(
                     yaml_meta["image"],
+                    download_image_sizes(),
                     args.min_image_width,
                     args.max_image_width,
                     args.min_image_height,
