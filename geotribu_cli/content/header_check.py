@@ -1,6 +1,7 @@
 import argparse
 import logging
 import os
+from enum import Enum
 from pathlib import Path
 
 import frontmatter
@@ -13,6 +14,23 @@ from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
+
+MANDATORY_KEYS = [
+    "title",
+    "authors",
+    "categories",
+    "date",
+    "description",
+    "tags",
+]
+
+
+class License(Enum):
+    DEFAULT = "default"
+    CC4_BY_BC_SA = "cc4_by-nc-sa"
+    CC4_BY_SA = "cc4_by-sa"
+    BEERWARE = "beerware"
+
 
 # ############################################################################
 # ########## CLI #################
@@ -145,7 +163,7 @@ def check_missing_mandatory_keys(keys: list[str]) -> tuple[bool, set[str]]:
 
 
 def check_license(license: str) -> bool:
-    return license in AVAILABLE_LICENSES
+    return license in [l.value for l in License]
 
 
 def run(args: argparse.Namespace) -> None:
@@ -241,7 +259,7 @@ def run(args: argparse.Namespace) -> None:
             if "license" in yaml_meta:
                 license_ok = check_license(yaml_meta["license"])
                 if not license_ok:
-                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join(AVAILABLE_LICENSES)})"
+                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join([l.value for l in License])})"
                     logger.error(msg)
                     if args.raise_exceptions:
                         raise ValueError(msg)
