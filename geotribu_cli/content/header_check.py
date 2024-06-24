@@ -126,9 +126,7 @@ def check_image_size(
     image_url: str, images: dict, minw: int, maxw: int, minh: int, maxh: int
 ) -> bool:
     key = image_url.replace(f"{URL_CDN}/img/", "")
-    print(key)
     if key not in images:
-        print("not in keys")
         return False
     width, height = images[key]
     return minw <= width <= maxw and minh <= height <= maxh
