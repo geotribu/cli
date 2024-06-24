@@ -23,6 +23,9 @@ MANDATORY_KEYS = [
     "tags",
 ]
 
+AVAILABLE_LICENSES = ["default", "cc4_by-nc-sa", "cc4_by-sa", "beerware"]
+
+
 # ############################################################################
 # ########## CLI #################
 # ################################
@@ -146,6 +149,10 @@ def check_mandatory_keys(
     return len(missing) == 0, missing
 
 
+def check_license(license: str) -> bool:
+    return license in AVAILABLE_LICENSES
+
+
 def run(args: argparse.Namespace) -> None:
     """Run the sub command logic.
 
@@ -236,3 +243,14 @@ def run(args: argparse.Namespace) -> None:
                     raise ValueError(msg)
             else:
                 logger.info("Clés de l'entête ok")
+
+            # check that license (if present) is in available licenses
+            if "license" in yaml_meta:
+                license_ok = check_license(yaml_meta["license"])
+                if not license_ok:
+                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join(AVAILABLE_LICENSES)})"
+                    logger.error(msg)
+                    if args.raise_exceptions:
+                        raise ValueError(msg)
+                else:
+                    logger.info("licence ok")
