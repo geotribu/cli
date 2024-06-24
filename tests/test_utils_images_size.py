@@ -126,8 +126,16 @@ class TestUtilsImagesSizeChecker(unittest.TestCase):
 
     def test_image_url_dimensions(self):
         for url, width, height in [
-            ("https://cdn.geotribu.fr/img/coup_de_gueule.jpg", 74, 64),
-            ("https://cdn.geotribu.fr/img/pytroll.png", 100, 100),
+            (
+                "https://cdn.geotribu.fr/img/articles-blog-rdp/articles/2024/lidarhd_pdal/lidar_zoom.png",
+                1380,
+                763,
+            ),
+            (
+                "https://cdn.geotribu.fr/img/articles-blog-rdp/articles/2024/lidarhd_pdal/sol.png",
+                1000,
+                557,
+            ),
         ]:
             w, h = get_image_dimensions_by_url(url)
             self.assertEqual(w, width)
