@@ -10,13 +10,12 @@ import logging
 import sys
 from os import getenv
 
-# 3rd party
-from rich import print
-
-# package
 from geotribu_cli.cli_results_rich_formatters import format_output_result_comments
 from geotribu_cli.comments.comments_toolbelt import find_comment_by_id
 from geotribu_cli.comments.mdl_comment import Comment
+
+# package
+from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.start_uri import open_uri
 
@@ -136,14 +135,14 @@ def run(args: argparse.Namespace):
 
     # si le commentaire n'a pas été trouvé
     if not isinstance(comment_obj, Comment):
-        print(
+        console.print(
             f":person_shrugging: Le commentaire {args.comment_id} n'a pu être trouvé. "
             "Est-il publié et validé ?"
         )
         sys.exit(0)
 
     if args.open_with == "shell":
-        print(
+        console.print(
             format_output_result_comments(
                 results=[comment_obj], format_type=args.format_output, count=1
             )
