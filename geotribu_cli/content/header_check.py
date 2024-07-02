@@ -5,7 +5,7 @@ from pathlib import Path
 
 import frontmatter
 
-from geotribu_cli.constants import GeotribuDefaults
+from geotribu_cli.constants import GeotribuDefaults, YamlHeaderMandatoryKeys
 from geotribu_cli.json.json_client import JsonFeedClient
 from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path
@@ -13,16 +13,6 @@ from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
-
-MANDATORY_KEYS = [
-    "title",
-    "authors",
-    "categories",
-    "date",
-    "description",
-    "license",
-    "tags",
-]
 
 # ############################################################################
 # ########## CLI #################
@@ -137,13 +127,20 @@ def check_tags_order(tags: list[str]) -> bool:
     return True
 
 
-def check_mandatory_keys(
-    keys: list[str], mandatory: list[str] = MANDATORY_KEYS
-) -> tuple[bool, set[str]]:
+def check_missing_mandatory_keys(keys: list[str]) -> tuple[bool, set[str]]:
+    """Liste les clés de l'en-tête qui sont manquantes par rapport à celles requises.
+
+    Args:
+        keys: clés de l'en-tête à comparer
+
+    Returns:
+        un tuple à 2 valeurs composé d'un booléen indiquant s'il manque une clé
+            obligatoire et la liste des clés manquantes
+    """
     missing = set()
-    for mk in mandatory:
-        if mk not in keys:
-            missing.add(mk)
+    for mandatory_key in YamlHeaderMandatoryKeys.values_set():
+        if mandatory_key not in keys:
+            missing.add(mandatory_key)
     return len(missing) == 0, missing
 
 
@@ -227,9 +224,7 @@ def run(args: argparse.Namespace) -> None:
                 logger.info("Ordre alphabétique des tags ok")
 
             # check that mandatory keys are present
-            all_present, missing = check_mandatory_keys(
-                yaml_meta.keys(), MANDATORY_KEYS
-            )
+            all_present, missing = check_missing_mandatory_keys(yaml_meta.keys())
             if not all_present:
                 msg = f"Les clés suivantes ne sont pas présentes dans l'entête markdown : {','.join(missing)}"
                 logger.error(msg)

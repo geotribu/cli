@@ -7,6 +7,7 @@
 # standard library
 import logging
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Literal
 
@@ -19,6 +20,59 @@ logger = logging.getLogger(__name__)
 # ############################################################################
 # ########## CLASSES #############
 # ################################
+
+
+class ExtendedEnum(Enum):
+    """Custom Enum with extended methods."""
+
+    @classmethod
+    def has_key(cls, name: str) -> bool:
+        """Check if a certain key is present in enum.
+
+        Source: https://stackoverflow.com/a/62065380/2556577
+
+        Args:
+            name (str): key to check.
+
+        Returns:
+            bool: True if the key exists.
+        """
+        return name in cls.__members__
+
+    @classmethod
+    def has_value(cls, value: str) -> bool:
+        """Check if a certain value is present in enum.
+
+        Source: https://stackoverflow.com/a/43634746/2556577
+
+        Args:
+            value (str): value to check
+
+        Returns:
+            bool: True is the value exists.
+        """
+        return value in cls._value2member_map_
+
+    @classmethod
+    def values_set(cls) -> set:
+        """Return a set of enum values.
+
+        Returns:
+            set of enum's unique values
+        """
+        return {item.value for item in cls}
+
+
+class YamlHeaderMandatoryKeys(ExtendedEnum):
+    """Clés obligatoires dans l'en-tête d'un contenu Geotribu."""
+
+    AUTHORS = "authors"
+    CATEGORIES = "categories"
+    DATE = "date"
+    DESCRIPTION = "description"
+    LICENSE = "license"
+    TAGS = "tags"
+    TITLE = "title"
 
 
 @dataclass
@@ -113,3 +167,7 @@ class GeotribuDefaults:
 if __name__ == "__main__":
     defaults = GeotribuDefaults()
     print(defaults.cdn_search_index_full_url)
+    print(YamlHeaderMandatoryKeys.TITLE.value)
+    print("title" in YamlHeaderMandatoryKeys.__members__)
+    print("title" in YamlHeaderMandatoryKeys._value2member_map_)
+    print({item.value for item in YamlHeaderMandatoryKeys})
