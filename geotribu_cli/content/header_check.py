@@ -51,28 +51,12 @@ def parser_header_check(
         help="Chemin qui contient les presentations markdown des auteurs/autrices",
     )
     subparser.add_argument(
-        "-minw",
-        "--min-width",
-        dest="min_image_width",
-        default=400,
-        type=int,
-        help="Largeur minimum de l'image à vérifier",
-    )
-    subparser.add_argument(
         "-maxw",
         "--max-width",
         dest="max_image_width",
         default=800,
         type=int,
         help="Largeur maximum de l'image à vérifier",
-    )
-    subparser.add_argument(
-        "-minh",
-        "--min-height",
-        dest="min_image_height",
-        default=400,
-        type=int,
-        help="Hauteur minimum de l'image à vérifier",
     )
     subparser.add_argument(
         "-maxh",
@@ -126,13 +110,25 @@ def download_image_sizes() -> dict:
 
 
 def check_image_size(
-    image_url: str, images: dict, minw: int, maxw: int, minh: int, maxh: int
+    image_url: str, images: dict, max_width: int, max_height: int
 ) -> bool:
+    """Checks if an image respects provided max dimensions using CDN index file
+
+    Args:
+        image_url: HTTP url of the image to check
+        images: Dictionary of image dimensions (see download_image_sizes())
+        max_width: maximum width of the image
+        max_height: maximum height of the image
+
+    Returns:
+        True if image max dimensions are respected
+        False if not
+    """
     key = image_url.replace(f"{defaults_settings.cdn_base_url}img/", "")
     if key not in images:
         return False
     width, height = images[key]
-    return minw <= width <= maxw and minh <= height <= maxh
+    return width <= max_width and height <= max_height
 
 
 def get_existing_tags() -> list[str]:
@@ -217,9 +213,7 @@ def run(args: argparse.Namespace) -> None:
                 elif not check_image_size(
                     yaml_meta["image"],
                     download_image_sizes(),
-                    args.min_image_width,
                     args.max_image_width,
-                    args.min_image_height,
                     args.max_image_height,
                 ):
                     msg = (
