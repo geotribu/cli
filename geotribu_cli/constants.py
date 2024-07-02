@@ -96,6 +96,7 @@ class GeotribuDefaults:
     site_git_default_branch: str = "master"
     site_git_project: str = "website"
     site_search_index: str = "search/search_index.json"
+    site_search_tags_remote_path = "tags.json"
 
     # CDN
     cdn_base_url: str = "https://cdn.geotribu.fr/"
@@ -104,6 +105,10 @@ class GeotribuDefaults:
 
     # comments
     comments_base_url: str = "https://comments.geotribu.fr/"
+
+    # JSON Feed
+    json_path_created = "feed_json_created.json"
+    json_path_updated = "feed_json_created.json"
 
     # RSS
     rss_path_created: str = "feed_rss_created.xml"
@@ -138,6 +143,15 @@ class GeotribuDefaults:
         return f"{self.cdn_base_url}{self.cdn_base_path}/{self.cdn_search_index}"
 
     @property
+    def json_created_full_url(self) -> str:
+        """Returns website JSON Feed full URL for latest created contents.
+
+        Returns:
+            str: URL as string
+        """
+        return f"{self.site_base_url}{self.json_path_created}"
+
+    @property
     def rss_created_full_url(self) -> str:
         """Returns website RSS full URL for latest created contents.
 
@@ -154,6 +168,15 @@ class GeotribuDefaults:
             str: URL as string
         """
         return f"{self.site_base_url}{self.site_search_index}"
+
+    @property
+    def site_search_tags_full_url(self) -> str:
+        """Returns website search tags full URL.
+
+        Returns:
+            str: URL as string
+        """
+        return f"{self.site_base_url}{self.site_search_tags_remote_path}"
 
     def site_git_source_base_url(
         self, mode: Literal["blob", "edit", "raw"] = "blob", url_path: str = ""
