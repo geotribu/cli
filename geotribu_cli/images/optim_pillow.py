@@ -35,6 +35,7 @@ defaults_settings = GeotribuDefaults()
 
 def pil_redimensionner_image(
     image_path_or_url: Path,
+    output_folder: Path,
     largeur_max_paysage: int = 1000,
     hauteur_max_portrait: int = 600,
 ) -> Optional[Path]:
@@ -44,6 +45,7 @@ def pil_redimensionner_image(
 
     Args:
         image_path_or_url: chemin ou URL vers l'image
+        output_folder: chemin du dossier de sortie
         largeur_max_paysage: largeur maximum pour une image orientée paysage.
             Defaults to 1000.
         hauteur_max_portrait: hauteur maximum pour une image orientée portrait.
@@ -83,8 +85,8 @@ def pil_redimensionner_image(
     new_img = contain(img, nouvelle_taille)
 
     # sauvegarder l'image
-    output_filepath = defaults_settings.geotribu_working_folder.joinpath(
-        f"images/optim/{image_path_or_url.stem}_resized_{new_img.width}x"
+    output_filepath = output_folder.joinpath(
+        f"{image_path_or_url.stem}_resized_{new_img.width}x"
         f"{new_img.height}{image_path_or_url.suffix}"
     )
     output_filepath.parent.mkdir(parents=True, exist_ok=True)

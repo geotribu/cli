@@ -65,9 +65,9 @@ def parser_images_optimizer(
     subparser.add_argument(
         "-o",
         "--output-path",
+        dest="output_path",
         help="Fichier de sortie. Par défaut, stocke dans le dossier de travail local "
         "de Geotribu.",
-        dest="output_path",
     )
 
     subparser.add_argument(
@@ -110,6 +110,10 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
+    # dossier de sortie
+    output_folder = Path(
+        args.output_path
+    ) or defaults_settings.geotribu_working_folder.joinpath("images/optim/")
 
     # liste l'image ou les images à optimiser
     if check_path(
@@ -120,10 +124,12 @@ def run(args: argparse.Namespace):
         must_exists=True,
         raise_error=False,
     ):
-        logger.info(f"Dossier d'images passé : {args.image_path}")
+        input_images_folder = Path(args.image_path).resolve()
+        logger.info(f"Dossier d'images passé : {input_images_folder}")
+        logger.info(f"Dossier en sortie : {output_folder}")
         li_images = [
             image.resolve()
-            for image in Path(args.image_path).glob("*")
+            for image in input_images_folder.glob("*")
             if image.suffix.lower() in defaults_settings.images_body_extensions
         ]
         if not li_images:
@@ -133,7 +139,7 @@ def run(args: argparse.Namespace):
             sys.exit(0)
     else:
         logger.debug(f"Image unique passée : {args.image_path}")
-        li_images = [args.image_path]
+        li_images = [Path(args.image_path)]
 
     # Utilise l'outil d'optimisation
     if args.tool_to_use == "tinypng":
@@ -159,7 +165,9 @@ def run(args: argparse.Namespace):
         for img in li_images:
             try:
                 optimized_image = optimize_with_tinify(
-                    image_path_or_url=img, image_type=args.image_type
+                    image_path_or_url=img,
+                    image_type=args.image_type,
+                    output_folder=output_folder,
                 )
                 console.print(
                     f":clamp: L'image {img} a été redimensionnée et "
@@ -187,7 +195,9 @@ def run(args: argparse.Namespace):
         count_optim_error = 0
         for img in li_images:
             try:
-                optimized_image = pil_redimensionner_image(image_path_or_url=img)
+                optimized_image = pil_redimensionner_image(
+                    image_path_or_url=img, output_folder=output_folder
+                )
                 console.print(
                     f":clamp: L'image {img} a été redimensionnée et "
                     f"compressée avec {args.tool_to_use} : {optimized_image}"
@@ -200,10 +210,12 @@ def run(args: argparse.Namespace):
                 )
                 count_optim_error += 1
 
+    # report
+    console.print(
+        f":white_check_mark: {count_optim_success} image(s) correctement redimensionnée(s)\n"
+        f":cross_mark: {count_optim_error} image(s) non redimensionnée(s)"
+    )
+
     # open output folder if success and not disabled
     if args.opt_auto_open_disabled and count_optim_success > 0:
-        open_uri(
-            in_filepath=defaults_settings.geotribu_working_folder.joinpath(
-                "images/optim"
-            )
-        )
+        open_uri(in_filepath=output_folder)
