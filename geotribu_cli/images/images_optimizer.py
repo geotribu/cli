@@ -127,7 +127,9 @@ def run(args: argparse.Namespace):
             if image.suffix.lower() in defaults_settings.images_body_extensions
         ]
         if not li_images:
-            print(":person_shrugging: Aucune image trouvée dans {args.image_path}")
+            console.print(
+                f":person_shrugging: Aucune image trouvée dans {args.image_path}"
+            )
             sys.exit(0)
     else:
         logger.debug(f"Image unique passée : {args.image_path}")
