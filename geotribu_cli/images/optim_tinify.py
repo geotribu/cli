@@ -9,7 +9,7 @@ import logging
 import sys
 from os import getenv
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 from urllib.parse import unquote, urlsplit
 
 # 3rd party
@@ -59,8 +59,8 @@ def tinify_check_api_limit() -> int:
 
 
 def optimize_with_tinify(
-    image_path_or_url: Union[str, Path], image_type: str = "body"
-) -> Path:
+    image_path_or_url: Union[str, Path], output_folder: Path, image_type: str = "body"
+) -> Optional[Path]:
     """Optimize image using Tinify API (tinypng.com).
 
     Args:
@@ -110,9 +110,7 @@ def optimize_with_tinify(
         )
 
         # prepare output path
-        output_filepath = defaults_settings.geotribu_working_folder.joinpath(
-            f"images/optim/{img_filename}"
-        )
+        output_filepath = output_folder.joinpath(f"{img_filename}")
         output_filepath.parent.mkdir(parents=True, exist_ok=True)
 
         # save output
