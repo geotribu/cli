@@ -108,7 +108,7 @@ class GeotribuDefaults:
 
     # JSON Feed
     json_path_created = "feed_json_created.json"
-    json_path_updated = "feed_json_created.json"
+    json_path_updated = "feed_json_updated.json"
 
     # RSS
     rss_path_created: str = "feed_rss_created.xml"
