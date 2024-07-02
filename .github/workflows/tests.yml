@@ -108,3 +108,6 @@ jobs:
 
       - name: CLI - Echoing help
         run: geotribu --help
+
+      - name: CLI - Search content
+        run: geotribu search-content --no-prompt -n 10 "python +osm"
