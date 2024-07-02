@@ -1,6 +1,6 @@
 # Installation
 
-Il est possible d'installer le projet de plusieurs façons différentes, en plus de [celle du mode développement](development/setup).
+Il est possible d'installer le projet de plusieurs façons différentes, en plus de [celle du mode développement](../development/setup).
 
 ## Utiliser comme package Python
 
@@ -9,6 +9,7 @@ C'est la méthode la plus simple et recommandée pour utiliser le CLI Geotribu.
 ### Prérequis
 
 - Python >= 3.10
+- a minima le couple [pip](https://pip.pypa.io/en/stable/installation/) et [venv](https://docs.python.org/3/library/venv.html) ou idéalement [pipx](https://pipx.pypa.io/latest/installation/) seul suffit et facilite la vie
 - Accès réseau sur :
     - le dépôt officiel de paquets Python : <https://pypi.org/>
     - les différents sous-domaines de Geotribu <https://*geotribu.fr>
@@ -19,12 +20,18 @@ C'est la méthode la plus simple et recommandée pour utiliser le CLI Geotribu.
 Avec les dépendances pour un usage classique :
 
 ```sh
+# avec pipx
+pipx install geotribu
+# ou avec pip
 pip install --upgrade geotribu
 ```
 
 Avec les dépendances pour un usage contributeur :
 
 ```sh
+# avec pipx
+pipx install geotribu[all]
+# ou avec pip
 pip install --upgrade geotribu[all]
 ```
 
