@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import frontmatter
+import orjson
 
 from geotribu_cli.constants import (
     GeotribuDefaults,
@@ -11,8 +12,8 @@ from geotribu_cli.constants import (
     YamlHeaderMandatoryKeys,
 )
 from geotribu_cli.json.json_client import JsonFeedClient
-from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path
+from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
@@ -50,28 +51,12 @@ def parser_header_check(
         help="Chemin qui contient les presentations markdown des auteurs/autrices",
     )
     subparser.add_argument(
-        "-minw",
-        "--min-width",
-        dest="min_image_width",
-        default=400,
-        type=int,
-        help="Largeur minimum de l'image à vérifier",
-    )
-    subparser.add_argument(
         "-maxw",
         "--max-width",
         dest="max_image_width",
         default=800,
         type=int,
         help="Largeur maximum de l'image à vérifier",
-    )
-    subparser.add_argument(
-        "-minh",
-        "--min-height",
-        dest="min_image_height",
-        default=400,
-        type=int,
-        help="Hauteur minimum de l'image à vérifier",
     )
     subparser.add_argument(
         "-maxh",
@@ -105,11 +90,45 @@ def check_author_md(author: str, folder: Path) -> bool:
     return os.path.exists(p)
 
 
+def download_image_sizes() -> dict:
+    """Downloads image dimensions file from CDN
+
+    Returns:
+            Dict of image dimensions
+    """
+    # download images sizes and indexes
+    local_dims = download_remote_file_to_local(
+        remote_url_to_download=f"{defaults_settings.cdn_base_url}img/search-index.json",
+        local_file_path=defaults_settings.geotribu_working_folder.joinpath(
+            "img/search-index.json"
+        ),
+        expiration_rotating_hours=24,
+    )
+    with local_dims.open("rb") as fd:
+        img_dims = orjson.loads(fd.read())
+        return img_dims["images"]
+
+
 def check_image_size(
-    image_url: str, minw: int, maxw: int, minh: int, maxh: int
+    image_url: str, images: dict, max_width: int, max_height: int
 ) -> bool:
-    width, height = get_image_dimensions_by_url(image_url)
-    return minw <= width <= maxw and minh <= height <= maxh
+    """Checks if an image respects provided max dimensions using CDN index file
+
+    Args:
+        image_url: HTTP url of the image to check
+        images: Dictionary of image dimensions (see download_image_sizes())
+        max_width: maximum width of the image
+        max_height: maximum height of the image
+
+    Returns:
+        True if image max dimensions are respected
+        False if not
+    """
+    key = image_url.replace(f"{defaults_settings.cdn_base_url}img/", "")
+    if key not in images:
+        return False
+    width, height = images[key]
+    return width <= max_width and height <= max_height
 
 
 def get_existing_tags() -> list[str]:
@@ -193,9 +212,8 @@ def run(args: argparse.Namespace) -> None:
                     logger.error("Pas d'URL pour l'image")
                 elif not check_image_size(
                     yaml_meta["image"],
-                    args.min_image_width,
+                    download_image_sizes(),
                     args.max_image_width,
-                    args.min_image_height,
                     args.max_image_height,
                 ):
                     msg = (
