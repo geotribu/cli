@@ -110,6 +110,10 @@ def run(args: argparse.Namespace):
         args (argparse.Namespace): arguments passed to the subcommand
     """
     logger.debug(f"Running {args.command} with {args}")
+    # dossier de sortie
+    output_folder = Path(
+        args.output_path
+    ) or defaults_settings.geotribu_working_folder.joinpath("images/optim/")
 
     # liste l'image ou les images à optimiser
     if check_path(
@@ -121,10 +125,6 @@ def run(args: argparse.Namespace):
         raise_error=False,
     ):
         input_images_folder = Path(args.image_path).resolve()
-        # dossier de sortie
-        output_folder = Path(
-            args.output_path
-        ) or defaults_settings.geotribu_working_folder.joinpath("images/optim/")
         logger.info(f"Dossier d'images passé : {input_images_folder}")
         logger.info(f"Dossier en sortie : {output_folder}")
         li_images = [
@@ -139,7 +139,7 @@ def run(args: argparse.Namespace):
             sys.exit(0)
     else:
         logger.debug(f"Image unique passée : {args.image_path}")
-        li_images = [args.image_path]
+        li_images = [Path(args.image_path)]
 
     # Utilise l'outil d'optimisation
     if args.tool_to_use == "tinypng":
@@ -195,7 +195,9 @@ def run(args: argparse.Namespace):
         count_optim_error = 0
         for img in li_images:
             try:
-                optimized_image = pil_redimensionner_image(image_path_or_url=img)
+                optimized_image = pil_redimensionner_image(
+                    image_path_or_url=img, output_folder=output_folder
+                )
                 console.print(
                     f":clamp: L'image {img} a été redimensionnée et "
                     f"compressée avec {args.tool_to_use} : {optimized_image}"
