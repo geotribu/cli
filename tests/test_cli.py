@@ -86,11 +86,12 @@ def test_cli_run_comments_open_specific(capsys):
             "comments",
             "open",
             "--page-size",
-            "25",
+            "100",
             "--comment-id",
             "15",
             "--expiration-rotating-hours",
             "0",
+            "-vv",
         ]
     )
 
