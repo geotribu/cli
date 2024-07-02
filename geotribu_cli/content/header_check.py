@@ -1,12 +1,15 @@
 import argparse
 import logging
 import os
-from enum import Enum
 from pathlib import Path
 
 import frontmatter
 
-from geotribu_cli.constants import GeotribuDefaults, YamlHeaderMandatoryKeys
+from geotribu_cli.constants import (
+    GeotribuDefaults,
+    YamlHeaderAvailableLicense,
+    YamlHeaderMandatoryKeys,
+)
 from geotribu_cli.json.json_client import JsonFeedClient
 from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path
@@ -14,22 +17,6 @@ from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
-
-MANDATORY_KEYS = [
-    "title",
-    "authors",
-    "categories",
-    "date",
-    "description",
-    "tags",
-]
-
-
-class License(Enum):
-    DEFAULT = "default"
-    CC4_BY_BC_SA = "cc4_by-nc-sa"
-    CC4_BY_SA = "cc4_by-sa"
-    BEERWARE = "beerware"
 
 
 # ############################################################################
@@ -162,8 +149,16 @@ def check_missing_mandatory_keys(keys: list[str]) -> tuple[bool, set[str]]:
     return len(missing) == 0, missing
 
 
-def check_license(license: str) -> bool:
-    return license in [l.value for l in License]
+def check_license(license_id: str) -> bool:
+    """Vérifie que la licence choisie fait partie de celles disponibles.
+
+    Args:
+        license: identifiant de la licence.
+
+    Returns:
+        True si la licence est l'une de celles disponibles.
+    """
+    return YamlHeaderAvailableLicense.has_value(license_id)
 
 
 def run(args: argparse.Namespace) -> None:
@@ -259,7 +254,7 @@ def run(args: argparse.Namespace) -> None:
             if "license" in yaml_meta:
                 license_ok = check_license(yaml_meta["license"])
                 if not license_ok:
-                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join([l.value for l in License])})"
+                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join([l.value for l in YamlHeaderAvailableLicense])})"
                     logger.error(msg)
                     if args.raise_exceptions:
                         raise ValueError(msg)
