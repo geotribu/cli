@@ -208,6 +208,12 @@ def run(args: argparse.Namespace):
                 )
                 count_optim_error += 1
 
+    # report
+    console.print(
+        f":white_check_mark: {count_optim_success} image(s) correctement redimensionnée(s)\n"
+        f":cross_mark: {count_optim_error} image(s) non redimensionnée(s)"
+    )
+
     # open output folder if success and not disabled
     if args.opt_auto_open_disabled and count_optim_success > 0:
         open_uri(in_filepath=output_folder)
