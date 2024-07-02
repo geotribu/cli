@@ -75,6 +75,15 @@ class YamlHeaderMandatoryKeys(ExtendedEnum):
     TITLE = "title"
 
 
+class YamlHeaderAvailableLicense(ExtendedEnum):
+    """Licences disponibles pour les contenus publiés sur Geotribu."""
+
+    BEERWARE = "beerware"
+    CC4_BY_SA = "cc4_by-sa"
+    CC4_BY_BC_SA = "cc4_by-nc-sa"
+    DEFAULT = "default"
+
+
 @dataclass
 class GeotribuDefaults:
     """Defaults settings for Geotribu."""

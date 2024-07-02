@@ -5,7 +5,11 @@ from pathlib import Path
 
 import frontmatter
 
-from geotribu_cli.constants import GeotribuDefaults, YamlHeaderMandatoryKeys
+from geotribu_cli.constants import (
+    GeotribuDefaults,
+    YamlHeaderAvailableLicense,
+    YamlHeaderMandatoryKeys,
+)
 from geotribu_cli.json.json_client import JsonFeedClient
 from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path
@@ -13,6 +17,7 @@ from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
+
 
 # ############################################################################
 # ########## CLI #################
@@ -144,6 +149,18 @@ def check_missing_mandatory_keys(keys: list[str]) -> tuple[bool, set[str]]:
     return len(missing) == 0, missing
 
 
+def check_license(license_id: str) -> bool:
+    """Vérifie que la licence choisie fait partie de celles disponibles.
+
+    Args:
+        license: identifiant de la licence.
+
+    Returns:
+        True si la licence est l'une de celles disponibles.
+    """
+    return YamlHeaderAvailableLicense.has_value(license_id)
+
+
 def run(args: argparse.Namespace) -> None:
     """Run the sub command logic.
 
@@ -232,3 +249,14 @@ def run(args: argparse.Namespace) -> None:
                     raise ValueError(msg)
             else:
                 logger.info("Clés de l'entête ok")
+
+            # check that license (if present) is in available licenses
+            if "license" in yaml_meta:
+                license_ok = check_license(yaml_meta["license"])
+                if not license_ok:
+                    msg = f"La licence ('{yaml_meta['license']}') n'est pas dans celles disponibles ({','.join([l.value for l in YamlHeaderAvailableLicense])})"
+                    logger.error(msg)
+                    if args.raise_exceptions:
+                        raise ValueError(msg)
+                else:
+                    logger.info("licence ok")

@@ -7,6 +7,7 @@ import yaml
 from geotribu_cli.content.header_check import (
     check_author_md,
     check_existing_tags,
+    check_license,
     check_missing_mandatory_keys,
     check_tags_order,
 )
@@ -66,8 +67,7 @@ class TestYamlHeaderCheck(unittest.TestCase):
             self.future_yaml_meta.keys()
         )
         self.assertFalse(all_present)
-        self.assertEqual(len(missing), 2)
-        self.assertIn("license", missing)
+        self.assertEqual(len(missing), 1)
         self.assertIn("description", missing)
 
     def test_author_md_ok(self):
@@ -78,3 +78,9 @@ class TestYamlHeaderCheck(unittest.TestCase):
         self.assertTrue(check_author_md("Jàne Döé", TEAM_FOLDER))
         self.assertTrue(check_author_md("Jàne D'öé", TEAM_FOLDER))
         self.assertFalse(check_author_md("JaneDoe", TEAM_FOLDER))
+
+    def test_license_ok(self):
+        self.assertTrue(check_license(self.past_yaml_meta["license"]))
+
+    def test_license_nok(self):
+        self.assertFalse(check_license(self.future_yaml_meta["license"]))

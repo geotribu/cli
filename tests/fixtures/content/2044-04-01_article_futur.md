@@ -8,6 +8,7 @@ categories:
 comments: true
 date: 2044-04-01
 icon: octicons/server-16
+license: gnu-gpl-3
 robots: index, follow
 tags:
     - Fromage
