@@ -4,8 +4,7 @@ import os
 from pathlib import Path
 
 import frontmatter
-import requests
-from requests import Response
+import orjson
 
 from geotribu_cli.constants import (
     GeotribuDefaults,
@@ -14,6 +13,7 @@ from geotribu_cli.constants import (
 )
 from geotribu_cli.json.json_client import JsonFeedClient
 from geotribu_cli.utils.check_path import check_path
+from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
@@ -107,12 +107,22 @@ def check_author_md(author: str, folder: Path) -> bool:
 
 
 def download_image_sizes() -> dict:
+    """Downloads image dimensions file from CDN
+
+    Returns:
+            Dict of image dimensions
+    """
     # download images sizes and indexes
-    image_req: Response = requests.get(
-        f"{defaults_settings.cdn_base_url}img/search-index.json"
+    local_dims = download_remote_file_to_local(
+        remote_url_to_download=f"{defaults_settings.cdn_base_url}img/search-index.json",
+        local_file_path=defaults_settings.geotribu_working_folder.joinpath(
+            "img/search-index.json"
+        ),
+        expiration_rotating_hours=24,
     )
-    image_req.raise_for_status()
-    return image_req.json()["images"]
+    with local_dims.open("rb") as fd:
+        img_dims = orjson.loads(fd.read())
+        return img_dims["images"]
 
 
 def check_image_size(
