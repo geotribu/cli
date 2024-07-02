@@ -65,9 +65,9 @@ def parser_images_optimizer(
     subparser.add_argument(
         "-o",
         "--output-path",
+        dest="output_path",
         help="Fichier de sortie. Par défaut, stocke dans le dossier de travail local "
         "de Geotribu.",
-        dest="output_path",
     )
 
     subparser.add_argument(
@@ -120,10 +120,16 @@ def run(args: argparse.Namespace):
         must_exists=True,
         raise_error=False,
     ):
-        logger.info(f"Dossier d'images passé : {args.image_path}")
+        input_images_folder = Path(args.image_path).resolve()
+        # dossier de sortie
+        output_folder = Path(
+            args.output_path
+        ) or defaults_settings.geotribu_working_folder.joinpath("images/optim/")
+        logger.info(f"Dossier d'images passé : {input_images_folder}")
+        logger.info(f"Dossier en sortie : {output_folder}")
         li_images = [
             image.resolve()
-            for image in Path(args.image_path).glob("*")
+            for image in input_images_folder.glob("*")
             if image.suffix.lower() in defaults_settings.images_body_extensions
         ]
         if not li_images:
@@ -159,7 +165,9 @@ def run(args: argparse.Namespace):
         for img in li_images:
             try:
                 optimized_image = optimize_with_tinify(
-                    image_path_or_url=img, image_type=args.image_type
+                    image_path_or_url=img,
+                    image_type=args.image_type,
+                    output_folder=output_folder,
                 )
                 console.print(
                     f":clamp: L'image {img} a été redimensionnée et "
@@ -202,8 +210,4 @@ def run(args: argparse.Namespace):
 
     # open output folder if success and not disabled
     if args.opt_auto_open_disabled and count_optim_success > 0:
-        open_uri(
-            in_filepath=defaults_settings.geotribu_working_folder.joinpath(
-                "images/optim"
-            )
-        )
+        open_uri(in_filepath=output_folder)
