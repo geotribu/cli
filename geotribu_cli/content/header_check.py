@@ -158,6 +158,14 @@ def check_image_ratio(
     return min_ratio <= ratio <= max_ratio
 
 
+def check_image_extension(
+    image_url: str,
+    allowed_extensions: tuple[str] = defaults_settings.images_header_extensions,
+) -> bool:
+    ext = image_url.split(".")[-1]
+    return ext in allowed_extensions
+
+
 def get_existing_tags() -> list[str]:
     jfc = JsonFeedClient()
     return jfc.tags(should_sort=True)
@@ -273,6 +281,17 @@ def run(args: argparse.Namespace) -> None:
                             raise ValueError(msg)
                     else:
                         logger.info("Ratio de l'image ok")
+
+                    # check image extension
+                    if not check_image_extension(
+                        yaml_meta["image"],
+                    ):
+                        msg = f"L'extension de l'image n'est pas autorisée, doit être parmi : {','.join(defaults_settings.images_header_extensions)}"
+                        logger.error(msg)
+                        if args.raise_exceptions:
+                            raise ValueError(msg)
+                    else:
+                        logger.info("Extension de l'image ok")
 
             # check that author md file is present
             if args.authors_folder:
