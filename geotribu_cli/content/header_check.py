@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 
 import frontmatter
+import orjson
 
 from geotribu_cli.constants import (
     GeotribuDefaults,
@@ -11,8 +12,8 @@ from geotribu_cli.constants import (
     YamlHeaderMandatoryKeys,
 )
 from geotribu_cli.json.json_client import JsonFeedClient
-from geotribu_cli.utils.check_image_size import get_image_dimensions_by_url
 from geotribu_cli.utils.check_path import check_path
+from geotribu_cli.utils.file_downloader import download_remote_file_to_local
 from geotribu_cli.utils.slugger import sluggy
 
 logger = logging.getLogger(__name__)
@@ -50,14 +51,6 @@ def parser_header_check(
         help="Chemin qui contient les presentations markdown des auteurs/autrices",
     )
     subparser.add_argument(
-        "-minw",
-        "--min-width",
-        dest="min_image_width",
-        default=400,
-        type=int,
-        help="Largeur minimum de l'image à vérifier",
-    )
-    subparser.add_argument(
         "-maxw",
         "--max-width",
         dest="max_image_width",
@@ -66,20 +59,28 @@ def parser_header_check(
         help="Largeur maximum de l'image à vérifier",
     )
     subparser.add_argument(
-        "-minh",
-        "--min-height",
-        dest="min_image_height",
-        default=400,
-        type=int,
-        help="Hauteur minimum de l'image à vérifier",
-    )
-    subparser.add_argument(
         "-maxh",
         "--max-height",
         dest="max_image_height",
         default=800,
         type=int,
         help="Hauteur maximum de l'image à vérifier",
+    )
+    subparser.add_argument(
+        "-minr",
+        "--min-ratio",
+        dest="min_image_ratio",
+        default=1.45,
+        type=float,
+        help="Ratio largeur / hauteur minimum de l'image à vérifier",
+    )
+    subparser.add_argument(
+        "-maxr",
+        "--max-ratio",
+        dest="max_image_ratio",
+        default=1.55,
+        type=float,
+        help="Ratio largeur / hauteur maximum de l'image à vérifier",
     )
     subparser.add_argument(
         "-r",
@@ -105,11 +106,64 @@ def check_author_md(author: str, folder: Path) -> bool:
     return os.path.exists(p)
 
 
+def download_image_sizes() -> dict:
+    """Downloads image dimensions file from CDN
+
+    Returns:
+            Dict of image dimensions
+    """
+    # download images sizes and indexes
+    local_dims = download_remote_file_to_local(
+        remote_url_to_download=f"{defaults_settings.cdn_base_url}img/search-index.json",
+        local_file_path=defaults_settings.geotribu_working_folder.joinpath(
+            "img/search-index.json"
+        ),
+        expiration_rotating_hours=24,
+    )
+    with local_dims.open("rb") as fd:
+        img_dims = orjson.loads(fd.read())
+        return img_dims["images"]
+
+
 def check_image_size(
-    image_url: str, minw: int, maxw: int, minh: int, maxh: int
+    image_url: str, images: dict, max_width: int, max_height: int
 ) -> bool:
-    width, height = get_image_dimensions_by_url(image_url)
-    return minw <= width <= maxw and minh <= height <= maxh
+    """Checks if an image respects provided max dimensions using CDN index file
+
+    Args:
+        image_url: HTTP url of the image to check
+        images: Dictionary of image dimensions (see download_image_sizes())
+        max_width: maximum width of the image
+        max_height: maximum height of the image
+
+    Returns:
+        True if image max dimensions are respected
+        False if not
+    """
+    key = image_url.replace(f"{defaults_settings.cdn_base_url}img/", "")
+    if key not in images:
+        return False
+    width, height = images[key]
+    return width <= max_width and height <= max_height
+
+
+def check_image_ratio(
+    image_url: str, images: dict, min_ratio: int, max_ratio: int
+) -> bool:
+    key = image_url.replace(f"{defaults_settings.cdn_base_url}img/", "")
+    if key not in images:
+        return False
+    width, height = images[key]
+    ratio = width / height
+    return min_ratio <= ratio <= max_ratio
+
+
+def check_image_extension(
+    image_url: str,
+    allowed_extensions: tuple[str] = defaults_settings.images_header_extensions,
+) -> bool:
+    ext = image_url.split(".")[-1]
+    return ext in allowed_extensions
 
 
 def get_existing_tags() -> list[str]:
@@ -190,24 +244,54 @@ def run(args: argparse.Namespace) -> None:
             # check that image size is okay
             if "image" in yaml_meta:
                 if not yaml_meta["image"]:
-                    logger.error("Pas d'URL pour l'image")
-                elif not check_image_size(
-                    yaml_meta["image"],
-                    args.min_image_width,
-                    args.max_image_width,
-                    args.min_image_height,
-                    args.max_image_height,
-                ):
-                    msg = (
-                        f"Les dimensions de l'image ne sont pas dans l'intervalle autorisé "
-                        f"(w:{args.min_image_width}-{args.max_image_width},"
-                        f"h:{args.min_image_height}-{args.max_image_height})"
-                    )
-                    logger.error(msg)
-                    if args.raise_exceptions:
-                        raise ValueError(msg)
+                    logger.warning("Pas d'URL pour l'image")
                 else:
-                    logger.info("Dimensions de l'image ok")
+                    # check image max size
+                    if not check_image_size(
+                        yaml_meta["image"],
+                        download_image_sizes(),
+                        args.max_image_width,
+                        args.max_image_height,
+                    ):
+                        msg = (
+                            f"Les dimensions de l'image ne sont pas dans l'intervalle autorisé "
+                            f"(w:{args.min_image_width}-{args.max_image_width},"
+                            f"h:{args.min_image_height}-{args.max_image_height})"
+                        )
+                        logger.error(msg)
+                        if args.raise_exceptions:
+                            raise ValueError(msg)
+                    else:
+                        logger.info("Dimensions de l'image ok")
+
+                    # check image max ratio
+                    if not check_image_ratio(
+                        yaml_meta["image"],
+                        download_image_sizes(),
+                        args.min_image_ratio,
+                        args.max_image_ratio,
+                    ):
+                        msg = (
+                            f"Le ratio largeur / hauteur de l'image n'est pas dans l'intervalle autorisé "
+                            f"(min:{args.min_image_ratio},"
+                            f"max:{args.max_image_ratio})"
+                        )
+                        logger.error(msg)
+                        if args.raise_exceptions:
+                            raise ValueError(msg)
+                    else:
+                        logger.info("Ratio de l'image ok")
+
+                    # check image extension
+                    if not check_image_extension(
+                        yaml_meta["image"],
+                    ):
+                        msg = f"L'extension de l'image n'est pas autorisée, doit être parmi : {','.join(defaults_settings.images_header_extensions)}"
+                        logger.error(msg)
+                        if args.raise_exceptions:
+                            raise ValueError(msg)
+                    else:
+                        logger.info("Extension de l'image ok")
 
             # check that author md file is present
             if args.authors_folder:
