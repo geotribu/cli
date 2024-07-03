@@ -18,6 +18,29 @@ Unreleased
 
 -->
 
+## 0.34.1 - 2024-07-03
+
+### Bugs fixes 🐛
+
+* fix(images): print with rich console to display emoji by @Guts in <https://github.com/geotribu/cli/pull/222>
+* Images optimizer : tient compte du dossier de sortie by @Guts in <https://github.com/geotribu/cli/pull/223>
+* Check if optional license is in available values by @gounux in <https://github.com/geotribu/cli/pull/215>
+* Fix: flaky tests by @Guts in <https://github.com/geotribu/cli/pull/227>
+* Fix unnecessary pillow import by using image size from CDN endpoint by @gounux in <https://github.com/geotribu/cli/pull/218>
+
+### Features and enhancements 🎉
+
+* refacto(header): transforme la liste de clés obligatoires en enum by @Guts in <https://github.com/geotribu/cli/pull/225>
+* refacto(json_feed_client): utilise le file downloader pour mutualiser le code by @Guts in <https://github.com/geotribu/cli/pull/226>
+
+### Tooling 🔧
+
+* Outillage : ajoute le jeton Codecov et des flags by @Guts in <https://github.com/geotribu/cli/pull/224>
+
+### Documentation 📖
+
+* doc: densify releasing doc by @gounux in <https://github.com/geotribu/cli/pull/217>
+
 ## 0.34.0 - 2024-06-07
 
 ### Bugs fixes 🐛
