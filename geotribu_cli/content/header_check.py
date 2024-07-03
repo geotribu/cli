@@ -255,8 +255,8 @@ def run(args: argparse.Namespace) -> None:
                     ):
                         msg = (
                             f"Les dimensions de l'image ne sont pas dans l'intervalle autorisé "
-                            f"(w:{args.min_image_width}-{args.max_image_width},"
-                            f"h:{args.min_image_height}-{args.max_image_height})"
+                            f"(largeur max: {args.max_image_width},"
+                            f"hauteur max: {args.max_image_height})"
                         )
                         logger.error(msg)
                         if args.raise_exceptions:
