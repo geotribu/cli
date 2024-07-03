@@ -18,6 +18,12 @@ Unreleased
 
 -->
 
+## 0.34.2 - 2024-07-03
+
+### Bugs fixes 🐛
+
+* fix header check unused variables by @gounux in https://github.com/geotribu/cli/pull/229
+
 ## 0.34.1 - 2024-07-03
 
 ### Bugs fixes 🐛
