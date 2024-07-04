@@ -163,7 +163,7 @@ def check_image_extension(
     allowed_extensions: tuple[str] = defaults_settings.images_header_extensions,
 ) -> bool:
     ext = image_url.split(".")[-1]
-    return ext in allowed_extensions
+    return f".{ext}" in allowed_extensions
 
 
 def get_existing_tags() -> list[str]:
