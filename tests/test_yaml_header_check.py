@@ -23,6 +23,8 @@ URL_TEST_HORIZONTAL_IMAGE = "https://cdn.geotribu.fr/img/articles-blog-rdp/captu
 
 
 class TestYamlHeaderCheck(unittest.TestCase):
+    image_sizes = download_image_sizes()
+
     def setUp(self):
         with open("tests/fixtures/content/2012-12-21_article_passe.md") as past_file:
             past_content = past_file.read()
@@ -102,68 +104,85 @@ class TestYamlHeaderCheck(unittest.TestCase):
         self.assertFalse(check_image_extension("https://mon.image.tiff"))
 
     def test_image_size_ok(self):
-        sizes = download_image_sizes()
         self.assertTrue(
             check_image_size(
-                URL_TEST_VERTICAL_IMAGE, sizes, max_width=800, max_height=800
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, max_width=800, max_height=800
             )
         )
         self.assertTrue(
             check_image_size(
-                URL_TEST_HORIZONTAL_IMAGE, sizes, max_width=800, max_height=800
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                max_width=800,
+                max_height=800,
             )
         )
 
     def test_image_size_nok(self):
-        sizes = download_image_sizes()
         self.assertFalse(
             check_image_size(
-                URL_TEST_VERTICAL_IMAGE, sizes, max_width=380, max_height=800
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, max_width=380, max_height=800
             )
         )
         self.assertFalse(
             check_image_size(
-                URL_TEST_VERTICAL_IMAGE, sizes, max_width=800, max_height=799
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, max_width=800, max_height=799
             )
         )
         self.assertFalse(
             check_image_size(
-                URL_TEST_HORIZONTAL_IMAGE, sizes, max_width=799, max_height=800
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                max_width=799,
+                max_height=800,
             )
         )
         self.assertFalse(
             check_image_size(
-                URL_TEST_HORIZONTAL_IMAGE, sizes, max_width=800, max_height=532
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                max_width=800,
+                max_height=532,
             )
         )
 
     def test_image_ratio_ok(self):
-        sizes = download_image_sizes()
         self.assertTrue(
             check_image_ratio(
-                URL_TEST_VERTICAL_IMAGE, sizes, min_ratio=0.45, max_ratio=0.5
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, min_ratio=0.45, max_ratio=0.5
             )
         )
         self.assertTrue(
             check_image_ratio(
-                URL_TEST_HORIZONTAL_IMAGE, sizes, min_ratio=1.45, max_ratio=1.55
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.45,
+                max_ratio=1.55,
             )
         )
         self.assertTrue(
             check_image_ratio(
-                URL_TEST_HORIZONTAL_IMAGE, sizes, min_ratio=1.49, max_ratio=1.51
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.49,
+                max_ratio=1.51,
             )
         )
 
     def test_image_ratio_nok(self):
-        sizes = download_image_sizes()
         self.assertFalse(
             check_image_ratio(
-                URL_TEST_VERTICAL_IMAGE, sizes, min_ratio=1.45, max_ratio=1.55
+                URL_TEST_VERTICAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.45,
+                max_ratio=1.55,
             )
         )
         self.assertFalse(
             check_image_ratio(
-                URL_TEST_HORIZONTAL_IMAGE, sizes, min_ratio=1.2, max_ratio=1.3
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.2,
+                max_ratio=1.3,
             )
         )

@@ -226,6 +226,9 @@ def run(args: argparse.Namespace) -> None:
     logger.debug(f"Running {args.command} with {args}")
     content_paths: list[Path] = args.content_path
 
+    # fetch image sizes dict once before processing
+    image_sizes = download_image_sizes()
+
     for content_path in content_paths:
         logger.info(f"Checking header of {content_path}")
         check_path(
@@ -249,7 +252,7 @@ def run(args: argparse.Namespace) -> None:
                     # check image max size
                     if not check_image_size(
                         yaml_meta["image"],
-                        download_image_sizes(),
+                        image_sizes,
                         args.max_image_width,
                         args.max_image_height,
                     ):
@@ -267,7 +270,7 @@ def run(args: argparse.Namespace) -> None:
                     # check image max ratio
                     if not check_image_ratio(
                         yaml_meta["image"],
-                        download_image_sizes(),
+                        image_sizes,
                         args.min_image_ratio,
                         args.max_image_ratio,
                     ):
