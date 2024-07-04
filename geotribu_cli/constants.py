@@ -116,7 +116,7 @@ class GeotribuDefaults:
 
     # images
     images_body_extensions: tuple = (".png", ".jpg", ".jpeg", ".webp")
-    images_body_dimensions_max: tuple = (".png", ".jpg", ".jpeg", ".webp")
+    images_body_dimensions_max: tuple = (400, 800)
     images_header_extensions: tuple = (".png", ".jpg", ".jpeg")
     images_header_dimensions_ratio: int = 400 * 800
     images_icon_extensions: tuple = (".png", ".jpg", ".jpeg", ".webp")
