@@ -7,6 +7,7 @@ import yaml
 from geotribu_cli.content.header_check import (
     check_author_md,
     check_existing_tags,
+    check_image_extension,
     check_license,
     check_missing_mandatory_keys,
     check_tags_order,
@@ -84,3 +85,13 @@ class TestYamlHeaderCheck(unittest.TestCase):
 
     def test_license_nok(self):
         self.assertFalse(check_license(self.future_yaml_meta["license"]))
+
+    def test_image_extension_ok(self):
+        self.assertTrue(check_image_extension("https://mon.image.png"))
+        self.assertTrue(check_image_extension("https://mon.image.jpg"))
+        self.assertTrue(check_image_extension("https://mon.image.jpeg"))
+
+    def test_image_extension_nok(self):
+        self.assertFalse(check_image_extension("https://mon.image.webp"))
+        self.assertFalse(check_image_extension("https://mon.image.gif"))
+        self.assertFalse(check_image_extension("https://mon.image.tiff"))
