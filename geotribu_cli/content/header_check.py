@@ -148,7 +148,7 @@ def check_image_size(
 
 
 def check_image_ratio(
-    image_url: str, images: dict, min_ratio: int, max_ratio: int
+    image_url: str, images: dict, min_ratio: float, max_ratio: float
 ) -> bool:
     key = image_url.replace(f"{defaults_settings.cdn_base_url}img/", "")
     if key not in images:
