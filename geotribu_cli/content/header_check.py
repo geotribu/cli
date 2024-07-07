@@ -148,7 +148,7 @@ def check_image_size(
 
 
 def check_image_ratio(
-    image_url: str, images: dict, min_ratio: int, max_ratio: int
+    image_url: str, images: dict, min_ratio: float, max_ratio: float
 ) -> bool:
     key = image_url.replace(f"{defaults_settings.cdn_base_url}img/", "")
     if key not in images:
@@ -163,7 +163,7 @@ def check_image_extension(
     allowed_extensions: tuple[str] = defaults_settings.images_header_extensions,
 ) -> bool:
     ext = image_url.split(".")[-1]
-    return ext in allowed_extensions
+    return f".{ext}" in allowed_extensions
 
 
 def get_existing_tags() -> list[str]:
@@ -226,6 +226,9 @@ def run(args: argparse.Namespace) -> None:
     logger.debug(f"Running {args.command} with {args}")
     content_paths: list[Path] = args.content_path
 
+    # fetch image sizes dict once before processing
+    image_sizes = download_image_sizes()
+
     for content_path in content_paths:
         logger.info(f"Checking header of {content_path}")
         check_path(
@@ -249,7 +252,7 @@ def run(args: argparse.Namespace) -> None:
                     # check image max size
                     if not check_image_size(
                         yaml_meta["image"],
-                        download_image_sizes(),
+                        image_sizes,
                         args.max_image_width,
                         args.max_image_height,
                     ):
@@ -267,7 +270,7 @@ def run(args: argparse.Namespace) -> None:
                     # check image max ratio
                     if not check_image_ratio(
                         yaml_meta["image"],
-                        download_image_sizes(),
+                        image_sizes,
                         args.min_image_ratio,
                         args.max_image_ratio,
                     ):

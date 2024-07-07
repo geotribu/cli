@@ -7,16 +7,24 @@ import yaml
 from geotribu_cli.content.header_check import (
     check_author_md,
     check_existing_tags,
+    check_image_extension,
+    check_image_ratio,
+    check_image_size,
     check_license,
     check_missing_mandatory_keys,
     check_tags_order,
+    download_image_sizes,
 )
 
 # -- GLOBALS
 TEAM_FOLDER = Path("tests/fixtures/team")
+URL_TEST_VERTICAL_IMAGE = "https://cdn.geotribu.fr/img/articles-blog-rdp/articles/2024/mise_en_place_qfieldcloud_custom/screenshot_qfield_qfc_project.webp"
+URL_TEST_HORIZONTAL_IMAGE = "https://cdn.geotribu.fr/img/articles-blog-rdp/capture-ecran/carte_trains_europe.png"
 
 
 class TestYamlHeaderCheck(unittest.TestCase):
+    image_sizes = download_image_sizes()
+
     def setUp(self):
         with open("tests/fixtures/content/2012-12-21_article_passe.md") as past_file:
             past_content = past_file.read()
@@ -84,3 +92,97 @@ class TestYamlHeaderCheck(unittest.TestCase):
 
     def test_license_nok(self):
         self.assertFalse(check_license(self.future_yaml_meta["license"]))
+
+    def test_image_extension_ok(self):
+        self.assertTrue(check_image_extension("https://mon.image.png"))
+        self.assertTrue(check_image_extension("https://mon.image.jpg"))
+        self.assertTrue(check_image_extension("https://mon.image.jpeg"))
+
+    def test_image_extension_nok(self):
+        self.assertFalse(check_image_extension("https://mon.image.webp"))
+        self.assertFalse(check_image_extension("https://mon.image.gif"))
+        self.assertFalse(check_image_extension("https://mon.image.tiff"))
+
+    def test_image_size_ok(self):
+        self.assertTrue(
+            check_image_size(
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, max_width=800, max_height=800
+            )
+        )
+        self.assertTrue(
+            check_image_size(
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                max_width=800,
+                max_height=800,
+            )
+        )
+
+    def test_image_size_nok(self):
+        self.assertFalse(
+            check_image_size(
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, max_width=380, max_height=800
+            )
+        )
+        self.assertFalse(
+            check_image_size(
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, max_width=800, max_height=799
+            )
+        )
+        self.assertFalse(
+            check_image_size(
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                max_width=799,
+                max_height=800,
+            )
+        )
+        self.assertFalse(
+            check_image_size(
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                max_width=800,
+                max_height=532,
+            )
+        )
+
+    def test_image_ratio_ok(self):
+        self.assertTrue(
+            check_image_ratio(
+                URL_TEST_VERTICAL_IMAGE, self.image_sizes, min_ratio=0.45, max_ratio=0.5
+            )
+        )
+        self.assertTrue(
+            check_image_ratio(
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.45,
+                max_ratio=1.55,
+            )
+        )
+        self.assertTrue(
+            check_image_ratio(
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.49,
+                max_ratio=1.51,
+            )
+        )
+
+    def test_image_ratio_nok(self):
+        self.assertFalse(
+            check_image_ratio(
+                URL_TEST_VERTICAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.45,
+                max_ratio=1.55,
+            )
+        )
+        self.assertFalse(
+            check_image_ratio(
+                URL_TEST_HORIZONTAL_IMAGE,
+                self.image_sizes,
+                min_ratio=1.2,
+                max_ratio=1.3,
+            )
+        )
