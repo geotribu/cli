@@ -276,6 +276,38 @@ geotribu images optimize ~/Images/Geotribu/images/
 
 ## Réseaux sociaux
 
+### Diffuser les commentaires du site
+
+De façon à publiciser les commentaires postés sur les contenus du site, il est possible de les publier sur nos réseaux sociaux (actuellement, seul Mastodon est supporté).
+
+Prérequis :
+
+- clé d'API du compte Mastodon de Geotribu
+- accès réseau sur l'instance Mastodon et à <https://comments.geotribu.fr>
+
+Diffuser le dernier commentaire validé :
+
+```sh
+geotribu comments broadcast -t mastodon
+```
+
+Diffuser un commentaire en particulier avec son identifiant :
+
+```sh
+geotribu comments broadcast -t mastodon -c 379
+```
+
+Si un commentaire a déjà été publié auparavant, il n'est pas republié et le message suivant s'affiche :
+
+```sh
+✅ 🗨 Commentaire 379 déjà publié précédemment sur Mastodon :
+https://mapstodon.space/@geotribu/113089336981322658
+```
+
+:::{note}
+Sur Mastodon, la diffusion tient compte du fil (thread) de commentaires : un commentaire publié en réponse à un commentaire est diffusé comme réponse au post (toot) correspondant au commentaire initial.
+:::
+
 ### Exporter les données du compte Mastodon
 
 Utile pour le partage des comptes suivis et listes (voir [cet article](https://geotribu.fr/articles/2024/2024-02-16_de-twitter-a-mastodon-guide-geo-import-liste-comptes/))
