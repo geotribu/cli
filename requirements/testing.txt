@@ -1,7 +1,7 @@
 # Testing dependencies
 # --------------------
 
-Pillow>=10.2,<11
+Pillow>=10.2,<12
 pytest-cov>=4
 pytest-retry>=1.6
 validators>=0.20,<0.35
