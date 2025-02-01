@@ -6,7 +6,7 @@ matplotlib>=3.8.2,<4
 myst-parser[linkify]>=2
 sphinx-argparse-cli>=1
 sphinx-autobuild>=2024
-sphinx-autodoc-typehints<3
+sphinx-autodoc-typehints<4
 sphinx-copybutton<1
 sphinxcontrib-mermaid<2
 sphinxext-opengraph>=0.4,<1
