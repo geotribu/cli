@@ -1,9 +1,9 @@
 #! python3  # noqa: E265
 
 """
-    Extract date from content path, location or name.
+Extract date from content path, location or name.
 
-    Author: Julien Moura (https://github.com/guts)
+Author: Julien Moura (https://github.com/guts)
 """
 
 # #############################################################################
