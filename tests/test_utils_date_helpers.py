@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_utils_date_helpers
-        # for specific test
-        python -m unittest tests.test_utils_date_helpers.TestUtilsDateHelpers.test_date_from_content_location
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_utils_date_helpers
+    # for specific test
+    python -m unittest tests.test_utils_date_helpers.TestUtilsDateHelpers.test_date_from_content_location
 """
 
 # standard library

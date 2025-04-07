@@ -1,13 +1,13 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_utils_args_types
-        # for specific test
-        python -m unittest tests.test_utils_args_types.TestUtilsArgsTypes.test_arg_type_folder_path
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_utils_args_types
+    # for specific test
+    python -m unittest tests.test_utils_args_types.TestUtilsArgsTypes.test_arg_type_folder_path
 """
 
 
