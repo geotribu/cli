@@ -1,10 +1,10 @@
 #! python3  # noqa E265
 
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        pytest
+.. code-block:: bash
+    pytest
 """
 
 # standard

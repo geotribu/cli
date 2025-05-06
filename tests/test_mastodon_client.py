@@ -1,11 +1,11 @@
 """
-    Usage from the repo root folder:
+Usage from the repo root folder:
 
-    .. code-block:: bash
-        # for whole tests
-        python -m unittest tests.test_mastodon_client
-        # for specific test
-        python -m unittest tests.test_mastodon_client.TestCustomMastodonClient.test_export_data_all
+.. code-block:: bash
+    # for whole tests
+    python -m unittest tests.test_mastodon_client
+    # for specific test
+    python -m unittest tests.test_mastodon_client.TestCustomMastodonClient.test_export_data_all
 """
 
 # standard
