@@ -2,13 +2,15 @@ name: "🎳 Tester"
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "**/*.py"
       - ".github/workflows/tests.yml"
 
   pull_request:
-    branches: [main]
+    branches:
+      - main
     paths:
       - "**/*.py"
       - ".github/workflows/tests.yml"
@@ -25,13 +27,14 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-22.04
+          - ubuntu-24.04
           - windows-latest
         python-version:
             - "3.9"
             - "3.10"
             - "3.11"
             - "3.12"
+            - "3.13"
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -75,13 +78,14 @@ jobs:
       matrix:
         os:
           - macos-latest
-          - ubuntu-22.04
+          - ubuntu-24.04
           - windows-latest
         python-version:
           - "3.9"
           - "3.10"
           - "3.11"
           - "3.12"
+          - "3.13"
 
     runs-on: ${{ matrix.os }}
     steps:
