@@ -3,7 +3,8 @@ name: "📦 Build & 🚀 Release"
 # Triggers
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
     paths:
       - ".github/workflows/build_release.yml"
@@ -16,7 +17,8 @@ on:
       - "*"
 
   pull_request:
-    branches: [main]
+    branches:
+      - main
     paths:
       - ".github/workflows/build_release.yml"
       - "builder/"
@@ -32,7 +34,7 @@ env:
 jobs:
   build-python-wheel:
     name: "🐍 Python Wheel"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Get source code
@@ -71,7 +73,7 @@ jobs:
 
   build-macos:
     name: "🍏 Mac OS"
-    runs-on: macos-12
+    runs-on: macos-15
 
     steps:
       - name: Get source code
@@ -104,7 +106,7 @@ jobs:
 
   build-ubuntu:
     name: "🐧 Ubuntu LTS"
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     steps:
       - name: Get source code
