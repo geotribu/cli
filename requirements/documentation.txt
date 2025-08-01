@@ -1,7 +1,7 @@
 # Documentation
 # -------------
 
-furo==2024.*
+furo==2025.*
 matplotlib>=3.8.2,<4
 myst-parser[linkify]>=2
 sphinx-argparse-cli>=1
