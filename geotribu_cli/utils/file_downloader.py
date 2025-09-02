@@ -8,7 +8,6 @@
 # standard library
 import logging
 from pathlib import Path
-from typing import Optional
 from urllib.error import HTTPError
 
 # 3rd party
@@ -38,7 +37,7 @@ def download_remote_file_to_local(
     local_file_path: Path,
     expiration_rotating_hours: int = 24,
     user_agent: str = f"{__title_clean__}/{__version__}",
-    content_type: Optional[str] = None,
+    content_type: str | None = None,
     chunk_size: int = 8192,
     timeout=(800, 800),
 ) -> Path:

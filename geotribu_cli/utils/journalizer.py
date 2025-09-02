@@ -15,7 +15,6 @@ from os.path import expanduser, expandvars
 from pathlib import Path
 from platform import architecture, platform
 from socket import gethostname
-from typing import Optional
 
 # package
 from geotribu_cli.__about__ import __title__, __version__
@@ -37,7 +36,7 @@ default_settings = GeotribuDefaults()
 # ################################
 
 
-def configure_logger(verbosity: int = 1, logfile: Optional[Path] = None):
+def configure_logger(verbosity: int = 1, logfile: Path | None = None):
     """Configure logging according to verbosity from CLI.
 
     Args:
@@ -157,7 +156,7 @@ def headers():
             )
 
 
-def get_logger_filepath() -> Optional[Path]:
+def get_logger_filepath() -> Path | None:
     """Retrieve log filepath within logger handlers.
 
     Returns:

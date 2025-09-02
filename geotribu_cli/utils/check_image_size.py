@@ -15,7 +15,6 @@ import logging
 import xml.etree.ElementTree as ET
 from decimal import Decimal
 from pathlib import Path
-from typing import Union
 from urllib import request
 
 # 3rd party
@@ -108,7 +107,7 @@ def get_svg_size(image_filepath: Path) -> tuple[int, int]:
 
 
 def check_image_dimensions(
-    image_filepath: Union[str, Path],
+    image_filepath: str | Path,
     min_width: int = 500,
     max_width: int = 600,
     min_height: int = 250,
