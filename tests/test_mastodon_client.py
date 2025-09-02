@@ -57,7 +57,7 @@ class TestCustomMastodonClient(unittest.TestCase):
         )
 
     @unittest.skipIf(
-        condition=getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN") is None,
+        condition=not getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN"),
         reason="Le jeton d'API Mastodon est requis pour exécuter ce test.",
     )
     def test_export_data_all(self):
