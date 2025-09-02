@@ -102,7 +102,7 @@ def download_remote_file_to_local(
                             buffile.write(chunk)
             logger.info(
                 f"Le téléchargement du fichier distant {remote_url_to_download} dans "
-                f"{remote_url_to_download} a réussi. "
+                f"{local_file_path} a réussi. "
             )
     except HTTPError as error:
         logger.error(

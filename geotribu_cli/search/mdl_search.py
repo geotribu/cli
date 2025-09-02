@@ -5,34 +5,34 @@
 
 
 # standard library
-from dataclasses import dataclass
+from typing import TypedDict
 
 # ############################################################################
 # ########## CLASSES #############
 # ################################
 
 
-@dataclass
-class MkdocsSearchConfiguration:
-    """Search configuration in Mkdocs."""
+class MkdocsSearchConfiguration(TypedDict, total=False):
+    """Search configuration in Mkdocs (lunr.py under the hood)."""
 
-    lang: list
+    # approximate, since config structure may vary
+    lang: list[str]
     separator: str
+    pipeline: list[str]
+    fields: dict[str, dict[str, float]]
 
 
-@dataclass
-class MkdocsSearchDocument:
-    """Search document structure in Mkdocs."""
+class MkdocsSearchDocument(TypedDict):
+    """Search document structure in Mkdocs (lunr.py under the hood)."""
 
     location: str
-    tags: list
+    tags: list[str]
     text: str
     title: str
 
 
-@dataclass
-class MkdocsSearchListing:
-    """Mkdocs listing search."""
+class MkdocsSearchListing(TypedDict):
+    """Mkdocs listing search (lunr.py under the hood)."""
 
     config: MkdocsSearchConfiguration
     docs: list[MkdocsSearchDocument]
