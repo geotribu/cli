@@ -47,9 +47,9 @@ repos:
           - --target-version=py310
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: "v0.12.2"
+    rev: v0.12.11
     hooks:
-      - id: ruff
+      - id: ruff-check
         args:
           - --fix-only
 

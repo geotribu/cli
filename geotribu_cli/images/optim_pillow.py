@@ -7,7 +7,6 @@
 # standard library
 import logging
 from pathlib import Path
-from typing import Optional
 
 # 3rd party
 try:
@@ -38,7 +37,7 @@ def pil_redimensionner_image(
     output_folder: Path,
     largeur_max_paysage: int = 1000,
     hauteur_max_portrait: int = 600,
-) -> Optional[Path]:
+) -> Path | None:
     """Redimensionne l'image dont le chemin est passé en entrée en tenant compte d'une
     contrainte de largeur max pour les images orientées paysage (largeur > hauteur) et
     une hauteur max pour les images orientées portrait (hauteur > largeur).

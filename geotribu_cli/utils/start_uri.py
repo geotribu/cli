@@ -5,7 +5,6 @@ import subprocess
 import webbrowser
 from pathlib import Path
 from sys import platform as opersys
-from typing import Union
 
 # imports depending on operating system
 if opersys == "win32":
@@ -15,7 +14,7 @@ if opersys == "win32":
 from geotribu_cli.utils.check_path import check_path
 
 
-def open_uri(in_filepath: Union[str, Path]):
+def open_uri(in_filepath: str | Path):
     """Open a file or a directory in the explorer or URL in the web browser of the
         operating system.
 

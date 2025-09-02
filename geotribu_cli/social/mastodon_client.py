@@ -12,7 +12,6 @@ import re
 from os import getenv
 from pathlib import Path
 from textwrap import shorten
-from typing import Optional
 from urllib.parse import urlparse
 
 # 3rd party
@@ -74,24 +73,24 @@ class ExtendedMastodonClient(Mastodon):
         "Notify on new posts",
         "Languages",
     ]
-    my_statuses: Optional[list] = None
+    my_statuses: list | None = None
 
     def __init__(
         self,
-        client_id: Optional[str] = None,
-        client_secret: Optional[str] = None,
-        access_token: Optional[str] = None,
+        client_id: str | None = None,
+        client_secret: str | None = None,
+        access_token: str | None = None,
         api_base_url: str = defaults_settings.mastodon_base_url,
-        debug_requests: Optional[bool] = None,
+        debug_requests: bool | None = None,
         ratelimit_method: str = "wait",
         ratelimit_pacefactor: float = 1.1,
         request_timeout: int = 60,
-        mastodon_version: Optional[str] = None,
+        mastodon_version: str | None = None,
         version_check_mode: str = "created",
-        session: Optional[Session] = None,
+        session: Session | None = None,
         feature_set: str = "mainline",
         user_agent: str = f"{__title_clean__}/{__version__}",
-        lang: Optional[str] = "fra",
+        lang: str | None = "fra",
     ):
         """Instanciation class. Args are inherited."""
         # handle some attributes
@@ -241,7 +240,7 @@ class ExtendedMastodonClient(Mastodon):
 
         return new_status
 
-    def comment_already_broadcasted(self, comment_id: int) -> Optional[dict]:
+    def comment_already_broadcasted(self, comment_id: int) -> dict | None:
         """Check if comment has already been broadcasted on the media.
 
         Args:
@@ -345,14 +344,14 @@ class ExtendedMastodonClient(Mastodon):
 
     def export_data(
         self,
-        dest_path_following_accounts: Optional[
+        dest_path_following_accounts: None | (
             Path
-        ] = default_dest_path_following_accounts,
-        dest_path_lists: Optional[Path] = default_dest_path_lists,
-        dest_path_lists_only_accounts: Optional[
+        ) = default_dest_path_following_accounts,
+        dest_path_lists: Path | None = default_dest_path_lists,
+        dest_path_lists_only_accounts: None | (
             Path
-        ] = default_dest_path_lists_only_accounts,
-    ) -> tuple[Optional[Path], Optional[Path], Optional[Path]]:
+        ) = default_dest_path_lists_only_accounts,
+    ) -> tuple[Path | None, Path | None, Path | None]:
         """Export account data.
 
         Args:

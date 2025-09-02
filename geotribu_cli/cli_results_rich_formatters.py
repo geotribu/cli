@@ -7,7 +7,6 @@
 # standard library
 import logging
 from functools import lru_cache
-from typing import Optional, Union
 
 # 3rd party
 from rich.table import Table
@@ -32,8 +31,8 @@ defaults_settings = GeotribuDefaults()
 
 
 def format_output_result_comments(
-    results: list[Comment], format_type: Optional[str] = None, count: int = 5
-) -> Union[Table, list[Comment]]:
+    results: list[Comment], format_type: str | None = None, count: int = 5
+) -> Table | list[Comment]:
     """Format list of comments according to output option.
 
     Args:
@@ -81,12 +80,12 @@ def format_output_result_comments(
 
 def format_output_result_search_content(
     result: list[dict],
-    search_term: Optional[str] = None,
-    format_type: Optional[str] = None,
+    search_term: str | None = None,
+    format_type: str | None = None,
     count: int = 5,
-    search_filter_dates: Optional[tuple] = None,
-    search_filter_type: Optional[str] = None,
-) -> Union[list[dict], Table]:
+    search_filter_dates: tuple | None = None,
+    search_filter_type: str | None = None,
+) -> list[dict] | Table:
     """Format result according to output option.
 
     Args:
@@ -147,11 +146,11 @@ def format_output_result_search_content(
 
 def format_output_result_search_image(
     result: list[dict],
-    search_term: Optional[str] = None,
-    format_type: Optional[str] = None,
+    search_term: str | None = None,
+    format_type: str | None = None,
     count: int = 5,
-    search_filter_type: Optional[str] = None,
-) -> Union[list[dict], Table]:
+    search_filter_type: str | None = None,
+) -> list[dict] | Table:
     """Format result according to output option.
 
     Args:
@@ -214,12 +213,12 @@ def format_output_result_search_image(
 @lru_cache
 def add_search_criteria_as_str(
     in_txt: str,
-    search_filter_dates: Optional[tuple] = None,
-    search_results_total: Optional[int] = None,
-    search_results_displayed: Optional[int] = None,
-    search_term: Optional[str] = None,
-    search_filter_type: Optional[str] = None,
-    hint: Optional[str] = None,
+    search_filter_dates: tuple | None = None,
+    search_results_total: int | None = None,
+    search_results_displayed: int | None = None,
+    search_term: str | None = None,
+    search_filter_type: str | None = None,
+    hint: str | None = None,
 ) -> str:
     """Prettify a title with search criterias.
 

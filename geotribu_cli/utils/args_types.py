@@ -12,7 +12,6 @@ import logging
 from argparse import ArgumentTypeError
 from datetime import date
 from pathlib import Path
-from typing import Union
 
 # package
 from geotribu_cli.utils.check_path import check_path
@@ -77,7 +76,7 @@ def arg_date_iso_max_today(date_str: str) -> date:
     return date_obj
 
 
-def arg_type_path_folder(input_path: Union[Path, str]) -> Path:
+def arg_type_path_folder(input_path: Path | str) -> Path:
     """Check an argparse argument type, expecting a valid folder path.
 
     Args:

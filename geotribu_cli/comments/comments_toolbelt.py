@@ -7,7 +7,7 @@
 # standard library
 import json
 import logging
-from typing import Literal, Optional
+from typing import Literal
 
 # package
 from geotribu_cli.comments.mdl_comment import Comment
@@ -26,7 +26,7 @@ defaults_settings = GeotribuDefaults()
 # ################################
 
 
-def filter_comment_by_id(comment_id: int) -> Optional[Comment]:
+def filter_comment_by_id(comment_id: int) -> Comment | None:
     """Trouve un commentaire parmi les derniers téléchargés d'après son id.
 
     Args:
@@ -60,7 +60,7 @@ def find_comment_by_id(
     comment_id: int,
     page_size: int = 20,
     expiration_rotating_hours: int = 1,
-) -> Optional[Comment]:
+) -> Comment | None:
     """Trouve un commentaire parmi tout ceux publiés à partir de son identifiant.
 
     Args:
