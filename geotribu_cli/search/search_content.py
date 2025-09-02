@@ -8,10 +8,10 @@
 import argparse
 import logging
 import sys
+from collections.abc import Iterator
 from datetime import date
 from os import getenv
 from pathlib import Path
-from typing import Iterator
 
 # 3rd party
 import orjson
