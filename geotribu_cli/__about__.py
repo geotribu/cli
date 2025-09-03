@@ -7,6 +7,12 @@ See: https://packaging.python.org/guides/single-sourcing-package-version/
 
 from datetime import date
 
+try:
+    from ._version import version as __version__
+except ImportError:
+    # Version manuelle comme fallback
+    __version__ = "0.0.0-dev"
+
 __all__ = [
     "__author__",
     "__copyright__",
@@ -37,8 +43,6 @@ __uri_repository__ = "https://github.com/geotribu/cli/"
 __uri_tracker__ = f"{__uri_repository__}issues/"
 
 __uri__ = __uri_repository__
-
-__version__ = "0.34.3"
 __version_info__ = tuple(
     [
         int(num) if num.isdigit() else num
