@@ -88,7 +88,7 @@ def parser_comments_broadcast(
         default="mastodon",
         dest="broadcast_to",
         help="Canaux (réseaux sociaux) où publier le(s) commentaire(s).",
-        required=True,
+        required=False,
     )
 
     subparser.add_argument(
