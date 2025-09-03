@@ -14,8 +14,7 @@ on:
     paths:
       - "**/*.py"
       - ".github/workflows/tests.yml"
-      - "requirements/base.txt"
-      - "requirements/testing.txt"
+      - pyproject.toml
 
 env:
   PROJECT_FOLDER: "geotribu_cli"
@@ -45,16 +44,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-          cache-dependency-path: "requirements/*.txt"
+          cache-dependency-path: pyproject.toml
 
       - name: Install project requirements
         run: |
           python -m pip install -U pip setuptools wheel
-          python -m pip install -U -r requirements.txt
-          python -m pip install -U -r requirements/testing.txt
 
       - name: Install project as a package
-        run: python -m pip install -e .[all]
+        run: python -m pip install -e .[all,test]
 
       - name: Unit tests
         env:
@@ -95,12 +92,11 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: "pip"
-          cache-dependency-path: "requirements/*.txt"
+          cache-dependency-path: pyproject.toml
 
       - name: Install project requirements
         run: |
           python -m pip install -U pip setuptools wheel
-          python -m pip install -U -r requirements.txt
 
       - name: Install project as a package
         run: python -m pip install -e .[all]
