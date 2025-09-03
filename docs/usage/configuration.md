@@ -1,5 +1,14 @@
 # Configuration
 
+## Autocomplétion des commandes
+
+L'autocomplétion des commandes est supportée pour les shells `bash` et `zsh` si le paquet Python `argcomplete` est installé.
+Pour l'activer, il faut ajouter la ligne suivante dans le fichier de configuration du shell (ex: `~/.bashrc` ou `~/.zshrc`):
+
+```bash
+eval "$(register-python-argcomplete geotribu)"
+```
+
 ## Variables d'environnement supportées
 
 | Nom de la variable  | Description | Option CLI correspondante | Valeur par défaut |

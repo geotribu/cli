@@ -1,4 +1,5 @@
 #! python3  # noqa: E265
+# PYTHON_ARGCOMPLETE_OK
 
 """Main CLI entrypoint."""
 
@@ -13,6 +14,7 @@ import sys
 from os import getenv
 
 # 3rd party
+import argcomplete
 from rich_argparse import RawDescriptionRichHelpFormatter
 
 # package
@@ -120,7 +122,7 @@ def set_default_subparser(
 # ################################
 
 
-def main(args: list[str] = None):
+def main(args: list[str] | None = None):
     """Main CLI entrypoint.
 
     Args:
@@ -366,6 +368,9 @@ def main(args: list[str] = None):
         parser_to_update=main_parser,
         default_subparser_name=getenv("GEOTRIBU_DEFAULT_SUBCOMMAND", "read-latest"),
     )
+
+    # enable autocompletion for bash and zsh if the argcomplete package is installed
+    argcomplete.autocomplete(main_parser)
 
     # just get passed args
     args = main_parser.parse_args(args)
