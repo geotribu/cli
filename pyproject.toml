@@ -7,7 +7,7 @@ name = "geotribu"
 dynamic = ["version"]
 description = "Une ligne de commande pour Geotribu qui offre des outils pour rechercher et consulter les contenus et images, et faciliter les tâches récurrentes des contributeur/ices."
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
 authors = [{ name = "Julien Moura (Geotribu)", email = "geotribu@gmail.com" }]
 keywords = [
     "cli",
