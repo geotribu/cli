@@ -5,44 +5,44 @@ bug:
       - ^hotfix
       - hotfix
 
-
 ci-cd:
   - changed-files:
       - any-glob-to-any-file:
-        - .github/**
+          - .github/**
 
 dependencies:
   - changed-files:
       - any-glob-to-any-file:
-          - requirements/*.txt
-          - requirements.txt
+          - pyproject.toml
 
 documentation:
   - changed-files:
       - any-glob-to-any-file:
           - docs/**
-          - requirements/documentation.txt
+          - README.md
+          - CONTRIBUTING.md
+          - CHANGELOG.md
 
 enhancement:
   - head-branch:
-    - ^feature
-    - feature
-    - ^improve
-    - improve
+      - ^feature
+      - feature
+      - ^improve
+      - improve
 
 packaging:
   - changed-files:
       - any-glob-to-any-file:
-        - builder/**/*
-        - setup.py
+          - builder/**/*
+          - pyproject.toml
   - head-branch:
-    - ^packaging
-    - packaging
+      - ^packaging
+      - packaging
 
 quality:
   - changed-files:
-    - any-glob-to-any-file:
-      - tests/**/*
+      - any-glob-to-any-file:
+          - tests/**/*
 
 tooling:
   - changed-files:
@@ -53,5 +53,5 @@ tooling:
           - sonar-project.properties
           - .vscode/**/*
   - head-branch:
-    - ^tooling
-    - tooling
+      - ^tooling
+      - tooling
