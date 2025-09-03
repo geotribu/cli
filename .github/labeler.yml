@@ -49,7 +49,6 @@ tooling:
       - any-glob-to-any-file:
           - codecov.yml
           - .pre-commit-config.yaml
-          - setup.cfg
           - sonar-project.properties
           - .vscode/**/*
   - head-branch:
