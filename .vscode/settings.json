@@ -69,7 +69,11 @@
             "indent": 4
         },
         "MD024": {
-            "allow_different_nesting": true
+            "siblings_only": true
         },
+    },
+    "sonarlint.connectedMode.project": {
+        "connectionId": "geotribu",
+        "projectKey": "geotribu_cli"
     }
 }
