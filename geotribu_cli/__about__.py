@@ -11,7 +11,7 @@ _pkg_metadata = metadata.metadata("geotribu") or {}
 try:
     from ._version import version as __version__
 except ImportError:
-    __version__ = _pkg_metadata.get("Version")
+    __version__ = _pkg_metadata.get("Version", "0.0.0-dev0")
 
 
 __author__: str = _pkg_metadata.get("Author", "Julien Moura (Geotribu)")

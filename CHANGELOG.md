@@ -18,19 +18,76 @@ Unreleased
 
 -->
 
+## 0.35.0 - 2025-09-04
+
+### Bugs fixes 🐛
+
+* build(deps): update orjson requirement from <3.11,>=3.8 to >=3.8,<3.12 and fix Ci errors due to token unusable by dependabot by @dependabot[bot] in <https://github.com/geotribu/cli/pull/275>
+* fix(search): confusion between local search index and filtered listing was leading to errors by @Guts in <https://github.com/geotribu/cli/pull/277>
+
+### Features and enhancements 🎉
+
+* change(comments/broadcast): make mastodon the default targetted social media by @Guts in <https://github.com/geotribu/cli/pull/279>
+* add(feature): enable autocompletion with argcomplete by @Guts in <https://github.com/geotribu/cli/pull/280>
+* update(packaging): switch to pyproject.toml by @Guts in <https://github.com/geotribu/cli/pull/281>
+
+### Tooling 🔧
+
+* build(deps): bump codecov/codecov-action from 4.5.0 to 5.0.7 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/246>
+* build(deps): bump codecov/codecov-action from 5.0.7 to 5.1.2 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/249>
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in <https://github.com/geotribu/cli/pull/250>
+* build(deps): update packaging requirement from <25,>=20 to >=20,<26 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/265>
+* update(build): bump macos and ubuntu base images versions by @Guts in <https://github.com/geotribu/cli/pull/268>
+* build(deps): bump codecov/codecov-action from 5.1.2 to 5.4.2 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/263>
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in <https://github.com/geotribu/cli/pull/262>
+* [pre-commit.ci] pre-commit autoupdate by @pre-commit-ci[bot] in <https://github.com/geotribu/cli/pull/271>
+* update(packaging): remove Python3.9 support by @Guts in <https://github.com/geotribu/cli/pull/278>
+* update(packaging): modernize Docker image by @Guts in <https://github.com/geotribu/cli/pull/282>
+* update(packaging): map __about__ vars on package metadata extracted from pyproject.toml by @Guts in <https://github.com/geotribu/cli/pull/283>
+
+### Documentation 📖
+
+* build(deps): update sphinxcontrib-mermaid requirement from <1 to <2 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/243>
+* build(deps): update sphinx-autodoc-typehints requirement from <3 to <4 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/252>
+* build(deps): update furo requirement from ==2024.*to ==2025.* by @dependabot[bot] in <https://github.com/geotribu/cli/pull/272>
+
+### Other Changes
+
+* build(deps): update pyinstaller requirement from <6.9,>=6 to >=6,<6.10 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/237>
+* build(deps): update markdownify requirement from <0.13,>=0.11 to >=0.11,<0.14 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/236>
+* build(deps): update validators requirement from <0.29,>=0.20 to >=0.20,<0.34 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/235>
+* build(deps): update pyinstaller requirement from <6.10,>=6 to >=6,<6.11 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/238>
+* build(deps): update validators requirement from <0.34,>=0.20 to >=0.20,<0.35 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/240>
+* build(deps): update pillow requirement from <11,>=10.0.1 to >=10.0.1,<12 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/242>
+* build(deps): update pyinstaller requirement from <6.11,>=6 to >=6,<6.12 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/245>
+* build(deps): update rich-argparse requirement from <1.6,>=1 to >=1,<1.7 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/247>
+* build(deps): update markdownify requirement from <0.14,>=0.11 to >=0.11,<0.15 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/248>
+* build(deps-dev): update pre-commit requirement from <4,>=3 to >=3,<5 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/254>
+* build(deps): update pyinstaller-hooks-contrib requirement from ==2024.*to ==2025.* by @dependabot[bot] in <https://github.com/geotribu/cli/pull/253>
+* build(deps): update rich-argparse requirement from <1.7,>=1 to >=1,<1.8 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/258>
+* build(deps): update markdownify requirement from <0.15,>=0.11 to >=0.11,<1.2 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/261>
+* build(deps-dev): update flake8 requirement from <7.2,>=7.1.0 to >=7.1.0,<7.3 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/260>
+* build(deps): update lunr[languages] requirement from <0.8,>=0.7 to >=0.7,<0.9 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/266>
+* build(deps): update validators requirement from <0.35,>=0.20 to >=0.20,<0.36 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/267>
+* build(deps): update pyinstaller requirement from <6.12,>=6 to >=6,<6.15 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/269>
+* build(deps-dev): update flake8 requirement from <7.3,>=7.1.0 to >=7.1.0,<7.4 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/270>
+* build(deps): update markdownify requirement from <1.2,>=0.11 to >=0.11,<1.3 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/274>
+* build(deps-dev): update flake8-builtins requirement from <3,>=2 to >=2,<4 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/273>
+* build(deps): update mastodon-py requirement from <1.9,>=1.8.1 to >=1.8.1,<2.2 by @dependabot[bot] in <https://github.com/geotribu/cli/pull/276>
+
 ## 0.34.3 - 2024-07-07
 
 ### Bugs fixes 🐛
 
-* fix header check unused variables by @gounux in https://github.com/geotribu/cli/pull/229
-* fix image body dimensions declaration by @gounux in https://github.com/geotribu/cli/pull/232
-* fix header image extension check by @gounux in https://github.com/geotribu/cli/pull/231
+* fix header check unused variables by @gounux in <https://github.com/geotribu/cli/pull/229>
+* fix image body dimensions declaration by @gounux in <https://github.com/geotribu/cli/pull/232>
+* fix header image extension check by @gounux in <https://github.com/geotribu/cli/pull/231>
 
 ## 0.34.2 - 2024-07-03
 
 ### Bugs fixes 🐛
 
-* fix header check unused variables by @gounux in https://github.com/geotribu/cli/pull/229
+* fix header check unused variables by @gounux in <https://github.com/geotribu/cli/pull/229>
 
 ## 0.34.1 - 2024-07-03
 
