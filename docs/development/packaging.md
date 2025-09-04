@@ -53,7 +53,24 @@ If you need that, edit the `.dockerignore` file.
 ### Build
 
 ```sh
-docker build --pull --rm -f "Dockerfile" -t qdt:latest "."
+docker build --pull --rm -f "Dockerfile" -t geotribu-cli:latest "."
+```
+
+Plus avancé avec build-kit et du cache :
+
+```sh
+docker buildx create --name bldr-geotribu --driver docker-container --use
+```
+
+```sh
+docker buildx build --pull --rm --file Dockerfile \
+    --cache-from type=local,src=.cache/docker/geotribu/ \
+    --cache-from type=registry,ref=ghcr.io/geotribu/ \
+    --cache-to type=local,dest=.cache/docker/geotribu/,mode=max \
+    --load \
+    --platform linux/amd64 \
+    --progress=plain \
+    -t geotribu-cli:latest .
 ```
 
 ### Run within the container
@@ -61,14 +78,21 @@ docker build --pull --rm -f "Dockerfile" -t qdt:latest "."
 Enter into the container and run commands interactively::
 
 ```sh
-> docker run --rm -it qdt:latest
-root@55c5de0191ee:/user/app# qdt --version
+> docker run --rm -it geotribu-cli:latest
+root@55c5de0191ee:/user/app# geotribu --version
 0.23.1
 ```
 
-Run QDT directly from the container:
+Run the CLI directly from the container:
 
 ```sh
-> docker run --rm qdt:latest qdt --version
+> docker run --rm geotribu-cli:latest --version
 0.23.1
+```
+
+Attention cependant, les commandes aboutissant sur un prompt ne fonctionneront pas dans un conteneur sans l'option interactive (`-it`) puisqu'il n'y pas de terminal tty a
+
+```sh
+> docker run -it --rm geotribu-cli:latest sc -f article "title:qgis"
+
 ```

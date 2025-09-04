@@ -1,24 +1,46 @@
-FROM python:3.11-slim
+FROM python:3.13-slim
 
-# Write .pyc files only once. See: https://stackoverflow.com/a/60797635/2556577
-ENV PYTHONDONTWRITEBYTECODE 1
-# Make sure that stdout and stderr are not buffered. See: https://stackoverflow.com/a/59812588/2556577
-ENV PYTHONUNBUFFERED 1
-# Remove assert statements and any code conditional on __debug__. See: https://docs.python.org/3/using/cmdline.html#cmdoption-O
-ENV PYTHONOPTIMIZE 2
+# Avoid .pyc bytecode and ensure output is unbuffered for CLI responsiveness
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONOPTIMIZE=2
 
-WORKDIR /user/app
+# Add user's local bin directory to PATH for pip installed packages
+ENV PATH="/home/geotribuser/.local/bin:$PATH"
 
-COPY requirements.txt .
-COPY requirements/base.txt ./requirements/
+# Set locale to French UTF-8
+RUN apt update && \
+    apt install -y --no-install-recommends locales && \
+    echo "fr_FR.UTF-8 UTF-8" > /etc/locale.gen && \
+    locale-gen \
+    && rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
 
-RUN python -m pip install --no-cache-dir -U pip && \
-    python -m pip install --no-cache-dir -U setuptools wheel
+ENV LANG=fr_FR.UTF-8 \
+    LANGUAGE=fr_FR:fr \
+    LC_ALL=fr_FR.UTF-8
 
-COPY . .
+# Create non-root group and user dedicated to geotribu usage
+RUN groupadd --system geotribu && \
+    useradd -m -s /bin/bash -g geotribu geotribuser
 
-RUN python -m pip install -U --no-cache-dir -r requirements.txt
+USER geotribuser
 
-RUN python -m pip install -U -e .
+# Set working directory and proper permissions
+WORKDIR /home/geotribuser
 
-CMD ["bash"]
+# Custom CLI settings
+ENV GEOTRIBU_CACHE_EXPIRATION_HOURS=240 \
+    GEOTRIBU_COMMENTS_EXPIRATION_HOURS=240 \
+    GEOTRIBU_RESULTATS_FORMAT=table \
+    GEOTRIBU_RESULTATS_NOMBRE=20
+
+COPY --chown=geotribuser:geotribu . .
+
+RUN pip install --no-cache-dir .[all] \
+    && rm -rf ~/.cache/pip \
+    && geotribu sc --no-prompt "qgis" \
+    && geotribu si --no-prompt "qgis" \
+    && geotribu comments latest
+
+ENTRYPOINT ["geotribu"]
+CMD []
