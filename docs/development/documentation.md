@@ -7,7 +7,7 @@ Le projet utilise Sphinx pour générer de la documentation à partir de docstri
 ### Installer les dépendances
 
 ```sh
-python -m pip install -U -r requirements/documentation.txt
+python -m pip install -e .[doc]
 ```
 
 ### Générer les pages spéciales
@@ -15,7 +15,6 @@ python -m pip install -U -r requirements/documentation.txt
 #### Exemples des commandes
 
 ```sh
-pip install -e .
 export GEOTRIBU_PROMPT_AFTER_SEARCH=false
 geotribu comments latest --results-number 5 > docs/usage/cli_sample_comments_latest.txt
 geotribu rss --format-output table --results-number 3 > docs/usage/cli_sample_rss.txt

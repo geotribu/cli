@@ -13,13 +13,13 @@ keywords = [
     "cli",
     "Geotribu",
     "GIS",
+    "images",
+    "lunr",
     "Mastodon",
     "markdown",
-    "search",
-    "images",
-    "tinify",
     "Pillow",
-    "lunr",
+    "search",
+    "tinify",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -220,4 +220,4 @@ exclude = [
 
 [tool.setuptools_scm]
 write_to = "geotribu_cli/_version.py"
-fallback_version = "0.0.0-dev"
+fallback_version = "0.35.0-dev"

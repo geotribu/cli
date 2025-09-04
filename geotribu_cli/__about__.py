@@ -1,49 +1,40 @@
 #! python3  # noqa: E265
 
-"""
-Metadata bout the package to easily retrieve informations about it.
-See: https://packaging.python.org/guides/single-sourcing-package-version/
-"""
+"""Abstraction on the package metadata to easily retrieve them."""
+
 
 from datetime import date
+from importlib import metadata
+
+_pkg_metadata = metadata.metadata("geotribu") or {}
 
 try:
     from ._version import version as __version__
 except ImportError:
-    # Version manuelle comme fallback
-    __version__ = "0.0.0-dev"
+    __version__ = _pkg_metadata.get("Version")
 
-__all__ = [
-    "__author__",
-    "__copyright__",
-    "__email__",
-    "__license__",
-    "__summary__",
-    "__title__",
-    "__uri__",
-    "__version__",
-]
 
-__author__ = "Julien Moura (Geotribu)"
-__copyright__ = f"2022 - {date.today().year}, {__author__}"
-__email__ = "geotribu@gmail.com"
-__executable_name__ = "geotribu"
-__keywords__ = ["cli", "Geotribu", "GIS"]
-__license__ = "MIT"
-__package_name__ = "geotribu"
-__summary__ = (
+__author__: str = _pkg_metadata.get("Author", "Julien Moura (Geotribu)")
+__copyright__: str = f"2022 - {date.today().year}, {__author__}"
+__email__: str = "geotribu@gmail.com"
+__executable_name__: str = "geotribu"
+__keywords__: list[str] = _pkg_metadata.get("Keywords", "cli,Geotribu,GIS").split(",")
+__license__: str = _pkg_metadata.get("License-Expression", "MIT")
+__package_name__ = _pkg_metadata.get("Name", "geotribu")
+__summary__ = _pkg_metadata.get(
+    "Summary",
     "Une ligne de commande pour Geotribu qui offre des outils pour rechercher "
     "et consulter les contenus et images, et faciliter les tâches récurrentes des "
-    "contributeur/ices."
+    "contributeur/ices.",
 )
-__title__ = "Geotribu Toolbelt"
-__title_clean__ = "".join(e for e in __title__ if e.isalnum())
-__uri_homepage__ = "https://cli.geotribu.fr/"
-__uri_repository__ = "https://github.com/geotribu/cli/"
-__uri_tracker__ = f"{__uri_repository__}issues/"
+__title__: str = "Geotribu Toolbelt"
+__title_clean__: str = "".join(e for e in __title__ if e.isalnum())
+__uri_homepage__: str = "https://cli.geotribu.fr/"
+__uri_repository__: str = "https://github.com/geotribu/cli/"
+__uri_tracker__: str = f"{__uri_repository__}issues/"
 
 __uri__ = __uri_repository__
-__version_info__ = tuple(
+__version_info__: tuple[int, int, int, str | None, str | None] = tuple(
     [
         int(num) if num.isdigit() else num
         for num in __version__.replace("-", ".", 1).split(".")
@@ -55,3 +46,14 @@ __cli_usage__ = (
     "consulter les derniers contenus sans quitter son terminal.\n"
     "Encore meilleur avec les terminaux gérant les hyperliens : Bash, PowerShell 5+, etc."
 )
+
+__all__ = [
+    "__author__",
+    "__copyright__",
+    "__email__",
+    "__license__",
+    "__summary__",
+    "__title__",
+    "__uri__",
+    "__version__",
+]

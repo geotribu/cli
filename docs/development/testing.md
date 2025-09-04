@@ -3,11 +3,11 @@
 ## Prérequis
 
 ```sh
-pip install -U -r requirements/testing.txt
+pip install -U -e .[test]
 ```
 
 ## Exécution
 
-```bash
+```sh
 pytest
 ```
