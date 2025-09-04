@@ -2,7 +2,8 @@ name: "📚 Documentation"
 
 on:
   push:
-    branches: [main]
+    branches:
+        - main
     paths:
       - "docs/**/*"
       - ".github/workflows/documentation.yml"
@@ -12,11 +13,12 @@ on:
       - "*"
 
   pull_request:
-    branches: [main]
+    branches:
+        - main
     paths:
       - ".github/workflows/documentation.yml"
       - docs/**/*
-      - requirements/documentation.txt
+      - pyproject.toml
 
 # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
 permissions:
@@ -45,12 +47,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
           cache: "pip"
-          cache-dependency-path: "requirements/*.txt"
+          cache-dependency-path: pyproject.toml
 
       - name: Install project requirements
         run: |
           python -m pip install -U pip setuptools wheel
-          python -m pip install -U -r requirements.txt
 
       - name: Install project as a package
         run: python -m pip install -e .[all]
@@ -89,7 +90,7 @@ jobs:
 
       - name: Install documentation requirements
         run: |
-          python -m pip install -U -r requirements/documentation.txt
+          python -m pip install -e .[doc]
 
       - name: Build doc using Sphinx
         env:

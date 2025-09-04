@@ -1,0 +1,223 @@
+[build-system]
+requires = ["setuptools>=61.0", "setuptools-scm[toml]>=6.2", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geotribu"
+dynamic = ["version"]
+description = "Une ligne de commande pour Geotribu qui offre des outils pour rechercher et consulter les contenus et images, et faciliter les tâches récurrentes des contributeur/ices."
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Julien Moura (Geotribu)", email = "geotribu@gmail.com" }]
+keywords = [
+    "cli",
+    "Geotribu",
+    "GIS",
+    "Mastodon",
+    "markdown",
+    "search",
+    "images",
+    "tinify",
+    "Pillow",
+    "lunr",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Information Technology",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: GIS",
+]
+requires-python = ">=3.10"
+dependencies = [
+    "argcomplete>=3.6.2,<4",
+    "imagesize>=1.4,<1.5",
+    "lunr[languages]>=0.7,<0.9",
+    "markdownify>=1.2,<1.3",
+    "Mastodon.py>=2.1,<2.2",
+    "orjson>=3.10,<3.12",
+    "packaging>=20,<26",
+    "rich_argparse>=1,<1.8",
+    "python-frontmatter>=1,<2",
+    "requests>=2.31,<3",
+    "typing-extensions>=4,<5 ; python_version < '3.11'",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "flake8>=7.1.0",
+    "flake8-bugbear>=23,<25",
+    "flake8-builtins>=2",
+    "flake8-docstrings>=1.6",
+    "flake8-eradicate>=1",
+    "flake8-isort>=5",
+    "Flake8-pyproject>=1.2.3",
+    "pre-commit>=4",
+]
+doc = [
+    "furo==2025.*",
+    "matplotlib>=3.8.2,<4",
+    "myst-parser[linkify]>=2",
+    "sphinx-argparse-cli>=1",
+    "sphinx-autobuild>=2024",
+    "sphinx-autodoc-typehints<4",
+    "sphinx-copybutton>=0.5.2",
+    "sphinxcontrib-mermaid>=1.0.0",
+    "sphinxext-opengraph>=0.13.0",
+    "sphinx-sitemap>=2.4.0",
+]
+test = [
+    "Pillow>=10.2,<12",
+    "pytest-cov>=4",
+    "pytest-retry>=1.6",
+    "validators>=0.20,<0.36",
+]
+packaging = [
+    "build>=1.2.2,<2",
+    "distro==1.9.* ; sys_platform == 'linux'",
+    "pyinstaller>=6.14.2,<6.16",
+    "pyinstaller-hooks-contrib==2025.*",
+    "pypiwin32==223 ; sys_platform == 'win32'",
+]
+all = ["tinify>=1.6,<2", "Pillow>=10.0.1,<12"]
+img-local = ["Pillow>=10.0.1,<12"]
+img-remote = ["tinify>=1.6,<2"]
+
+[project.urls]
+Homepage = "https://cli.geotribu.fr/"
+Documentation = "https://cli.geotribu.fr/"
+Repository = "https://github.com/geotribu/cli/"
+"Bug Reports" = "https://github.com/geotribu/cli/issues/"
+
+[project.scripts]
+geotribu = "geotribu_cli.cli:main"
+geotribu-cli = "geotribu_cli.cli:main"
+
+# -- TOOLING --
+[tool.bdist_wheel]
+universal = false
+
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+
+[tool.coverage.run]
+branch = true
+omit = [".venv/*", "docs/*", "*tests*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "if self.debug:",
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+ignore_errors = true
+show_missing = true
+
+
+[tool.flake8]
+count = true
+exclude = [
+    ".git",
+    "__pycache__",
+    "docs/conf.py",
+    "old",
+    "build",
+    "dist",
+    ".venv*",
+    "tests",
+]
+ignore = ["E121", "E123", "E126", "E203", "E226", "E24", "E704", "W503", "W504"]
+max-complexity = 15
+max-doc-length = 130
+max-line-length = 100
+statistics = true
+tee = true
+
+
+[tool.isort]
+profile = "black"
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 88
+multi_line_output = 3
+use_parentheses = true
+
+
+[tool.pytest.ini_options]
+addopts = [
+    "--junitxml=junit/test-results.xml",
+    "--cov-config=pyproject.toml",
+    "--cov=geotribu_cli",
+    "--cov-report=html",
+    "--cov-report=term",
+    "--cov-report=xml",
+    "--ignore=tests/_wip/",
+]
+junit_family = "xunit2"
+norecursedirs = [
+    ".* build dev development dist docs CVS fixtures _darcs {arch} *.egg venv _wip",
+]
+python_files = ["test_*.py"]
+testpaths = ["tests"]
+retries = 2
+retry_delay = 0.5
+cumulative_timing = false
+
+
+[tool.ruff]
+indent-width = 4
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+[tool.ruff.lint.mccabe]
+# Flag errors (`C901`) whenever the complexity level exceeds 5.
+max-complexity = 15
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+# setuptools
+[tool.setuptools]
+py-modules = ["geotribu_cli"]
+
+[tool.setuptools.packages.find]
+exclude = [
+    "contrib",
+    "docs",
+    "*.tests",
+    "*.tests.*",
+    "tests.*",
+    "tests",
+    ".venv",
+]
+
+[tool.setuptools.package-data]
+"*" = ["*"]
+
+[tool.setuptools_scm]
+write_to = "geotribu_cli/_version.py"
+fallback_version = "0.0.0-dev"

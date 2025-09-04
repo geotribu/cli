@@ -4,7 +4,8 @@
 
 - Python >= 3.10
 - Accès réseau sur :
-  - le dépôt officiel de paquets Python : <https://pypi.org/>
+    - le dépôt officiel de paquets Python : <https://pypi.org/>
+    - les sites Geotribu
 
 ## Cloner le dépôt
 
@@ -24,8 +25,6 @@ python3 -m venv .venv
 source .venv/bin/activate
 # mise à jour de pip dans l'environnement virtuel
 python -m pip install -U pip setuptools wheel
-# installation des dépendances de base
-python -m pip install -U -r requirements.txt
 # installation du projet en mode développement avec toutes les dépendances fonctionnelles
 python -m pip install -e .[all,dev,doc,test]
 ```

@@ -60,10 +60,6 @@
     "autoDocstring.guessTypes": true,
     "autoDocstring.docstringFormat": "google-notypes",
     "autoDocstring.generateDocstringOnEnter": false,
-    "flake8.args": [
-        "--config=setup.cfg",
-        "--verbose"
-    ],
     "markdownlint.config": {
         "MD007": {
             "indent": 4

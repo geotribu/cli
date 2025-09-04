@@ -50,9 +50,9 @@ class TestUtilsCheckPath(unittest.TestCase):
     def test_check_path_exists_ok(self):
         """Test path exists."""
         # a valid Path instance pointing to an existing file
-        self.assertTrue(check_path_exists(input_path=Path("setup.py")))
+        self.assertTrue(check_path_exists(input_path=Path("pyproject.toml")))
         # str is valid and point to an existing file
-        self.assertTrue(check_path_exists(input_path="setup.py"))
+        self.assertTrue(check_path_exists(input_path="pyproject.toml"))
 
     def test_check_path_exists_ko(self):
         """Test path exists fail cases."""
@@ -73,9 +73,9 @@ class TestUtilsCheckPath(unittest.TestCase):
     def test_check_path_readable_ok(self):
         """Test path is readable."""
         # a valid Path instance pointing to an existing file which is readable
-        self.assertTrue(check_path_is_readable(input_path=Path("setup.py")))
+        self.assertTrue(check_path_is_readable(input_path=Path("pyproject.toml")))
         # str is valid and point to an existing file which is readable
-        self.assertTrue(check_path_is_readable(input_path="setup.py"))
+        self.assertTrue(check_path_is_readable(input_path="pyproject.toml"))
 
     def test_check_path_readable_ko(self):
         """Test path is readable fail cases."""
@@ -106,9 +106,9 @@ class TestUtilsCheckPath(unittest.TestCase):
     def test_check_path_writable_ok(self):
         """Test path is writable."""
         # a valid Path instance pointing to an existing file which is writable
-        self.assertTrue(check_path_is_writable(input_path=Path("setup.py")))
+        self.assertTrue(check_path_is_writable(input_path=Path("pyproject.toml")))
         # str is valid and point to an existing file which is writable
-        self.assertTrue(check_path_is_writable(input_path="setup.py"))
+        self.assertTrue(check_path_is_writable(input_path="pyproject.toml"))
 
     def test_check_path_writable_ko(self):
         """Test path is writable fail cases."""

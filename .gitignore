@@ -145,6 +145,7 @@ docs/misc/dependencies.md
 docs/misc/licenses.md
 docs/usage/*sample*.txt
 GeotribuToolbelt_*_Python*
+geotribu_cli/_version.py
 
 # jb stuff
 .idea
