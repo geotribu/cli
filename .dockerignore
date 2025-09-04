@@ -10,6 +10,7 @@
 **/.pytest_cache
 **/.ruff_cache
 **/.settings
+**/.sonarlint
 **/.toolstarget
 **/.venv
 **/.vs
@@ -35,6 +36,11 @@
 # custom project
 docs/
 build/
+builder/
 dist/
+export/
+*.egg-info/
+htmlcov/
+junit/
 tests/
 **/*.xml

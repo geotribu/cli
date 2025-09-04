@@ -20,6 +20,12 @@ Outil en ligne de commande pour les tâches récurrentes du projet Geotribu.
 
 ## Installer
 
+Avec [pipx](https://pipx.pypa.io/) (recommandé) :
+
+```sh
+pipx install geotribu[all]
+```
+
 Via _pip_ :
 
 ```sh
@@ -36,7 +42,7 @@ Via un exécutable pré-compilé : [télécharger pour son système d'exploitati
 
 ## Utiliser
 
-Installation locale :
+Avec une installation avec un gestionnaire de paquets Python (pipx, pip, uv...) :
 
 ```sh
 geotribu --help
@@ -45,7 +51,7 @@ geotribu --help
 Ou avec l'image Docker :
 
 ```sh
-docker run --rm ghcr.io/geotribu/cli:latest geotribu --help
+docker run --rm -it ghcr.io/geotribu/cli:latest --help
 ```
 
 Pour plus d'informations, [consulter la documentation](https://cli.geotribu.fr/).
