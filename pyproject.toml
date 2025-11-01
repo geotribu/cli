@@ -85,8 +85,8 @@ packaging = [
     "pyinstaller-hooks-contrib==2025.*",
     "pypiwin32==223 ; sys_platform == 'win32'",
 ]
-all = ["tinify>=1.6,<2", "Pillow>=10.0.1,<12"]
-img-local = ["Pillow>=10.0.1,<12"]
+all = ["tinify>=1.6,<2", "Pillow>=10.0.1,<13"]
+img-local = ["Pillow>=10.0.1,<13"]
 img-remote = ["tinify>=1.6,<2"]
 
 [project.urls]
