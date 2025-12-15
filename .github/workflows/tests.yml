@@ -19,6 +19,10 @@ on:
 env:
   PROJECT_FOLDER: "geotribu_cli"
 
+# Sets permissions of the GITHUB_TOKEN
+permissions:
+  contents: read
+
 jobs:
   unit-test:
     strategy:
