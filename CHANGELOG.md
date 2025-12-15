@@ -18,6 +18,10 @@ Unreleased
 
 -->
 
+## 0.35.1 - 2025-12-15
+
+A release to package newer dependencies minimal versions fixing security issues.
+
 ## 0.35.0 - 2025-09-04
 
 ### Bugs fixes 🐛
