@@ -67,7 +67,7 @@ jobs:
           --outdir dist/
           .
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: python_wheel
           path: dist/*
@@ -98,7 +98,7 @@ jobs:
       - name: Generates Executable
         run: python -O ./builder/pyinstaller_build_macos.py
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: macos_executable
           path: dist/*
@@ -129,7 +129,7 @@ jobs:
       - name: Generates Executable
         run: python -O ./builder/pyinstaller_build_ubuntu.py
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: ubuntu_executable
           path: dist/*
@@ -165,7 +165,7 @@ jobs:
         run: python -O .\builder\pyinstaller_build_windows.py
 
       - name: Save it as artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: windows_executable
           path: dist/*
