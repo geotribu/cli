@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 # ##################################
 
 
-def get_image_size(image_filepath: Path) -> tuple[int, int]:
+def get_image_size(image_filepath: Path) -> tuple[int, int] | None:
     """Get image dimensions as a tuple (width,height). Return None in case of error.
 
     :param Path image_filepath: path to the image
@@ -51,7 +51,10 @@ def get_image_size(image_filepath: Path) -> tuple[int, int]:
 
     # get image dimensions
     try:
-        return imagesize.get(image_filepath)
+        img_size = imagesize.get(image_filepath)
+        if img_size == (-1, -1):
+            raise ValueError("Unable to determine image dimensions.")
+        return img_size
     except ValueError as exc:
         logging.error(f"Invalid image: {image_filepath.resolve()}. Trace: {exc}")
     except Exception as exc:
@@ -62,8 +65,9 @@ def get_image_size(image_filepath: Path) -> tuple[int, int]:
     return None
 
 
-def get_image_dimensions_by_url(url: str) -> tuple[int, int]:
-    """Get image dimensions as a tuple (width,height) of an image at an URL. Return None in case of error or no data.
+def get_image_dimensions_by_url(url: str) -> tuple[int, int] | None:
+    """Get image dimensions as a tuple (width,height) of an image at an URL.
+    Return None in case of error or no data.
 
     :param str url: url of the image
 
