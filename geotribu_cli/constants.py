@@ -3,7 +3,6 @@
 
 """Package constants."""
 
-
 # standard library
 import logging
 from dataclasses import dataclass
@@ -19,8 +18,7 @@ from typing import Literal
 logger = logging.getLogger(__name__)
 
 
-completion_instructions = dedent(
-    """
+completion_instructions = dedent("""
 If you encountered register-python-argcomplete command not found error,
 or if you are using zipapp, run
 
@@ -59,8 +57,7 @@ fish:
     # Not required to be in the config file, only run once
     register-python-argcomplete --shell fish geotribu >~/.config/fish/completions/geotribu.fish
 
-"""
-)
+""")
 
 # ############################################################################
 # ########## CLASSES #############

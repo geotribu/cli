@@ -3,7 +3,6 @@
 
 """Package constants."""
 
-
 # standard library
 from dataclasses import dataclass
 

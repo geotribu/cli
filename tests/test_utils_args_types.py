@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_args_types.TestUtilsArgsTypes.test_arg_type_folder_path
 """
 
-
 # standard library
 import unittest
 from argparse import ArgumentTypeError
