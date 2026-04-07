@@ -2,7 +2,6 @@
 
 """Abstraction on the package metadata to easily retrieve them."""
 
-
 from datetime import date
 from importlib import metadata
 

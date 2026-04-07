@@ -10,7 +10,6 @@ Usage from the repo root folder:
     python -m unittest tests.test_utils_file_stats.TestUtilsFileStats.test_check_path_as_str_ok
 """
 
-
 # standard library
 import unittest
 from pathlib import Path

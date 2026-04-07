@@ -3,7 +3,6 @@
 
 """Search related models."""
 
-
 # standard library
 from typing import TypedDict
 

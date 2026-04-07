@@ -3,7 +3,6 @@
 
 """Package constants."""
 
-
 # standard library
 import logging
 from dataclasses import dataclass
