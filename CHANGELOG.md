@@ -18,6 +18,16 @@ Unreleased
 
 -->
 
+## 0.35.2 - 2026-04-07
+
+### Tooling 🔧
+
+* update(packaging): support Python 3.14 by @Guts in <https://github.com/geotribu/cli/pull/318>
+
+### Other Changes
+
+* chore(deps): bump imagesize minimal version to 2 and adapt code to breaking changes by @Guts in <https://github.com/geotribu/cli/pull/317>
+
 ## 0.35.1 - 2025-12-15
 
 A release to package newer dependencies minimal versions fixing security issues.
