@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """
 Launch PyInstaller using a Python script.
@@ -19,7 +19,7 @@ import PyInstaller.__main__
 
 # package
 sys.path.insert(0, str(Path(".").resolve()))
-from geotribu_cli import __about__  # noqa: E402
+from geotribu_cli import __about__
 
 # #############################################################################
 # ########### MAIN #################

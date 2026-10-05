@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 # ############################################################################
 # ########## IMPORTS #############
@@ -183,8 +183,7 @@ def get_latest_comments(
         list of comments objects
     """
     # check if count is acceptable
-    if number < 1:
-        number = 1
+    number = max(number, 1)
 
     # download remote latest comments
     comments_file = download_remote_file_to_local(

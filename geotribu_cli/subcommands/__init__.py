@@ -1,4 +1,4 @@
-#! python3  # noqa: E265 F401
+#! python3
 
 # submodules
 from geotribu_cli.comments import parser_comments_broadcast  # noqa: F401
