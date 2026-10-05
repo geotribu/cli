@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 # ############################################################################
 # ########## IMPORTS #############
@@ -198,12 +198,7 @@ def run(args: argparse.Namespace):
         # filter on image type
         if args.filter_type == "logo" and not result.get("ref").startswith(
             "logos-icones/"
-        ):
-            logger.debug(
-                f"Résultat ignoré par le filtre {args.filter_type}: {result.get('ref')}"
-            )
-            continue
-        elif args.filter_type == "geoicone" and not result.get("ref").startswith(
+        ) or args.filter_type == "geoicone" and not result.get("ref").startswith(
             "internal/icons-rdp-news/"
         ):
             logger.debug(
@@ -259,7 +254,7 @@ def run(args: argparse.Namespace):
             console=console,
             choices=["q"]
             + [
-                str(i) for i in range(0, min([len(final_results), args.results_number]))
+                str(i) for i in range(min([len(final_results), args.results_number]))
             ],
             default="q",
         )

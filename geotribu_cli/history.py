@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """Store and load CLI history."""
 
@@ -61,8 +61,7 @@ class CliHistory:
             out_history.write(f"{request_performed}\n")
 
             # results
-            for i in results_to_dump:
-                out_history.write(f"{i.get(key_field)}\n")
+            out_history.writelines(f"{i.get(key_field)}\n" for i in results_to_dump)
 
         logger.debug(f"History saved for {cmd_name}")
 

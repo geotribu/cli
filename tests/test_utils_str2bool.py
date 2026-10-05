@@ -1,4 +1,4 @@
-#! python3  # noqa E265
+#! python3
 
 """
 Usage from the repo root folder:
@@ -34,8 +34,8 @@ class TestUtilsStrToBool(unittest.TestCase):
 
         # KO
         with self.assertRaises(TypeError):
-            str2bool(input_var=int(10), raise_exc=True)
-        self.assertIsNone(str2bool(input_var=int(10), raise_exc=False))
+            str2bool(input_var=10, raise_exc=True)
+        self.assertIsNone(str2bool(input_var=10, raise_exc=False))
 
         with self.assertRaises(ValueError):
             str2bool(input_var="vrai", raise_exc=True)

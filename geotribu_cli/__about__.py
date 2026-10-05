@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """Abstraction on the package metadata to easily retrieve them."""
 

@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 # ############################################################################
 # ########## IMPORTS #############
@@ -220,12 +220,7 @@ def run(args: argparse.Namespace):
                 # filter on content type
                 if args.filter_type == "article" and not item.find(
                     "link"
-                ).text.startswith(f"{defaults_settings.site_base_url}articles/"):
-                    logger.debug(
-                        f"Résultat ignoré par le filtre {args.filter_type}: {item.find('link').text}"
-                    )
-                    continue
-                elif args.filter_type == "rdp" and not item.find(
+                ).text.startswith(f"{defaults_settings.site_base_url}articles/") or args.filter_type == "rdp" and not item.find(
                     "link"
                 ).text.startswith(f"{defaults_settings.site_base_url}rdp/"):
                     logger.debug(
@@ -251,9 +246,7 @@ def run(args: argparse.Namespace):
                     )
                 )
             except Exception as err:
-                err_msg = "Feed item (index = {}) triggers an error. Trace: {}".format(
-                    feed_items.index(item), err
-                )
+                err_msg = f"Feed item (index = {feed_items.index(item)}) triggers an error. Trace: {err}"
                 logger.error(err_msg)
                 sys.exit(err_msg)
 
@@ -276,7 +269,7 @@ def run(args: argparse.Namespace):
             prompt="Afficher le résultat n° (q pour quitter)",
             console=console,
             choices=["q"]
-            + [str(i) for i in range(0, min([len(feed_items), args.results_number]))],
+            + [str(i) for i in range(min([len(feed_items), args.results_number]))],
             default="q",
         )
 

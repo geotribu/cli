@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """
 Sub-command in charge of checking if new versions are available.
@@ -70,11 +70,7 @@ def get_download_url_for_os(
         opersys_code = override_opersys
 
     for asset in release_assets:
-        if opersys_code == "win32" and "Windows" in asset.get("name"):
-            return asset.get("browser_download_url"), asset.get("content-type")
-        elif opersys_code == "linux" and "Ubuntu" in asset.get("name"):
-            return asset.get("browser_download_url"), asset.get("content-type")
-        elif opersys_code == "darwin" and "MacOS" in asset.get("name"):
+        if opersys_code == "win32" and "Windows" in asset.get("name") or opersys_code == "linux" and "Ubuntu" in asset.get("name") or opersys_code == "darwin" and "MacOS" in asset.get("name"):
             return asset.get("browser_download_url"), asset.get("content-type")
         else:
             continue
@@ -281,4 +277,3 @@ def run(args: argparse.Namespace):
 # ##################################
 if __name__ == "__main__":
     """Standalone execution."""
-    pass
