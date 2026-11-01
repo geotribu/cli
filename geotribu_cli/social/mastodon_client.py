@@ -16,7 +16,6 @@ from urllib.parse import urlparse
 
 # 3rd party
 from mastodon import Mastodon, MastodonAPIError, MastodonError
-from requests import Session
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
@@ -77,22 +76,11 @@ class ExtendedMastodonClient(Mastodon):
 
     def __init__(
         self,
-        client_id: str | None = None,
-        client_secret: str | None = None,
         access_token: str | None = None,
         api_base_url: str = defaults_settings.mastodon_base_url,
-        debug_requests: bool | None = None,
-        ratelimit_method: str = "wait",
-        ratelimit_pacefactor: float = 1.1,
-        request_timeout: int = 60,
-        mastodon_version: str | None = None,
-        version_check_mode: str = "created",
-        session: Session | None = None,
-        feature_set: str = "mainline",
-        user_agent: str = f"{__title_clean__}/{__version__}",
-        lang: str | None = "fra",
+        **kwargs,
     ):
-        """Instanciation class. Args are inherited."""
+        """Instanciation class. Other args are inherited from Mastodon."""
         # handle some attributes
         if access_token is None:
             access_token = getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN")
@@ -108,31 +96,26 @@ class ExtendedMastodonClient(Mastodon):
             elif isinstance(access_token, str) and len(access_token) < 25:
                 logger.critical(
                     "Le jeton d'accès à l'API Mastodon récupéré semble incorrect "
-                    f"(moins de 25 caractères): {access_token}"
+                    "(moins de 25 caractères)."
                 )
                 raise MastodonError(
                     f"Le jeton d'accès à l'API Mastodon (instance : {api_base_url}) est requis."
                 )
 
-        if debug_requests is None:
-            debug_requests = getenv("GEOTRIBU_LOGS_LEVEL", "") == "DEBUG"
+        if kwargs.get("debug_requests") is None:
+            kwargs["debug_requests"] = getenv("GEOTRIBU_LOGS_LEVEL", "") == "DEBUG"
 
-        # instanciate subclass
+        # instanciate subclass: only the defaults which differ from Mastodon.py's
         super().__init__(
-            client_id=client_id,
-            client_secret=client_secret,
             access_token=access_token.strip(),
             api_base_url=api_base_url,
-            debug_requests=debug_requests,
-            ratelimit_method=ratelimit_method,
-            ratelimit_pacefactor=ratelimit_pacefactor,
-            request_timeout=request_timeout,
-            mastodon_version=mastodon_version,
-            version_check_mode=version_check_mode,
-            session=session,
-            feature_set=feature_set,
-            user_agent=user_agent,
-            lang=lang,
+            **{
+                "request_timeout": 60,
+                "version_check_mode": "created",
+                "user_agent": f"{__title_clean__}/{__version__}",
+                "lang": "fr",
+            }
+            | kwargs,
         )
 
     @property

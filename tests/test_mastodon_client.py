@@ -58,6 +58,22 @@ class TestCustomMastodonClient(unittest.TestCase):
             "mapstodon.space",
         )
 
+    def test_init_defaults_and_overrides(self):
+        """Test CLI defaults are applied and can be overridden."""
+        client = ExtendedMastodonClient(
+            access_token=" " + "x" * 30 + " ", version_check_mode="none"
+        )
+        self.assertEqual(client.access_token, "x" * 30)
+        self.assertEqual(client.request_timeout, 60)
+        self.assertEqual(client.lang, "fr")
+        self.assertEqual(client.api_base_url, "https://mapstodon.space")
+        self.assertTrue(client.user_agent.startswith(f"{__title_clean__}/"))
+
+        client = ExtendedMastodonClient(
+            access_token="x" * 30, version_check_mode="none", request_timeout=5
+        )
+        self.assertEqual(client.request_timeout, 5)
+
     def test_comment_already_broadcasted_filters_statuses(self):
         """Test statuses without both hashtags or comment id are ignored."""
         client = ExtendedMastodonClient(
