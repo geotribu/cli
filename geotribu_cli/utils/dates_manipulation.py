@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """
 Extract date from content path, location or name.
@@ -86,8 +86,7 @@ def get_date_from_content_location(input_content_location: str) -> date:
     next_part = parts[parts.index(year) + 1]
 
     # clean next part for rdp
-    if next_part.startswith("rdp_"):
-        next_part = next_part[4:]
+    next_part = next_part.removeprefix("rdp_")
 
     # now, the next part should contain the date within the first 10 chars
     date_str = next_part[:10]
@@ -127,4 +126,3 @@ def get_days_until_next_month(from_date: date = None) -> int:
 
 if __name__ == "__main__":
     """Standalone execution."""
-    pass

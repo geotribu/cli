@@ -8,7 +8,7 @@ C'est la méthode la plus simple et recommandée pour utiliser le CLI Geotribu.
 
 ### Prérequis
 
-- Python >= 3.10
+- Python >= 3.11
 - a minima le couple [pip](https://pip.pypa.io/en/stable/installation/) et [venv](https://docs.python.org/3/library/venv.html) ou idéalement [pipx](https://pipx.pypa.io/latest/installation/) seul suffit et facilite la vie
 - Accès réseau sur :
     - le dépôt officiel de paquets Python : <https://pypi.org/>

@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """
 Small module to get network proxies configuration.
@@ -98,4 +98,3 @@ def get_proxy_settings() -> dict:
 
 if __name__ == "__main__":
     """Standalone execution."""
-    pass

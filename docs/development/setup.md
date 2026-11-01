@@ -2,7 +2,7 @@
 
 ## Prérequis système
 
-- Python >= 3.10
+- Python >= 3.11
 - Accès réseau sur :
     - le dépôt officiel de paquets Python : <https://pypi.org/>
     - les sites Geotribu

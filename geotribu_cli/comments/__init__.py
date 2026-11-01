@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 # submodules
 from .comments_broadcast import parser_comments_broadcast  # noqa: F401
