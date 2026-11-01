@@ -13,6 +13,8 @@ import unittest
 from os import getenv
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
+from unittest.mock import PropertyMock, patch
 
 # project
 from geotribu_cli.__about__ import __title_clean__, __version__
@@ -55,6 +57,26 @@ class TestCustomMastodonClient(unittest.TestCase):
             ),
             "mapstodon.space",
         )
+
+    def test_comment_to_media_fits_instance_limit(self):
+        """Test formatted comment never exceeds the instance limit."""
+        client = ExtendedMastodonClient(
+            access_token="x" * 30, version_check_mode="none"
+        )
+        comment = SimpleNamespace(
+            id=1234,
+            author="Jean-Michel",
+            url_to_comment="https://geotribu.fr/articles/2026/un-article/#isso-1234",
+            markdownified_text="mot " * 300,
+        )
+        with patch.object(
+            ExtendedMastodonClient, "max_status_length", new_callable=PropertyMock
+        ) as mock_max_length:
+            for limit in (300, 500, 5000):
+                mock_max_length.return_value = limit
+                status = client.comment_to_media(in_comment=comment)
+                self.assertLessEqual(client.get_status_length(status), limit)
+                self.assertTrue(status.endswith("comment-1234"))
 
     @unittest.skipIf(
         condition=not getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN"),
