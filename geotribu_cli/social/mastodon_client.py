@@ -135,6 +135,11 @@ class ExtendedMastodonClient(Mastodon):
             lang=lang,
         )
 
+    @property
+    def max_status_length(self) -> int:
+        """Maximum number of characters of a status, as set by the instance."""
+        return self.instance_v2()["configuration"]["statuses"]["max_characters"]
+
     @classmethod
     def full_account_with_instance(
         cls, account: dict, default_instance: str = "mapstodon.space"
@@ -318,6 +323,24 @@ class ExtendedMastodonClient(Mastodon):
 
         return None
 
+    @staticmethod
+    def render_status(in_comment: Comment, text: str) -> str:
+        """Fill the status template with a comment and the text to display.
+
+        Args:
+            in_comment: comment to format
+            text: text of the comment, already shortened to fit the status
+
+        Returns:
+            status ready to be posted
+        """
+        return status_mastodon_tmpl.format(
+            author=in_comment.author,
+            url_to_comment=in_comment.url_to_comment,
+            text=text,
+            id=in_comment.id,
+        )
+
     def comment_to_media(self, in_comment: Comment) -> str:
         """Format comment to fit media size and publication rules.
 
@@ -330,16 +353,16 @@ class ExtendedMastodonClient(Mastodon):
         """
 
         logger.debug(f"Formatting comment {in_comment.id}")
-        # 500 caractères - longueur du template = 370
-        max_text_length = (
-            370 - len(in_comment.author) - len(str(in_comment.id)) - 4
-        )  # 4 = placeholder final
 
-        return status_mastodon_tmpl.format(
-            author=in_comment.author,
-            url_to_comment=in_comment.url_to_comment,
+        # limite de l'instance - longueur du template sans texte
+        # gère aussi le fait qu'une URL = 23 caractères dans Mastodon
+        max_text_length = self.max_status_length - self.get_status_length(
+            self.render_status(in_comment=in_comment, text="")
+        )
+
+        return self.render_status(
+            in_comment=in_comment,
             text=shorten(in_comment.markdownified_text, width=max_text_length),
-            id=in_comment.id,
         )
 
     def export_data(
