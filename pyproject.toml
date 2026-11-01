@@ -76,7 +76,7 @@ test = [
     "Pillow>=10.2,<14",
     "pytest-cov>=4",
     "pytest-retry>=1.6",
-    "validators>=0.20,<0.36",
+    "validators>=0.20,<0.37",
 ]
 packaging = [
     "build>=1.2.2,<2",
