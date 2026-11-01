@@ -392,14 +392,14 @@ class ExtendedMastodonClient(Mastodon):
             default_instance_domain = self.url_to_instance_domain(
                 url=mastodon_profile.get("url")
             )
-        except Exception as err:
+        except MastodonError as err:
             logger.critical(
                 "La récupération du profil auprès de l'API a échoué. L'export est "
                 f"impossible. Trace: {err}"
             )
             raise MastodonAPIError(
                 "Impossible de récupérer les informations du profil."
-            )
+            ) from err
 
         # récupération des listes
         if dest_path_lists is not None or dest_path_lists_only_accounts is not None:
@@ -410,7 +410,7 @@ class ExtendedMastodonClient(Mastodon):
                     )
                     for liste in self.lists()
                 }
-            except Exception as err:
+            except MastodonError as err:
                 logger.critical(
                     "La récupération des listes a échoué. L'export est "
                     f"impossible. Trace: {err}"
@@ -423,7 +423,7 @@ class ExtendedMastodonClient(Mastodon):
                 masto_following_accounts = self.fetch_remaining(
                     self.account_following(id=self.me())
                 )
-            except Exception as err:
+            except MastodonError as err:
                 logger.critical(
                     "La récupération des comptes suivis a échoué. L'export est "
                     f"impossible. Trace: {err}"

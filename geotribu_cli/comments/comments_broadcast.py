@@ -11,6 +11,7 @@ import sys
 from os import getenv
 
 # 3rd party
+from mastodon import MastodonNetworkError, MastodonUnauthorizedError
 from rich import print
 
 # package
@@ -157,6 +158,19 @@ def run(args: argparse.Namespace):
             online_post = mastodon_client.broadcast_comment(in_comment=comment_obj)
             if not online_post:
                 print(f"le commentaire n'a pas encore été publié : {comment_obj.id}")
+        except MastodonUnauthorizedError as err:
+            logger.error(
+                f"{defaults_settings.mastodon_base_url} a refusé le jeton d'accès. "
+                "Vérifier la variable d'environnement GEOTRIBU_MASTODON_API_ACCESS_TOKEN. "
+                f"Trace : {err}"
+            )
+            sys.exit(1)
+        except MastodonNetworkError as err:
+            logger.error(
+                f"{defaults_settings.mastodon_base_url} est injoignable (réseau ou "
+                f"délai dépassé). Trace : {err}"
+            )
+            sys.exit(1)
         except Exception as err:
             logger.error(
                 f"La publication du commentaire {comment_obj.id} a échoué. "
