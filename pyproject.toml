@@ -73,7 +73,7 @@ doc = [
     "sphinx-sitemap>=2.4.0",
 ]
 test = [
-    "Pillow>=10.2,<13",
+    "Pillow>=10.2,<14",
     "pytest-cov>=4",
     "pytest-retry>=1.6",
     "validators>=0.20,<0.36",
@@ -85,8 +85,8 @@ packaging = [
     "pyinstaller-hooks-contrib>=2025,<2027",
     "pypiwin32==223 ; sys_platform == 'win32'",
 ]
-all = ["tinify>=1.6,<2", "Pillow>=10.0.1,<13"]
-img-local = ["Pillow>=10.0.1,<13"]
+all = ["tinify>=1.6,<2", "Pillow>=10.0.1,<14"]
+img-local = ["Pillow>=10.0.1,<14"]
 img-remote = ["tinify>=1.6,<2"]
 
 [project.urls]
