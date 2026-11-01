@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """
 Check image size using pure Python <https://github.com/shibukawa/imagesize_py>.

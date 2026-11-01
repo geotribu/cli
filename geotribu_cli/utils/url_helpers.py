@@ -1,4 +1,4 @@
-#! python3  # noqa: E265
+#! python3
 
 """
 Helpers to check file: readable, exists, etc..
@@ -83,4 +83,3 @@ def check_str_is_url(
 
 if __name__ == "__main__":
     """Standalone execution."""
-    pass

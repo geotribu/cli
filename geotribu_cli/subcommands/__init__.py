@@ -1,9 +1,11 @@
-#! python3  # noqa: E265 F401
+#! python3
 
 # submodules
-from geotribu_cli.comments import parser_comments_broadcast  # noqa: F401
-from geotribu_cli.comments import parser_comments_latest  # noqa: F401
-from geotribu_cli.comments import parser_comments_read  # noqa: F401
+from geotribu_cli.comments import (  # noqa: F401
+    parser_comments_broadcast,
+    parser_comments_latest,
+    parser_comments_read,
+)
 from geotribu_cli.content.header_check import parser_header_check  # noqa: F401
 from geotribu_cli.content.new_article import parser_new_article  # noqa: F401
 from geotribu_cli.images.images_optimizer import parser_images_optimizer  # noqa: F401
