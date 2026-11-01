@@ -4,7 +4,7 @@
 """Search related models."""
 
 # standard library
-from typing import TypedDict
+from typing import Literal, NotRequired, TypedDict
 
 # ############################################################################
 # ########## CLASSES #############
@@ -19,13 +19,16 @@ class MkdocsSearchConfiguration(TypedDict, total=False):
     separator: str
     pipeline: list[str]
     fields: dict[str, dict[str, float]]
+    indexing: str
+    min_search_length: int
+    prebuild_index: Literal["python"] | bool
 
 
 class MkdocsSearchDocument(TypedDict):
     """Search document structure in Mkdocs (lunr.py under the hood)."""
 
     location: str
-    tags: list[str]
+    tags: NotRequired[list[str]]
     text: str
     title: str
 
@@ -35,3 +38,4 @@ class MkdocsSearchListing(TypedDict):
 
     config: MkdocsSearchConfiguration
     docs: list[MkdocsSearchDocument]
+    index: NotRequired[dict]

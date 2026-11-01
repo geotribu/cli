@@ -28,6 +28,7 @@ from geotribu_cli.__about__ import (
     __version__,
 )
 from geotribu_cli.subcommands import (
+    parser_build_search_index,
     parser_comments_broadcast,
     parser_comments_latest,
     parser_comments_read,
@@ -210,6 +211,18 @@ def main(args: list[str] | None = None):
     )
     add_common_arguments(subcmd_search_image)
     parser_search_image(subcmd_search_image)
+
+    # Build search index
+    subcmd_build_search_index = subparsers.add_parser(
+        "build-search-index",
+        aliases=["indexer", "bsi"],
+        help="Générer un index de recherche JSON (lunr) à partir d'un dossier de "
+        "fichiers Markdown, comme le plugin search de Mkdocs.",
+        formatter_class=main_parser.formatter_class,
+        prog="build-search-index",
+    )
+    add_common_arguments(subcmd_build_search_index)
+    parser_build_search_index(subcmd_build_search_index)
 
     # Content reader
     subcmd_opener = subparsers.add_parser(
