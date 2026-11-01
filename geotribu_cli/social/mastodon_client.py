@@ -276,7 +276,7 @@ class ExtendedMastodonClient(Mastodon):
             status_tags = status.get("tags")
 
             # check if status has tag (it should since the requests is already filtered...)
-            if not isinstance(status_tags, list) and len(status_tags):
+            if not status_tags:
                 logger.debug(
                     f"Exclusion de {status.get('url')} car il n'a aucun hashtag."
                 )
@@ -285,7 +285,7 @@ class ExtendedMastodonClient(Mastodon):
             tags_names = [tag.get("name") for tag in status_tags]
 
             # check if status has the two required tags
-            if "geotribot" not in tags_names and "commentaire" not in tags_names:
+            if not all(tag in tags_names for tag in ("geotribot", "commentaire")):
                 logger.debug(
                     f"Exclusion de {status.get('url')} car il ne contient pas les deux "
                     "hashtags requis : #geotribot ET #commentaire."

@@ -58,6 +58,32 @@ class TestCustomMastodonClient(unittest.TestCase):
             "mapstodon.space",
         )
 
+    def test_comment_already_broadcasted_filters_statuses(self):
+        """Test statuses without both hashtags or comment id are ignored."""
+        client = ExtendedMastodonClient(
+            access_token="x" * 30, version_check_mode="none"
+        )
+        tags = [{"name": "geotribot"}, {"name": "commentaire"}]
+        relayed = {
+            "url": "https://example.org/1",
+            "tags": tags,
+            "content": "comment-123",
+        }
+        # statuses already in memory: no API call
+        client.my_statuses = [
+            {"url": "https://example.org/2", "tags": None, "content": "comment-321"},
+            {
+                "url": "https://example.org/3",
+                "tags": tags[:1],
+                "content": "comment-321",
+            },
+            {"url": "https://example.org/4", "tags": tags, "content": "pas d'id"},
+            relayed,
+        ]
+
+        self.assertIsNone(client.comment_already_broadcasted(321))
+        self.assertEqual(client.comment_already_broadcasted(123), relayed)
+
     def test_comment_to_media_fits_instance_limit(self):
         """Test formatted comment never exceeds the instance limit."""
         client = ExtendedMastodonClient(
