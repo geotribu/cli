@@ -49,17 +49,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = [
-    "black",
-    "flake8>=7.1.0",
-    "flake8-bugbear>=23,<26",
-    "flake8-builtins>=2",
-    "flake8-docstrings>=1.6",
-    "flake8-eradicate>=1",
-    "flake8-isort>=5",
-    "Flake8-pyproject>=1.2.3",
-    "pre-commit>=4",
-]
+dev = ["pre-commit>=4", "ruff>=0.17.3"]
 doc = [
     "furo==2025.*",
     "matplotlib>=3.8.2,<4",
@@ -104,11 +94,6 @@ geotribu-cli = "geotribu_cli.cli:main"
 universal = false
 
 
-[tool.black]
-line-length = 88
-target-version = ['py311']
-
-
 [tool.coverage.run]
 branch = true
 omit = [".venv/*", "docs/*", "*tests*"]
@@ -122,36 +107,6 @@ exclude_lines = [
 ]
 ignore_errors = true
 show_missing = true
-
-
-[tool.flake8]
-count = true
-exclude = [
-    ".git",
-    "__pycache__",
-    "docs/conf.py",
-    "old",
-    "build",
-    "dist",
-    ".venv*",
-    "tests",
-]
-ignore = ["E121", "E123", "E126", "E203", "E226", "E24", "E704", "W503", "W504"]
-max-complexity = 15
-max-doc-length = 130
-max-line-length = 100
-statistics = true
-tee = true
-
-
-[tool.isort]
-profile = "black"
-ensure_newline_before_comments = true
-force_grid_wrap = 0
-include_trailing_comma = true
-line_length = 88
-multi_line_output = 3
-use_parentheses = true
 
 
 [tool.pytest.ini_options]
@@ -176,26 +131,50 @@ cumulative_timing = false
 
 
 [tool.ruff]
+extend-exclude = ["old", "tests/dev", "tests/fixtures"]
 indent-width = 4
 line-length = 88
 target-version = "py311"
 
 [tool.ruff.format]
-# Like Black, use double quotes for strings.
-quote-style = "double"
-
-# Like Black, indent with spaces, rather than tabs.
+docstring-code-format = true
+docstring-code-line-length = "dynamic"
 indent-style = "space"
-
-# Like Black, respect magic trailing commas.
+line-ending = "auto"
+quote-style = "double"
 skip-magic-trailing-comma = false
 
-# Like Black, automatically detect the appropriate line ending.
-line-ending = "auto"
+[tool.ruff.lint]
+exclude = ["docs/conf.py"]
+select = [
+    "A",   # flake8-builtins
+    "B",   # flake8-bugbear
+    "C90", # mccabe complexity
+    "D",   # pydocstyle
+    "E",   # pycodestyle errors
+    "ERA", # eradicate (commented code)
+    "F",   # pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "W",   # pycodestyle warnings
+]
+ignore = [
+    "E501", # line too long (handled by ruff format)
+]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+split-on-trailing-comma = true
 
 [tool.ruff.lint.mccabe]
-# Flag errors (`C901`) whenever the complexity level exceeds 5.
 max-complexity = 15
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore docstring rules in tests
+"tests/**" = ["D"]
+
+[tool.ruff.lint.pycodestyle]
+max-doc-length = 130
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"

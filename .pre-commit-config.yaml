@@ -29,44 +29,26 @@ repos:
       - id: rst-directive-colons
       - id: rst-inline-touching-normal
 
-  - repo: https://github.com/asottile/pyupgrade
-    rev: v3.22.0
-    hooks:
-      - id: pyupgrade
-        args:
-          - "--py311-plus"
-
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.10.1
-    hooks:
-      - id: black
-        args:
-          - --target-version=py311
-
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.17.3
     hooks:
       - id: ruff-check
+        types_or:
+          - pyi
+          - python
         args:
           - --fix-only
-
-  - repo: https://github.com/pycqa/isort
-    rev: 10.0.0b2
-    hooks:
-      - id: isort
+      - id: ruff-check
+        name: ruff check (blocking errors)
+        types_or:
+          - pyi
+          - python
         args:
-          - --profile
-          - black
-          - --filter-files
-
-  - repo: https://github.com/pycqa/flake8
-    rev: 7.5.0
-    hooks:
-      - id: flake8
-        language: python
-        types: [python]
-        args:
-          - --select=E9,F63,F7,F82,D103
+          - --select=E9,F63,F7,F82
+      - id: ruff-format
+        types_or:
+          - pyi
+          - python
 
 ci:
   autoupdate_schedule: quarterly

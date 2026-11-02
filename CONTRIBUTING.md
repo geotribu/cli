@@ -15,9 +15,9 @@ Voir le fichier de configuration correspondant : `.pre-commit-config.yaml`.
 Assurez-vous que votre code suit à peu près la PEP-8 [PEP-8](https://www.python.org/dev/peps/pep-0008/) et reste cohérent avec le reste du code :
 
 - docstrings: [google-style](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html) est utilisé pour écrire la documentation technique.
-- formatage: [black](https://black.readthedocs.io/) est utilisé pour formater automatiquement le code sans débat.
-- tri des imports: [isort](https://pycqa.github.io/isort/) est utilisé pour trier les imports.
-- analyse statique: [flake8](https://flake8.pycqa.org/en/latest/) est utilisé pour identifier les écarts vis à vis de PEP-8 et maintenir un code source de qualité.
+- formatage: [ruff format](https://docs.astral.sh/ruff/formatter/) est utilisé pour formater automatiquement le code sans débat.
+- tri des imports: [ruff check](https://docs.astral.sh/ruff/linter/#sorting-imports) est utilisé pour trier les imports.
+- analyse statique: [ruff check](https://docs.astral.sh/ruff/linter/) est utilisé pour identifier les écarts vis à vis de PEP-8 et maintenir un code source de qualité.
 
 ## Branches
 
