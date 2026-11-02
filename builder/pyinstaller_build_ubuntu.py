@@ -1,8 +1,6 @@
 #! python3
 
-"""
-Launch PyInstaller using a Python script.
-"""
+"""Launch PyInstaller using a Python script."""
 
 # #############################################################################
 # ########## Libraries #############

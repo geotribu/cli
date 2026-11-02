@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Shared console instance.
+"""Shared console instance.
 
 See: https://rich.readthedocs.io/en/stable/console.html
 """

@@ -38,7 +38,6 @@ def parser_mastodon_export(
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
     subparser.add_argument(
         "-w",
         "--where",

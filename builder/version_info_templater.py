@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Microsoft Version Info templater.
+"""Microsoft Version Info templater.
 
 See:
 

@@ -171,9 +171,9 @@ def test_cli_run_new_article(capsys):
     )
 
     assert err == ""
-    assert (
-        out_file.parent.is_dir()
-    ), f"Le dossier {out_file.parent} devrait avoir été créé"
+    assert out_file.parent.is_dir(), (
+        f"Le dossier {out_file.parent} devrait avoir été créé"
+    )
     assert out_file.is_file(), f"Le fichier {out_file} devrait avoir été créé"
 
     # clean up

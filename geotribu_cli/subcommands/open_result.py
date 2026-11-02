@@ -91,7 +91,6 @@ def parser_open_result(
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
     subparser.add_argument(
         "result_index",
         help="Numéro du résultat précédent à ouvrir. Valeur par défault : 0.",

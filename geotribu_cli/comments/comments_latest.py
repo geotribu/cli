@@ -41,7 +41,6 @@ def parser_comments_latest(
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
     subparser.add_argument(
         "-n",
         "--results-number",

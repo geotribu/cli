@@ -53,7 +53,6 @@ def format_output_result(
     Returns:
         str: formatted result ready to print
     """
-
     if format_type == "table":
         table = Table(
             title=f"{count} derniers contenus publiés",

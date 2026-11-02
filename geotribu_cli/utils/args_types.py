@@ -6,7 +6,6 @@
 # ########## IMPORTS #############
 # ################################
 
-
 # standard lib
 import logging
 from argparse import ArgumentTypeError
@@ -28,8 +27,7 @@ logger = logging.getLogger(__name__)
 # ########## FUNCTIONS ###########
 # ################################
 def arg_date_iso(date_str: str) -> date:
-    """
-    Valide le format d'une date au format AAAA-MM-JJ.
+    """Valide le format d'une date au format AAAA-MM-JJ.
 
     Args:
         date_str (str): Date au format AAAA-MM-JJ.

@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Sub-command in charge of checking if new versions are available.
+"""Sub-command in charge of checking if new versions are available.
 
 Author: Julien M. (https://github.com/guts)
 """
@@ -31,8 +30,8 @@ from geotribu_cli.__about__ import (
     __title__,
     __title_clean__,
     __uri_repository__,
+    __version__ as actual_version,
 )
-from geotribu_cli.__about__ import __version__ as actual_version
 from geotribu_cli.console import console
 from geotribu_cli.constants import GeotribuDefaults
 from geotribu_cli.utils.file_downloader import download_remote_file_to_local

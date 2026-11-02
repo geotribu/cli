@@ -107,7 +107,6 @@ def generate_index_from_docs(
     Returns:
         Index: lunr Index
     """
-
     idx: Index = lunr(
         ref=index_ref_id,
         fields=index_fieds_definition,
@@ -134,7 +133,6 @@ def parser_search_content(
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
     subparser.add_argument(
         "search_term",
         help="Terme de recherche. Accepte les filtres sur les champs indexés : tags ou "
