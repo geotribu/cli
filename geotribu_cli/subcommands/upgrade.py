@@ -265,7 +265,7 @@ def run(args: argparse.Namespace):
     )
 
     # download it
-    logger.info = (
+    logger.info(
         f"Téléchargement de la nouvelle version '{latest_version}' depuis "
         f"{remote_url} vers {dest_filepath}"
     )
