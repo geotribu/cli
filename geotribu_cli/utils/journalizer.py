@@ -126,7 +126,7 @@ def configure_logger(verbosity: int = 1, logfile: Path | None = None):
 def headers():
     """Basic information to log before other message."""
     # initialize the log
-    logger.info(f"{'='*10} {__title__} - {__version__} {'='*10}")
+    logger.info(f"{'=' * 10} {__title__} - {__version__} {'=' * 10}")
     logger.debug(f"Operating System: {platform()}")
     logger.debug(f"Architecture: {architecture()[0]}")
     logger.debug(f"Computer: {gethostname()}")

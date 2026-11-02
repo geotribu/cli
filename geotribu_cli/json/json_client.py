@@ -70,7 +70,6 @@ class JsonFeedClient:
         Returns:
             List of dicts representing raw JSON feed items
         """
-
         local_json_feed = download_remote_file_to_local(
             remote_url_to_download=self.json_feed_url,
             local_file_path=self.local_json_feed_path,

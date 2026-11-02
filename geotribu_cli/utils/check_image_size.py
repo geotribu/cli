@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Check image size using pure Python <https://github.com/shibukawa/imagesize_py>.
+"""Check image size using pure Python <https://github.com/shibukawa/imagesize_py>.
 
 Author: Julien Moura (https://github.com/guts)
 """
@@ -128,7 +127,6 @@ def check_image_dimensions(
 
     :return bool: True if image dimensions are inferior
     """
-
     if image_filepath.suffix.lower() not in allowed_images_extensions:
         logger.error(
             f"Image extension {image_filepath.suffix.lower()} is not one of "

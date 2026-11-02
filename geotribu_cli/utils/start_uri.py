@@ -21,7 +21,6 @@ def open_uri(in_filepath: str | Path):
     Args:
         in_filepath (Union[str, Path]): path to the file/folder or url to open.
     """
-
     if "://" in str(in_filepath):
         url = in_filepath
         return webbrowser.open(url)

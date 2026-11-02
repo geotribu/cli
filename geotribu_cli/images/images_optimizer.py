@@ -45,7 +45,6 @@ def parser_images_optimizer(
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
     subparser.add_argument(
         "image_path",
         help="Chemin ou URL de l'image à optimiser ou chemin vers un dossier local.",

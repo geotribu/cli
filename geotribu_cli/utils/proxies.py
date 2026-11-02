@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Small module to get network proxies configuration.
+"""Small module to get network proxies configuration.
 
 Author: Julien Moura (github.com/guts)
 """

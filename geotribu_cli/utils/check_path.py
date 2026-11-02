@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Helpers to check file: readable, exists, etc..
+"""Helpers to check file: readable, exists, etc..
 
 Author: Julien Moura (https://github.com/guts)
 """

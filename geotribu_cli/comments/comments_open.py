@@ -41,7 +41,6 @@ def parser_comments_read(
     Returns:
         argparse.ArgumentParser: parser ready to use
     """
-
     subparser.add_argument(
         "-c",
         "--comment-id",

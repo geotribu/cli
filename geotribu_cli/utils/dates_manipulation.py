@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Extract date from content path, location or name.
+"""Extract date from content path, location or name.
 
 Author: Julien Moura (https://github.com/guts)
 """

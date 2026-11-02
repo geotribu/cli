@@ -1,7 +1,6 @@
 #! python3
 
-"""
-Minimalist slugifier.
+"""Minimalist slugifier.
 
 Author: Julien Moura (@geojulien)
 """

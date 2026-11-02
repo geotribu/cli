@@ -167,7 +167,11 @@ class ExtendedMastodonClient(Mastodon):
 
         .. code-block:: python
 
-        >>> print(ExtendedMastodonClient.url_to_instance_domain(url="https://mapstodon.space/@geotribu"))
+        >>> print(
+        ...     ExtendedMastodonClient.url_to_instance_domain(
+        ...         url="https://mapstodon.space/@geotribu"
+        ...     )
+        ... )
         mapstodon.space
 
         """
@@ -335,7 +339,6 @@ class ExtendedMastodonClient(Mastodon):
         Returns:
             formatted comment
         """
-
         logger.debug(f"Formatting comment {in_comment.id}")
 
         # limite de l'instance - longueur du template sans texte
@@ -351,13 +354,11 @@ class ExtendedMastodonClient(Mastodon):
 
     def export_data(
         self,
-        dest_path_following_accounts: None | (
-            Path
-        ) = default_dest_path_following_accounts,
+        dest_path_following_accounts: None
+        | (Path) = default_dest_path_following_accounts,
         dest_path_lists: Path | None = default_dest_path_lists,
-        dest_path_lists_only_accounts: None | (
-            Path
-        ) = default_dest_path_lists_only_accounts,
+        dest_path_lists_only_accounts: None
+        | (Path) = default_dest_path_lists_only_accounts,
     ) -> tuple[Path | None, Path | None, Path | None]:
         """Export account data.
 

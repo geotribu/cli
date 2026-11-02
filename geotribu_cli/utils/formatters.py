@@ -5,8 +5,7 @@
 # standard library
 import logging
 from functools import lru_cache
-from math import floor
-from math import log as math_log
+from math import floor, log as math_log
 from typing import Literal
 from urllib.parse import parse_qs, urlsplit, urlunsplit
 
