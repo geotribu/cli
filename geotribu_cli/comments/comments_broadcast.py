@@ -32,15 +32,6 @@ logger = logging.getLogger(__name__)
 defaults_settings = GeotribuDefaults()
 
 
-status_mastodon_tmpl = """🗨️ :geotribu: Nouveau commentaire de {author} :
-
-{text}
-
-Poursuivre la discussion : {url_to_comment}.
-
-\n#Geotribot #commentaire comment-{id}"""
-
-
 # ############################################################################
 # ########## CLI #################
 # ################################
