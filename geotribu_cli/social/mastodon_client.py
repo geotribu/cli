@@ -16,7 +16,6 @@ from urllib.parse import urlparse
 
 # 3rd party
 from mastodon import Mastodon, MastodonAPIError, MastodonError
-from requests import Session
 
 # package
 from geotribu_cli.__about__ import __title_clean__, __version__
@@ -51,7 +50,7 @@ default_dest_path_lists = defaults_settings.geotribu_working_folder.joinpath(
 )
 default_dest_path_lists_only_accounts = (
     defaults_settings.geotribu_working_folder.joinpath(
-        "mastodon/export/mastodon_comptes_des_listes_geotribu"
+        "mastodon/export/mastodon_comptes_des_listes_geotribu.csv"
     )
 )
 
@@ -77,22 +76,11 @@ class ExtendedMastodonClient(Mastodon):
 
     def __init__(
         self,
-        client_id: str | None = None,
-        client_secret: str | None = None,
         access_token: str | None = None,
         api_base_url: str = defaults_settings.mastodon_base_url,
-        debug_requests: bool | None = None,
-        ratelimit_method: str = "wait",
-        ratelimit_pacefactor: float = 1.1,
-        request_timeout: int = 60,
-        mastodon_version: str | None = None,
-        version_check_mode: str = "created",
-        session: Session | None = None,
-        feature_set: str = "mainline",
-        user_agent: str = f"{__title_clean__}/{__version__}",
-        lang: str | None = "fra",
+        **kwargs,
     ):
-        """Instanciation class. Args are inherited."""
+        """Instanciation class. Other args are inherited from Mastodon."""
         # handle some attributes
         if access_token is None:
             access_token = getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN")
@@ -108,32 +96,32 @@ class ExtendedMastodonClient(Mastodon):
             elif isinstance(access_token, str) and len(access_token) < 25:
                 logger.critical(
                     "Le jeton d'accès à l'API Mastodon récupéré semble incorrect "
-                    f"(moins de 25 caractères): {access_token}"
+                    "(moins de 25 caractères)."
                 )
                 raise MastodonError(
                     f"Le jeton d'accès à l'API Mastodon (instance : {api_base_url}) est requis."
                 )
 
-        if debug_requests is None:
-            debug_requests = getenv("GEOTRIBU_LOGS_LEVEL", "") == "DEBUG"
+        if kwargs.get("debug_requests") is None:
+            kwargs["debug_requests"] = getenv("GEOTRIBU_LOGS_LEVEL", "") == "DEBUG"
 
-        # instanciate subclass
+        # instanciate subclass: only the defaults which differ from Mastodon.py's
         super().__init__(
-            client_id=client_id,
-            client_secret=client_secret,
             access_token=access_token.strip(),
             api_base_url=api_base_url,
-            debug_requests=debug_requests,
-            ratelimit_method=ratelimit_method,
-            ratelimit_pacefactor=ratelimit_pacefactor,
-            request_timeout=request_timeout,
-            mastodon_version=mastodon_version,
-            version_check_mode=version_check_mode,
-            session=session,
-            feature_set=feature_set,
-            user_agent=user_agent,
-            lang=lang,
+            **{
+                "request_timeout": 60,
+                "version_check_mode": "created",
+                "user_agent": f"{__title_clean__}/{__version__}",
+                "lang": "fr",
+            }
+            | kwargs,
         )
+
+    @property
+    def max_status_length(self) -> int:
+        """Maximum number of characters of a status, as set by the instance."""
+        return self.instance_v2()["configuration"]["statuses"]["max_characters"]
 
     @classmethod
     def full_account_with_instance(
@@ -234,6 +222,7 @@ class ExtendedMastodonClient(Mastodon):
             in_reply_to_id=in_reply_to_id,
             language="fr",
             visibility=getenv("GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"),
+            idempotency_key=f"geotribu-cli-comment-{in_comment.id}",
         )
         if isinstance(new_status, dict):
             new_status["cli_newly_posted"] = True
@@ -271,7 +260,7 @@ class ExtendedMastodonClient(Mastodon):
             status_tags = status.get("tags")
 
             # check if status has tag (it should since the requests is already filtered...)
-            if not isinstance(status_tags, list) and len(status_tags):
+            if not status_tags:
                 logger.debug(
                     f"Exclusion de {status.get('url')} car il n'a aucun hashtag."
                 )
@@ -280,7 +269,7 @@ class ExtendedMastodonClient(Mastodon):
             tags_names = [tag.get("name") for tag in status_tags]
 
             # check if status has the two required tags
-            if "geotribot" not in tags_names and "commentaire" not in tags_names:
+            if not all(tag in tags_names for tag in ("geotribot", "commentaire")):
                 logger.debug(
                     f"Exclusion de {status.get('url')} car il ne contient pas les deux "
                     "hashtags requis : #geotribot ET #commentaire."
@@ -318,6 +307,24 @@ class ExtendedMastodonClient(Mastodon):
 
         return None
 
+    @staticmethod
+    def render_status(in_comment: Comment, text: str) -> str:
+        """Fill the status template with a comment and the text to display.
+
+        Args:
+            in_comment: comment to format
+            text: text of the comment, already shortened to fit the status
+
+        Returns:
+            status ready to be posted
+        """
+        return status_mastodon_tmpl.format(
+            author=in_comment.author,
+            url_to_comment=in_comment.url_to_comment,
+            text=text,
+            id=in_comment.id,
+        )
+
     def comment_to_media(self, in_comment: Comment) -> str:
         """Format comment to fit media size and publication rules.
 
@@ -330,16 +337,16 @@ class ExtendedMastodonClient(Mastodon):
         """
 
         logger.debug(f"Formatting comment {in_comment.id}")
-        # 500 caractères - longueur du template = 370
-        max_text_length = (
-            370 - len(in_comment.author) - len(str(in_comment.id)) - 4
-        )  # 4 = placeholder final
 
-        return status_mastodon_tmpl.format(
-            author=in_comment.author,
-            url_to_comment=in_comment.url_to_comment,
+        # limite de l'instance - longueur du template sans texte
+        # gère aussi le fait qu'une URL = 23 caractères dans Mastodon
+        max_text_length = self.max_status_length - self.get_status_length(
+            self.render_status(in_comment=in_comment, text="")
+        )
+
+        return self.render_status(
+            in_comment=in_comment,
             text=shorten(in_comment.markdownified_text, width=max_text_length),
-            id=in_comment.id,
         )
 
     def export_data(
@@ -386,14 +393,14 @@ class ExtendedMastodonClient(Mastodon):
             default_instance_domain = self.url_to_instance_domain(
                 url=mastodon_profile.get("url")
             )
-        except Exception as err:
+        except MastodonError as err:
             logger.critical(
                 "La récupération du profil auprès de l'API a échoué. L'export est "
                 f"impossible. Trace: {err}"
             )
             raise MastodonAPIError(
                 "Impossible de récupérer les informations du profil."
-            )
+            ) from err
 
         # récupération des listes
         if dest_path_lists is not None or dest_path_lists_only_accounts is not None:
@@ -404,7 +411,7 @@ class ExtendedMastodonClient(Mastodon):
                     )
                     for liste in self.lists()
                 }
-            except Exception as err:
+            except MastodonError as err:
                 logger.critical(
                     "La récupération des listes a échoué. L'export est "
                     f"impossible. Trace: {err}"
@@ -415,9 +422,9 @@ class ExtendedMastodonClient(Mastodon):
         if dest_path_following_accounts is not None:
             try:
                 masto_following_accounts = self.fetch_remaining(
-                    self.account_following(id=self.me())
+                    self.account_following(id=mastodon_profile)
                 )
-            except Exception as err:
+            except MastodonError as err:
                 logger.critical(
                     "La récupération des comptes suivis a échoué. L'export est "
                     f"impossible. Trace: {err}"

@@ -13,6 +13,8 @@ import unittest
 from os import getenv
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from types import SimpleNamespace
+from unittest.mock import PropertyMock, patch
 
 # project
 from geotribu_cli.__about__ import __title_clean__, __version__
@@ -56,13 +58,74 @@ class TestCustomMastodonClient(unittest.TestCase):
             "mapstodon.space",
         )
 
+    def test_init_defaults_and_overrides(self):
+        """Test CLI defaults are applied and can be overridden."""
+        client = ExtendedMastodonClient(
+            access_token=" " + "x" * 30 + " ", version_check_mode="none"
+        )
+        self.assertEqual(client.access_token, "x" * 30)
+        self.assertEqual(client.request_timeout, 60)
+        self.assertEqual(client.lang, "fr")
+        self.assertEqual(client.api_base_url, "https://mapstodon.space")
+        self.assertTrue(client.user_agent.startswith(f"{__title_clean__}/"))
+
+        client = ExtendedMastodonClient(
+            access_token="x" * 30, version_check_mode="none", request_timeout=5
+        )
+        self.assertEqual(client.request_timeout, 5)
+
+    def test_comment_already_broadcasted_filters_statuses(self):
+        """Test statuses without both hashtags or comment id are ignored."""
+        client = ExtendedMastodonClient(
+            access_token="x" * 30, version_check_mode="none"
+        )
+        tags = [{"name": "geotribot"}, {"name": "commentaire"}]
+        relayed = {
+            "url": "https://example.org/1",
+            "tags": tags,
+            "content": "comment-123",
+        }
+        # statuses already in memory: no API call
+        client.my_statuses = [
+            {"url": "https://example.org/2", "tags": None, "content": "comment-321"},
+            {
+                "url": "https://example.org/3",
+                "tags": tags[:1],
+                "content": "comment-321",
+            },
+            {"url": "https://example.org/4", "tags": tags, "content": "pas d'id"},
+            relayed,
+        ]
+
+        self.assertIsNone(client.comment_already_broadcasted(321))
+        self.assertEqual(client.comment_already_broadcasted(123), relayed)
+
+    def test_comment_to_media_fits_instance_limit(self):
+        """Test formatted comment never exceeds the instance limit."""
+        client = ExtendedMastodonClient(
+            access_token="x" * 30, version_check_mode="none"
+        )
+        comment = SimpleNamespace(
+            id=1234,
+            author="Jean-Michel",
+            url_to_comment="https://geotribu.fr/articles/2026/un-article/#isso-1234",
+            markdownified_text="mot " * 300,
+        )
+        with patch.object(
+            ExtendedMastodonClient, "max_status_length", new_callable=PropertyMock
+        ) as mock_max_length:
+            for limit in (300, 500, 5000):
+                mock_max_length.return_value = limit
+                status = client.comment_to_media(in_comment=comment)
+                self.assertLessEqual(client.get_status_length(status), limit)
+                self.assertTrue(status.endswith("comment-1234"))
+
     @unittest.skipIf(
         condition=not getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN"),
         reason="Le jeton d'API Mastodon est requis pour exécuter ce test.",
     )
     def test_export_data_all(self):
         """Test export following accounts to CSV."""
-        print(getenv("GEOTRIBU_MASTODON_API_ACCESS_TOKEN"))
         masto_client = ExtendedMastodonClient(
             user_agent=f"{__title_clean__}-TESTS/{__version__}", debug_requests=False
         )
