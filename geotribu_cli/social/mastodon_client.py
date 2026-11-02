@@ -422,7 +422,7 @@ class ExtendedMastodonClient(Mastodon):
         if dest_path_following_accounts is not None:
             try:
                 masto_following_accounts = self.fetch_remaining(
-                    self.account_following(id=self.me())
+                    self.account_following(id=mastodon_profile)
                 )
             except MastodonError as err:
                 logger.critical(
