@@ -17,6 +17,7 @@ import sys
 from os import getenv
 from pathlib import Path
 from sys import platform as opersys
+from urllib.error import HTTPError
 from urllib.parse import urlsplit, urlunsplit
 from urllib.request import Request, urlopen
 
@@ -84,7 +85,7 @@ def get_download_url_for_os(
     return None
 
 
-def get_latest_release(api_repo_url: str) -> dict:
+def get_latest_release(api_repo_url: str) -> dict | None:
     """Get latest release from GitHub public API.
 
     Args:
@@ -114,14 +115,18 @@ def get_latest_release(api_repo_url: str) -> dict:
             if response.status == 200:
                 release_info = json.loads(response.read())
         return release_info
-    except Exception as err:
+    except HTTPError as err:
         logger.error(err)
-        if "rate limit exceeded" in err:
+        # GitHub gives the reason of the refusal in the response body
+        if "rate limit" in err.read().decode(errors="replace").lower():
             logger.error(
                 "Rate limit of GitHub API exeeded. Try again later (generally "
                 "in 15 minutes) or set GITHUB_TOKEN as environment variable with a "
                 "personal token."
             )
+        return None
+    except Exception as err:
+        logger.error(err)
         return None
 
 
