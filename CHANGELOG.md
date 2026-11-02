@@ -18,6 +18,21 @@ Unreleased
 
 -->
 
+## 0.36.0 - 2026-11-02
+
+### Features and enhancements 🎉
+
+* improve(mastodon): use Mastodon-py >= 2.2 and make some arrangements by @Guts in <https://github.com/geotribu/cli/pull/345>
+* improve(upgrade): replace bare exception by urllib.HTTPError by @Guts in <https://github.com/geotribu/cli/pull/348>
+
+### Tooling 🔧
+
+* chore(python): drop Python 3.10 support (EOL) by @Guts in <https://github.com/geotribu/cli/pull/339>
+* chore(python): add support for Python 3.15 by @Guts in <https://github.com/geotribu/cli/pull/340>
+* update(tooling): ruff only by @Guts in <https://github.com/geotribu/cli/pull/346>
+* chore(deps): bump minimal dependencies versions by @Guts in <https://github.com/geotribu/cli/pull/347>
+* update(packaging): use include instead of exclude by @Guts in <https://github.com/geotribu/cli/pull/349>
+
 ## 0.35.2 - 2026-04-07
 
 ### Tooling 🔧

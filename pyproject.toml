@@ -191,4 +191,4 @@ include = ["geotribu_cli*"]
 
 [tool.setuptools_scm]
 write_to = "geotribu_cli/_version.py"
-fallback_version = "0.36.0-dev"
+fallback_version = "0.99.9-dev"
