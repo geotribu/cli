@@ -50,7 +50,7 @@ default_dest_path_lists = defaults_settings.geotribu_working_folder.joinpath(
 )
 default_dest_path_lists_only_accounts = (
     defaults_settings.geotribu_working_folder.joinpath(
-        "mastodon/export/mastodon_comptes_des_listes_geotribu"
+        "mastodon/export/mastodon_comptes_des_listes_geotribu.csv"
     )
 )
 
