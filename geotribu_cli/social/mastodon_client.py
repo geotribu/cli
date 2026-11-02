@@ -222,6 +222,7 @@ class ExtendedMastodonClient(Mastodon):
             in_reply_to_id=in_reply_to_id,
             language="fr",
             visibility=getenv("GEOTRIBU_MASTODON_DEFAULT_VISIBILITY", "unlisted"),
+            idempotency_key=f"geotribu-cli-comment-{in_comment.id}",
         )
         if isinstance(new_status, dict):
             new_status["cli_newly_posted"] = True
